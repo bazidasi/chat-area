@@ -2040,8 +2040,8 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                     innerShadow
                     theme={colorScheme}
                     strength={submitBlocked && !showingStopControl ? 0.15 : 0.8}
-                    paused={reducedMotion || (submitBlocked && !showingStopControl)}
-                    disableGlow={reducedMotion || (submitBlocked && !showingStopControl)}
+                    paused={false}
+                    disableGlow={false}
                     normalizeHostStyles={false}
                     className="shrink-0 ml-1"
                     style={{ background: 'var(--chatbox-background-secondary)', color: 'var(--chatbox-tint-primary)' }}
@@ -2073,7 +2073,7 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                         aria-label={showingStopControl ? t('Stop') : t('Send')}
                         onClick={showingStopControl ? onStopGenerating : () => handleSubmit()}
                         className="chatbox-send-button shrink-0"
-                        style={{ background: 'transparent', color: 'inherit' }}
+                        style={{ color: 'inherit' }}
                       >
                         {showingStopControl ? (
                           <ScalableIcon icon={IconPlayerStopFilled} size={16} />

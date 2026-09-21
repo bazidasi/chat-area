@@ -98,8 +98,8 @@ export const CompactionStatus = memo(function CompactionStatus({ sessionId, onVi
   }
 
   if (compactionState.status === 'completed') {
-    return (
-      <Box className="rounded-xl bg-chatbox-background-brand-secondary border border-chatbox-border-primary shadow-sm px-3 py-2">
+      return (
+      <Box className="chatbox-card-surface rounded-xl bg-chatbox-background-brand-secondary border border-chatbox-border-primary px-3 py-2">
         <Flex align="center" justify="space-between" gap="xs">
           <Flex align="center" gap="xs" className="min-w-0">
             <ScalableIcon icon={IconCheck} size={16} className="flex-shrink-0 text-chatbox-tint-brand" />
@@ -126,7 +126,7 @@ export const CompactionStatus = memo(function CompactionStatus({ sessionId, onVi
 
   if (compactionState.status === 'failed') {
     return (
-      <Box className="rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 shadow-sm p-3">
+      <Box className="chatbox-card-surface rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-3">
         <Flex align="flex-start" justify="space-between" gap="xs">
           <Flex
             align="flex-start"
@@ -183,7 +183,7 @@ export const CompactionStatus = memo(function CompactionStatus({ sessionId, onVi
   }
 
   return (
-    <Box className="rounded-xl bg-chatbox-background-tertiary border border-chatbox-border-primary shadow-sm p-3">
+    <Box className="chatbox-card-surface rounded-xl bg-chatbox-background-tertiary border border-chatbox-border-primary p-3">
       <Flex align="center" gap="xs" justify="center">
         <ScalableIcon icon={IconLoader2} size={16} className="animate-spin text-chatbox-tertiary" />
         <Text size="sm" c="chatbox-tertiary">

@@ -311,23 +311,31 @@ ul[data-sidebar='menu-sub'] > li {
 
 /* ---------- chat input surface (shared by InputBox + PendingActionBar) ----------
    Large soft well matching the reference design: 24px radius, no hard
-   border, gentle lift, and a magenta focus glow when typing. */
+   border, and a magenta focus glow when typing. The lift is the app's
+   dual-shadow soft-UI extrusion (dark bottom-right / light top-left)
+   rather than a single drop shadow, so the well reads as the same
+   material as the surrounding page, pushed out of it. */
 .chatbox-input-surface {
   border: none !important;
   border-radius: 24px;
+  box-shadow:
+    var(--neo-shadow-outset-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 70%, transparent);
   transition: box-shadow 180ms ease, background-color 180ms ease;
 }
 
 .chatbox-input-surface:focus-within {
   box-shadow:
-    0 6px 28px -6px rgba(0, 0, 0, 0.14),
+    var(--neo-shadow-outset-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 70%, transparent),
     0 0 0 1.5px color-mix(in srgb, var(--chatbox-brand) 38%, transparent),
     0 0 0 6px color-mix(in srgb, var(--chatbox-brand) 9%, transparent);
 }
 
 [data-mantine-color-scheme='dark'] .chatbox-input-surface:focus-within {
   box-shadow:
-    0 6px 28px -6px rgba(0, 0, 0, 0.55),
+    var(--neo-shadow-outset-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 70%, transparent),
     0 0 0 1.5px color-mix(in srgb, var(--chatbox-brand) 55%, transparent),
     0 0 0 6px color-mix(in srgb, var(--chatbox-brand) 12%, transparent);
 }
@@ -339,18 +347,62 @@ ul[data-sidebar='menu-sub'] > li {
   outline: none;
 }
 
-/* circular send / stop button in the composer */
+/* circular send / stop button in the composer ----------
+   Layered "pressed metal" pill, adapted from the reference button but built
+   from the app's soft-UI tokens so light and dark follow the theme. The
+   element's own background is the recessed socket and shows as a thin rim;
+   ::before is the raised face sitting 1px inside it. The metal-fx ring still
+   draws over the whole control, so this only supplies the material. */
 .chatbox-send-button {
+  position: relative;
   border-radius: 9999px;
-  transition: transform 140ms ease, filter 140ms ease;
+  background-color: color-mix(in srgb, var(--neo-surface-raised) 62%, var(--neo-shadow-dark));
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 60%, transparent);
+  transition: box-shadow 180ms ease, transform 140ms ease;
 }
 
+.chatbox-send-button::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: linear-gradient(
+    135deg,
+    var(--neo-surface-raised),
+    color-mix(in srgb, var(--neo-surface-raised) 78%, var(--neo-shadow-dark))
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 90%, transparent),
+    inset 1px 1px 2px color-mix(in srgb, var(--neo-shadow-light) 65%, transparent),
+    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-dark) 45%, transparent);
+  transition: box-shadow 180ms ease, background-image 180ms ease;
+}
+
+/* icon and loader sit on the face, not under it */
+.chatbox-send-button > span {
+  position: relative;
+  z-index: 1;
+}
+
+/* hover: the face presses in, the socket stops casting a lip */
 .chatbox-send-button:hover:not(:disabled) {
-  filter: brightness(1.06);
+  box-shadow: none;
+}
+
+.chatbox-send-button:hover:not(:disabled)::before {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--neo-surface-raised) 88%, var(--neo-shadow-dark)),
+    color-mix(in srgb, var(--neo-surface-raised) 72%, var(--neo-shadow-dark))
+  );
+  box-shadow:
+    inset 1px 1px 3px color-mix(in srgb, var(--neo-shadow-dark) 55%, transparent),
+    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-light) 60%, transparent);
 }
 
 .chatbox-send-button:active:not(:disabled) {
-  transform: scale(0.92);
+  transform: scale(0.97);
 }
 
 .chatbox-send-button:disabled {
@@ -368,6 +420,89 @@ ul[data-sidebar='menu-sub'] > li {
   }
 
   .chatbox-send-button:active:not(:disabled) {
+    transform: none;
+  }
+}
+
+/* notification / status cards above the composer ----------
+   Same neumorphic extrusion as the chat input well but at a
+   slightly smaller radius (20px). Applied to the three bars that
+   sit between the conversation and the composer
+   (CompactionStatus, WebSearchUnavailableBanner, QueuedMessagesBar)
+   so they share the same pushed-out soft surface. */
+.chatbox-card-surface {
+  border: none !important;
+  border-radius: 20px;
+  box-shadow:
+    var(--neo-shadow-outset-sm),
+    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 65%, transparent);
+  transition: box-shadow 180ms ease, background-color 180ms ease;
+}
+
+/* primary action buttons (approve / continue / deny): pressed-metal
+   hover + press animation, mirroring the send button's behaviour so
+   all composer-area CTAs share the same tactile language. */
+.chatbox-action-btn {
+  position: relative;
+  border-radius: 9999px !important;
+  background-color: color-mix(in srgb, var(--neo-surface-raised) 62%, var(--neo-shadow-dark)) !important;
+  border: none !important;
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 60%, transparent) !important;
+  transition: box-shadow 180ms ease, transform 140ms ease;
+}
+
+.chatbox-action-btn::before {
+  content: '';
+  position: absolute;
+  inset: 1px;
+  z-index: 0;
+  border-radius: inherit;
+  background-image: linear-gradient(
+    135deg,
+    var(--neo-surface-raised),
+    color-mix(in srgb, var(--neo-surface-raised) 78%, var(--neo-shadow-dark))
+  );
+  box-shadow:
+    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 90%, transparent) !important,
+    inset 1px 1px 2px color-mix(in srgb, var(--neo-shadow-light) 65%, transparent) !important,
+    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-dark) 45%, transparent) !important;
+  transition: box-shadow 180ms ease, background-image 180ms ease;
+}
+
+.chatbox-action-btn > span {
+  position: relative;
+  z-index: 1;
+}
+
+.chatbox-action-btn:hover:not(:disabled) {
+  box-shadow: none !important;
+}
+
+.chatbox-action-btn:hover:not(:disabled)::before {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--neo-surface-raised) 88%, var(--neo-shadow-dark)),
+    color-mix(in srgb, var(--neo-surface-raised) 72%, var(--neo-shadow-dark))
+  );
+  box-shadow:
+    inset 1px 1px 3px color-mix(in srgb, var(--neo-shadow-dark) 55%, transparent) !important,
+    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-light) 60%, transparent) !important;
+}
+
+.chatbox-action-btn:active:not(:disabled) {
+  transform: scale(0.97) !important;
+}
+
+.chatbox-action-btn:disabled {
+  opacity: 0.4;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chatbox-action-btn {
+    transition: none;
+  }
+
+  .chatbox-action-btn:active:not(:disabled) {
     transform: none;
   }
 }

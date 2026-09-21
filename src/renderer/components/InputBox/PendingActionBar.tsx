@@ -520,6 +520,7 @@ const PendingActionBarContent: FC<PendingActionBarProps> = ({ session }) => {
             h={32}
             px={12}
             radius="md"
+            className="chatbox-action-btn"
             loading={isActing && (acting?.action === 'deny' || acting?.action === 'stop')}
             disabled={isActing && isResolveAction(acting?.action ?? 'approve')}
             onClick={() => runAction(current, current.kind === 'approval' ? 'deny' : 'stop')}
@@ -536,6 +537,7 @@ const PendingActionBarContent: FC<PendingActionBarProps> = ({ session }) => {
                 radius="xl"
                 fw={500}
                 color="chatbox-brand"
+                className="chatbox-action-btn"
                 loading={isActing && acting?.action === 'continue'}
                 disabled={isActing && acting?.action !== 'continue'}
                 onClick={() => runAction(current, 'continue')}
@@ -586,6 +588,7 @@ const PendingActionBarContent: FC<PendingActionBarProps> = ({ session }) => {
               fw={500}
               leftSection={<IconCheck size={15} stroke={2.5} />}
               color="chatbox-brand"
+              className="chatbox-action-btn"
               loading={isActing && acting?.action === 'approve'}
               disabled={isActing && acting?.action !== 'approve'}
               onClick={() => runAction(current, 'approve')}

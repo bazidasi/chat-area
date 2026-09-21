@@ -274,7 +274,7 @@ export const QueuedMessagesBar = memo(function QueuedMessagesBar({ sessionId }: 
   return (
     <Box
       data-testid={TestId.chat.queuedMessageBar}
-      className="rounded-lg bg-chatbox-background-tertiary border border-chatbox-border-primary shadow-sm px-2.5 py-2"
+      className="chatbox-card-surface rounded-lg bg-chatbox-background-tertiary border border-chatbox-border-primary px-2.5 py-2"
     >
       <Flex align="center" justify="space-between" gap="xs" className="px-0.5">
         <Flex align="center" gap={6} className="min-w-0">

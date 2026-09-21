@@ -68,7 +68,7 @@ export function WebSearchUnavailableBanner({ session }: { session: Session }) {
       gap="xs"
       px={10}
       py={8}
-      className="rounded-2xl border border-solid border-chatbox-border-primary bg-chatbox-background-primary shadow-sm"
+      className="chatbox-card-surface rounded-2xl border border-solid border-chatbox-border-primary bg-chatbox-background-primary"
       style={{ borderLeft: '3px solid var(--chatbox-tint-warning)' }}
     >
       <Flex align="center" gap={6} className="min-w-0 flex-1">
