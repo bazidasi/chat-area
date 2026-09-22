@@ -18,6 +18,7 @@ import {
 } from '@mantine/core'
 import {
   getDefaultInterfaceColors,
+  interfaceColorsEqual,
   INTERFACE_COLOR_PRESETS,
   type InterfaceColorPreset,
   type InterfaceColors,
@@ -70,7 +71,9 @@ export function RouteComponent() {
   const { t } = useTranslation()
   const { setSettings, ...settings } = useSettingsStore((state) => state)
   const realTheme = useUIStore((state) => state.realTheme)
-  const storedInterfaceColors = (settings.interfaceColors ?? getDefaultInterfaceColors())[realTheme]
+  const storedInterfaceColors = (
+    (settings.interfaceColorsCustomized && settings.interfaceColors) || getDefaultInterfaceColors()
+  )[realTheme]
   const currentInterfaceColors = {
     ...storedInterfaceColors,
     brand: resolveInterfaceBrandColor(storedInterfaceColors.brand, realTheme),
@@ -82,8 +85,13 @@ export function RouteComponent() {
 
   const updateCurrentInterfaceColors = (updater: (colors: InterfaceThemeColors) => InterfaceThemeColors) => {
     setSettings((draft) => {
-      draft.interfaceColors ??= getDefaultInterfaceColors()
-      draft.interfaceColors[realTheme] = updater(draft.interfaceColors[realTheme])
+      const base =
+        (draft.interfaceColorsCustomized && draft.interfaceColors) || getDefaultInterfaceColors()
+      draft.interfaceColors = {
+        ...base,
+        [realTheme]: updater(base[realTheme]),
+      }
+      draft.interfaceColorsCustomized = true
     })
   }
 
@@ -92,12 +100,17 @@ export function RouteComponent() {
   }
 
   const resetInterfaceColors = () => {
-    updateCurrentInterfaceColors(() => getDefaultInterfaceColors()[realTheme])
+    setSettings((draft) => {
+      draft.interfaceColors = getDefaultInterfaceColors()
+      draft.interfaceColorsCustomized = false
+    })
   }
 
   const applyInterfaceColorPreset = (colors: InterfaceColors) => {
     setSettings((draft) => {
       draft.interfaceColors = resolveInterfaceBrandColors(colors)
+      // Applying the stock Default preset returns to source-following mode.
+      draft.interfaceColorsCustomized = !interfaceColorsEqual(draft.interfaceColors, getDefaultInterfaceColors())
     })
   }
 
@@ -106,7 +119,9 @@ export function RouteComponent() {
     if (!label) return
 
     setSettings((draft) => {
-      const currentColors = resolveInterfaceBrandColors(draft.interfaceColors ?? getDefaultInterfaceColors())
+      const currentColors = resolveInterfaceBrandColors(
+        (draft.interfaceColorsCustomized && draft.interfaceColors) || getDefaultInterfaceColors()
+      )
       draft.interfaceColorPresets ??= []
       draft.interfaceColorPresets.push({
         id: crypto.randomUUID(),
@@ -145,7 +160,9 @@ export function RouteComponent() {
     if (!editingPresetId || !label) return
 
     setSettings((draft) => {
-      const colors = resolveInterfaceBrandColors(draft.interfaceColors ?? getDefaultInterfaceColors())
+      const colors = resolveInterfaceBrandColors(
+        (draft.interfaceColorsCustomized && draft.interfaceColors) || getDefaultInterfaceColors()
+      )
       draft.interfaceColorPresets = (draft.interfaceColorPresets ?? []).map((preset) =>
         preset.id === editingPresetId
           ? {

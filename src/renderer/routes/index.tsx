@@ -32,7 +32,7 @@ import { rendererApplication } from '@/app/renderer-application'
 import { BlurText } from '@/components/animate-ui/primitives/effects/blur-text'
 import { Fade } from '@/components/animate-ui/primitives/effects/fade'
 import { Slide, Slides } from '@/components/animate-ui/primitives/effects/slide'
-import { Halftone } from '@/components/animate-ui/primitives/effects/halftone'
+import { HalftoneBackground } from '@/components/backgrounds/halftone'
 import { ScalableIcon } from '@/components/common/ScalableIcon'
 import { ImageInStorage } from '@/components/Image'
 import InputBox, { type InputBoxPayload } from '@/components/InputBox/InputBox'
@@ -444,139 +444,142 @@ function Index() {
     (forceShowNewUserScenarioCards || (hasCompletedFirstSuccessfulChat === false && isLoggedIn)) && !session.copilotId
 
   return (
-    <Page title="">
-      <div className="relative flex flex-col h-full min-h-0 overflow-hidden pb-md">
-        <Halftone className="absolute inset-0 pointer-events-none" />
-        {/* Hero + composer cluster, centered in the viewport when it fits;
-            scrolls as one unit when it doesn't. */}
-        <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto pb-md">
-          {showNewUserScenarios ? (
-            <Stack className="my-auto w-full" py="xl">
-              <NewUserScenarioGrid scenarios={newUserScenarios} onSelect={handleScenarioSelect} />
-            </Stack>
-          ) : (
-            <Stack align="center" gap="lg" className="w-full pt-14 pb-6" px="md">
-              {/* auth-template reference: centered content on a grid
-                  background, logo on top */}
-              <div aria-hidden className="chatbox-hero-grid pointer-events-none absolute inset-0" />
-
-              <Slide direction="up" offset={12}>
-                <Stack align="center" gap={6} pt="md">
-                  <Text fw={800} fz={isSmallScreen ? 24 : 34} ta="center" lh={1.15}>
-                    <BlurText text={t('What can I help you with today?')} />
-                  </Text>
-                  <span className="h-[3px] w-10 rounded-full bg-chatbox-brand" />
-                  {!isSmallScreen && (
-                    <Text size="sm" c="chatbox-tertiary" ta="center" mt={4}>
-                      {t('Ask anything — chat, create images, analyze files, and more.')}
-                    </Text>
-                  )}
+    <div className="relative isolate h-full">
+      {/* Spans the whole page — including behind the transparent title-bar header —
+          so paddings/header no longer clip the animation. */}
+      <HalftoneBackground className="absolute inset-0 z-0 pointer-events-none" />
+      <div className="relative z-[1] flex h-full flex-col">
+        <Page title="">
+          <div className="relative flex flex-col h-full min-h-0 overflow-hidden pb-md">
+            {/* Hero + composer cluster, centered in the viewport when it fits;
+                scrolls as one unit when it doesn't. */}
+            <div className="relative z-[1] flex min-h-0 flex-1 flex-col justify-center overflow-y-auto pb-md">
+              {showNewUserScenarios ? (
+                <Stack className="my-auto w-full" py="xl">
+                  <NewUserScenarioGrid scenarios={newUserScenarios} onSelect={handleScenarioSelect} />
                 </Stack>
-              </Slide>
-            </Stack>
-          )}
+              ) : (
+                <Stack align="center" gap="lg" className="w-full pt-14 pb-6" px="md">
+                  <Slide direction="up" offset={12}>
+                    <Stack align="center" gap={6} pt="md">
+                      <Text fw={800} fz={isSmallScreen ? 24 : 34} ta="center" lh={1.15}>
+                        <BlurText text={t('What can I help you with today?')} />
+                      </Text>
+                      <span className="h-[3px] w-10 rounded-full bg-chatbox-brand" />
+                      {!isSmallScreen && (
+                        <Text size="sm" c="chatbox-tertiary" ta="center" mt={4}>
+                          {t('Ask anything — chat, create images, analyze files, and more.')}
+                        </Text>
+                      )}
+                    </Stack>
+                  </Slide>
+                </Stack>
+              )}
 
-          {session.copilotId ? (
-            <Box px="md">
-              <Stack gap="sm" className={widthFull ? 'w-full' : 'w-full max-w-4xl mx-auto'}>
-                <Flex align="center" gap="sm">
-                  <CopilotItem
-                    name={session.name}
-                    avatar={
-                      session.assistantAvatarKey
-                        ? { type: 'storage-key', storageKey: session.assistantAvatarKey }
-                        : undefined
-                    }
-                    picUrl={session.picUrl}
-                    selected
-                    onClick={() => onClickSessionSettings?.()}
-                  />
-                  <ActionIcon
-                    size={32}
-                    radius="lg"
-                    c="chatbox-tertiary"
-                    bg="#F1F3F5"
-                    onClick={() => setSession((old) => ({ ...old, copilotId: undefined }))}
-                  >
-                    <ScalableIcon icon={IconX} size={24} />
-                  </ActionIcon>
-                </Flex>
+              {session.copilotId ? (
+                <Box px="md">
+                  <Stack gap="sm" className={widthFull ? 'w-full' : 'w-full max-w-4xl mx-auto'}>
+                    <Flex align="center" gap="sm">
+                      <CopilotItem
+                        name={session.name}
+                        avatar={
+                          session.assistantAvatarKey
+                            ? { type: 'storage-key', storageKey: session.assistantAvatarKey }
+                            : undefined
+                        }
+                        picUrl={session.picUrl}
+                        selected
+                        onClick={() => onClickSessionSettings?.()}
+                      />
+                      <ActionIcon
+                        size={32}
+                        radius="lg"
+                        c="chatbox-tertiary"
+                        bg="#F1F3F5"
+                        onClick={() => setSession((old) => ({ ...old, copilotId: undefined }))}
+                      >
+                        <ScalableIcon icon={IconX} size={24} />
+                      </ActionIcon>
+                    </Flex>
 
-                <Text c="chatbox-secondary" className="line-clamp-5">
-                  {session.messages[0]?.contentParts?.map((part) => (part.type === 'text' ? part.text : '')).join('') ||
-                    ''}
-                </Text>
-              </Stack>
-            </Box>
-          ) : (
-            showCopilotsInNewSession && (
-              <CopilotPicker onSelect={(copilot) => setSession((old) => ({ ...old, copilotId: copilot?.id }))} />
-            )
-          )}
+                    <Text c="chatbox-secondary" className="line-clamp-5">
+                      {session.messages[0]?.contentParts
+                        ?.map((part) => (part.type === 'text' ? part.text : ''))
+                        .join('') || ''}
+                    </Text>
+                  </Stack>
+                </Box>
+              ) : (
+                showCopilotsInNewSession && (
+                  <CopilotPicker onSelect={(copilot) => setSession((old) => ({ ...old, copilotId: copilot?.id }))} />
+                )
+              )}
 
-          {/* Chat / Work mode switch — sits between the welcome message and
+              {/* Chat / Work mode switch — sits between the welcome message and
               the composer, driving the same agent-mode entry as the panel. */}
-          {!showNewUserScenarios && !session.copilotId && (
-            <WorkChatModeToggle sessionId="new" model={selectedModel} sessionSettings={session.settings} />
-          )}
+              {!showNewUserScenarios && !session.copilotId && (
+                <WorkChatModeToggle sessionId="new" model={selectedModel} sessionSettings={session.settings} />
+              )}
 
-          <Box className="w-full max-w-4xl mx-auto">
-            <InputBox
-              sessionType="chat"
-              sessionId="new"
-              draftCopilotId={session.copilotId}
-              draftCopilotName={session.copilotId ? session.name : undefined}
-              model={selectedModel}
-              // fullWidth
-              onSelectModel={onSelectModel}
-              onClickSessionSettings={onClickSessionSettings}
-              onSubmit={handleSubmit}
-            />
-          </Box>
+              <Box className="w-full max-w-4xl mx-auto">
+                <InputBox
+                  sessionType="chat"
+                  sessionId="new"
+                  draftCopilotId={session.copilotId}
+                  draftCopilotName={session.copilotId ? session.name : undefined}
+                  model={selectedModel}
+                  // fullWidth
+                  onSelectModel={onSelectModel}
+                  onClickSessionSettings={onClickSessionSettings}
+                  onSubmit={handleSubmit}
+                />
+              </Box>
 
-          {!session.copilotId && !showNewUserScenarios && (
-            <Fade delay={260} className={widthFull ? 'w-full' : 'w-full max-w-4xl mx-auto'}>
-              <Stack gap="xs" px="sm" pb={isSmallScreen ? 0 : 'xs'}>
-                {!isSmallScreen && (
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-                    <Slides delay={320} holdDelay={90}>
-                      <HomeFeatureCard
-                        icon={IconPhoto}
-                        tag={t('Create Image')}
-                        title={t('Image Generator')}
-                        description={t('Create high-quality images instantly from text.')}
-                        onClick={() => router.navigate({ to: '/image-creator' })}
-                      />
-                      <HomeFeatureCard
-                        icon={IconPresentation}
-                        tag={t('Make Slides')}
-                        title={t('AI Presentation')}
-                        description={t('Turn ideas into engaging, professional presentations.')}
-                        onClick={() => setQuote(t('Create a professional presentation about '))}
-                      />
-                      <HomeFeatureCard
-                        icon={IconCode}
-                        tag={t('Generate Code')}
-                        title={t('Dev Assistant')}
-                        description={t('Generate clean, production-ready code in seconds.')}
-                        onClick={() => setQuote(t('Write production-ready code for '))}
-                      />
-                    </Slides>
-                  </div>
-                )}
-              </Stack>
-            </Fade>
-          )}
-        </div>
+              {!session.copilotId && !showNewUserScenarios && (
+                <Fade delay={260} className={widthFull ? 'w-full' : 'w-full max-w-4xl mx-auto'}>
+                  <Stack gap="xs" px="sm" pb={isSmallScreen ? 0 : 'xs'}>
+                    {!isSmallScreen && (
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                        <Slides delay={320} holdDelay={90}>
+                          <HomeFeatureCard
+                            icon={IconPhoto}
+                            tag={t('Create Image')}
+                            title={t('Image Generator')}
+                            description={t('Create high-quality images instantly from text.')}
+                            onClick={() => router.navigate({ to: '/image-creator' })}
+                          />
+                          <HomeFeatureCard
+                            icon={IconPresentation}
+                            tag={t('Make Slides')}
+                            title={t('AI Presentation')}
+                            description={t('Turn ideas into engaging, professional presentations.')}
+                            onClick={() => setQuote(t('Create a professional presentation about '))}
+                          />
+                          <HomeFeatureCard
+                            icon={IconCode}
+                            tag={t('Generate Code')}
+                            title={t('Dev Assistant')}
+                            description={t('Generate clean, production-ready code in seconds.')}
+                            onClick={() => setQuote(t('Write production-ready code for '))}
+                          />
+                        </Slides>
+                      </div>
+                    )}
+                  </Stack>
+                </Fade>
+              )}
+            </div>
+          </div>
+        </Page>
       </div>
-    </Page>
+    </div>
   )
 }
 
 const MAX_COPILOTS_TO_SHOW = 10
 
 /**
- * Home feature card (desktop): icon in a brand-tinted square, magenta tag
+ * Home feature card (desktop): icon in a brand-tinted square, brand tag
  * pill, title and one-line description — mirrors the reference home layout.
  * Entrance stagger is handled by the parent <Slides> (animate-ui).
  */

@@ -35,6 +35,7 @@ export function createDefaultSettings(): Settings {
     backgroundImageOpacity: 0.16,
     theme: Theme.System,
     interfaceColors: getDefaultInterfaceColors(),
+    interfaceColorsCustomized: false,
     interfaceColorPresets: [],
     language: 'en',
     fontSize: 14,

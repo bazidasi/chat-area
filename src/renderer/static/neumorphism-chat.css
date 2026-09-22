@@ -144,32 +144,32 @@ a:hover {
   border: none !important;
 }
 
-/* ---------- splash screen: brand-pink spiral on soft surface ---------- */
+/* ---------- splash screen: brand spiral on soft surface ---------- */
 .splash-screen {
-  background-color: #f2f5fa;
+  background-color: var(--chatbox-background-primary, #f2f5fa);
 }
 
 html[data-theme='dark'] .splash-screen {
-  background-color: #262b35;
+  background-color: var(--chatbox-background-primary, #1a1d24);
 }
 
 .splash-screen-logo {
-  color: #87262e;
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, #87262e 35%, transparent));
+  color: var(--chatbox-brand, #8b0000);
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--chatbox-brand, #8b0000) 35%, transparent));
 }
 
 html[data-theme='dark'] .splash-screen-logo {
-  color: #a04050;
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, #a04050 30%, transparent));
+  color: var(--chatbox-brand, #b71c1c);
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--chatbox-brand, #b71c1c) 30%, transparent));
 }
 
 .splash-screen-logo-bg {
-  color: #87262e;
+  color: var(--chatbox-brand, #8b0000);
   opacity: 0.22;
 }
 
 html[data-theme='dark'] .splash-screen-logo-bg {
-  color: #a04050;
+  color: var(--chatbox-brand, #b71c1c);
   opacity: 0.16;
 }
 

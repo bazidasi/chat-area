@@ -1,5 +1,6 @@
 import { createTheme, type ThemeOptions } from '@mui/material/styles'
-import { getDefaultInterfaceColors, resolveInterfaceBrandColor } from '@shared/theme-colors'
+import { isLegacyBrandColor } from '@chatbox/core/domain/settings'
+import { DEFAULT_INTERFACE_COLORS, getDefaultInterfaceColors, resolveInterfaceBrandColor } from '@shared/theme-colors'
 import { useLayoutEffect, useMemo } from 'react'
 import { settingsStore, useLanguage, useSettingsStore } from '@/stores/settingsStore'
 import { uiStore, useUIStore } from '@/stores/uiStore'
@@ -26,7 +27,10 @@ export const switchTheme = async (theme: Theme) => {
 
 export default function useAppTheme() {
   const theme = useSettingsStore((state) => state.theme)
-  const interfaceColors = useSettingsStore((state) => state.interfaceColors ?? getDefaultInterfaceColors())
+  const interfaceColorsCustomized = useSettingsStore((state) => state.interfaceColorsCustomized === true)
+  const storedInterfaceColors = useSettingsStore((state) => state.interfaceColors)
+  const interfaceColors =
+    interfaceColorsCustomized && storedInterfaceColors ? storedInterfaceColors : getDefaultInterfaceColors()
   const realTheme = useUIStore((state) => state.realTheme)
   const language = useLanguage()
 
@@ -53,23 +57,51 @@ export default function useAppTheme() {
   }, [realTheme])
 
   useLayoutEffect(() => {
-    const colors = interfaceColors[realTheme]
-    const brandColor = resolveInterfaceBrandColor(colors.brand, realTheme)
     const rootStyle = document.documentElement.style
+    if (!interfaceColorsCustomized) {
+      // Follow source CSS defaults so palette edits in globals.css / theme-colors.ts
+      // are not shadowed by a stale persisted snapshot.
+      for (const prop of [
+        '--chatbox-background-primary',
+        '--chatbox-background-secondary',
+        '--chatbox-background-tertiary',
+        '--chatbox-brand',
+      ]) {
+        rootStyle.removeProperty(prop)
+      }
+      return
+    }
+    const raw = interfaceColors[realTheme]
+    // Legacy settings carry the old palette as a whole — brand *and*
+    // backgrounds. Paint the current defaults until the persisted copy migrates.
+    const legacy = isLegacyBrandColor(raw.brand) || raw.brand.toLowerCase() === '#ffffff'
+    const colors = legacy ? DEFAULT_INTERFACE_COLORS[realTheme] : raw
     rootStyle.setProperty('--chatbox-background-primary', colors.backgroundPrimary)
     rootStyle.setProperty('--chatbox-background-secondary', colors.backgroundSecondary)
     rootStyle.setProperty('--chatbox-background-tertiary', colors.backgroundTertiary)
-    rootStyle.setProperty('--chatbox-brand', brandColor)
-  }, [interfaceColors, realTheme])
+    rootStyle.setProperty('--chatbox-brand', resolveAppBrandColor(raw.brand, realTheme))
+  }, [interfaceColors, interfaceColorsCustomized, realTheme])
 
   const themeObj = useMemo(
     () =>
       createTheme(
-        getThemeDesign(realTheme, language, resolveInterfaceBrandColor(interfaceColors[realTheme].brand, realTheme))
+        getThemeDesign(
+          realTheme,
+          language,
+          resolveAppBrandColor(interfaceColors[realTheme].brand, realTheme)
+        )
       ),
     [interfaceColors, language, realTheme]
   )
   return themeObj
+}
+
+/** Resolve the brand for paint, forcing legacy magenta/burgundy values back to dark-red defaults. */
+export function resolveAppBrandColor(brand: string, theme: 'light' | 'dark'): string {
+  if (isLegacyBrandColor(brand) || brand.toLowerCase() === '#ffffff') {
+    return DEFAULT_INTERFACE_COLORS[theme].brand
+  }
+  return resolveInterfaceBrandColor(brand, theme)
 }
 
 export function getThemeDesign(

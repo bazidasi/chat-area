@@ -96,6 +96,9 @@ export const ShaderCanvas = forwardRef<ShaderCanvasHandle, ShaderCanvasProps>(
       }
       programRef.current = program;
       gl.useProgram(program);
+      gl.enable(gl.BLEND);
+      gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+      gl.clearColor(0, 0, 0, 0);
 
       // Fullscreen quad (two triangles)
       const buffer = gl.createBuffer();
@@ -112,19 +115,28 @@ export const ShaderCanvas = forwardRef<ShaderCanvasHandle, ShaderCanvasProps>(
       }
 
       // -- Resolve CSS variable colors --
-      const resolveColor = (name: string): [number, number, number, number] => {
+      // NOTE: getComputedStyle returns the *specified* value, so vars that
+      // alias another var (e.g. `--brand: var(--chatbox-brand)`) come back
+      // as "var(--chatbox-brand)". Resolve recursively before parsing.
+      const resolveVar = (name: string, depth = 0): string => {
+        if (depth > 4) return '';
         const raw = getComputedStyle(document.documentElement).getPropertyValue(name).trim();
-        return parseCssColor(raw) || [0, 0, 0, 1];
+        const m = raw.match(/^var\(\s*(--[\w-]+)/);
+        if (m) return resolveVar(m[1], depth + 1);
+        return raw;
+      };
+      const resolveColor = (name: string): [number, number, number, number] => {
+        return parseCssColor(resolveVar(name)) || [0.4, 0.4, 0.45, 1];
       };
 
       const uColor0 = gl.getUniformLocation(program, 'u_color0');
       const uColor1 = gl.getUniformLocation(program, 'u_color1');
       const uColor2 = gl.getUniformLocation(program, 'u_color2');
       const uColor3 = gl.getUniformLocation(program, 'u_color3');
-      if (uColor0) gl.uniform4fv(uColor0, new Float32Array(resolveColor('--brand')));
-      if (uColor1) gl.uniform4fv(uColor1, new Float32Array(resolveColor('--foreground')));
-      if (uColor2) gl.uniform4fv(uColor2, new Float32Array(resolveColor('--accent')));
-      if (uColor3) gl.uniform4fv(uColor3, new Float32Array(resolveColor('--card')));
+      if (uColor0) gl.uniform4fv(uColor0, new Float32Array(resolveColor('--chatbox-brand')));
+      if (uColor1) gl.uniform4fv(uColor1, new Float32Array(resolveColor('--chatbox-tint-primary')));
+      if (uColor2) gl.uniform4fv(uColor2, new Float32Array(resolveColor('--chatbox-background-tertiary')));
+      if (uColor3) gl.uniform4fv(uColor3, new Float32Array(resolveColor('--chatbox-background-primary')));
 
       const uResolution = gl.getUniformLocation(program, 'u_resolution');
       const uDpr = gl.getUniformLocation(program, 'u_dpr');
@@ -173,6 +185,7 @@ export const ShaderCanvas = forwardRef<ShaderCanvasHandle, ShaderCanvasProps>(
         for (let i = 0; i < 8; i++) {
           if (uTrail[i]) gl.uniform4fv(uTrail[i], trailRef.current.subarray(i * 4, i * 4 + 4));
         }
+        gl.clear(gl.COLOR_BUFFER_BIT);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
         raf = requestAnimationFrame(render);
       };

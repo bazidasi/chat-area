@@ -517,6 +517,9 @@ export const SettingsSchema = GlobalSessionSettingsSchema.extend({
 
   theme: z.nativeEnum(Theme),
   interfaceColors: InterfaceColorsSchema,
+  // True only after the user explicitly edits colors/presets in Settings.
+  // When false/absent, the app follows source defaults so palette code edits propagate.
+  interfaceColorsCustomized: z.boolean().default(false),
   interfaceColorPresets: z.array(InterfaceColorPresetSchema).default([]),
   language: z.enum([
     'en',

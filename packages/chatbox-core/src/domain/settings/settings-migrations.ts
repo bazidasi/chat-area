@@ -1,4 +1,5 @@
 import deepmerge from 'deepmerge'
+import { inferInterfaceColorsCustomization, normalizePersistedBrandColors } from './settings-brand-migration'
 import { createDefaultSettings, getDefaultDocumentParser, type SettingsHostDefaults } from './settings-defaults'
 import { type Settings, SettingsSchema } from './settings-schema'
 
@@ -30,7 +31,12 @@ export function encodePersistedSettings(settings: Settings): Settings & { __vers
  * persist. Every older integer version receives all later migrations.
  */
 export function migrateSettings(persisted: unknown, version: number, host: SettingsHostDefaults): Settings {
-  const settings = deepmerge<Record<string, unknown>>(createDefaultSettings(), persisted ?? {}, {
+  const persistedRecord =
+    persisted && typeof persisted === 'object' && !Array.isArray(persisted)
+      ? ({ ...(persisted as Record<string, unknown>) } as Record<string, unknown>)
+      : {}
+  inferInterfaceColorsCustomization(persistedRecord)
+  const settings = deepmerge<Record<string, unknown>>(createDefaultSettings(), persistedRecord, {
     arrayMerge: (_target, source) => source,
   })
 
@@ -80,6 +86,8 @@ export function migrateSettings(persisted: unknown, version: number, host: Setti
       documentParser: getDefaultDocumentParser(host),
     }
   }
+
+  normalizePersistedBrandColors(settings as unknown as Record<string, unknown>)
 
   return SettingsSchema.parse(settings)
 }

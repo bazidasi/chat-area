@@ -26,7 +26,7 @@
 }
 
 :root {
-  /* colors — burgundy accent on warm gray, neumorphic surfaces */
+  /* colors — dark red accent on warm gray, neumorphic surfaces */
   --chatbox-tint-primary: #3d4657;
   --chatbox-tint-secondary: #5f6b80;
   --chatbox-tint-tertiary: #8d97ab;
@@ -36,7 +36,7 @@
   --chatbox-tint-gray: #8d97ab;
 
   --chatbox-tint-disabled: #a9b2c3;
-  --chatbox-brand: #87262e;
+  --chatbox-brand: #8b0000;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-placeholder: #9aa4b8;
@@ -44,6 +44,10 @@
   --chatbox-tint-error-disabled: #dda6a1;
   --chatbox-tint-warning: #8a6100;
   --chatbox-tint-success: #1f7a4d;
+
+  /* home halftone background — soft muted brick, tuned low-contrast for day mode */
+  --halftone-color: #a87a7a;
+  --halftone-opacity: 0.4;
 
   --chatbox-border-primary: #d5dbe7;
   --chatbox-border-secondary: #cdd5e2;
@@ -137,7 +141,7 @@
 }
 
 :root[data-mantine-color-scheme="dark"] {
-  /* colors — burgundy accent on dark gray */
+  /* colors — dark red accent on darker gray */
   --chatbox-tint-primary: #e6eaf2;
   --chatbox-tint-secondary: #b8c1d1;
   --chatbox-tint-tertiary: #7f8999;
@@ -147,7 +151,7 @@
   --chatbox-tint-gray: #7f8999;
 
   --chatbox-tint-disabled: #565f6f;
-  --chatbox-brand: #a04050;
+  --chatbox-brand: #b71c1c;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-placeholder: #6b7488;
@@ -156,16 +160,20 @@
   --chatbox-tint-warning: #ffc86b;
   --chatbox-tint-success: #3ddbb0;
 
-  --chatbox-border-primary: #323947;
-  --chatbox-border-secondary: #3b4353;
+  /* home halftone background — very dark red on the dark surface */
+  --halftone-color: #4d0b0b;
+  --halftone-opacity: 0.7;
+
+  --chatbox-border-primary: #2b313e;
+  --chatbox-border-secondary: #333a48;
   --chatbox-border-warning: #ffc86b;
   --chatbox-border-error: #ef7b7b;
   --chatbox-border-success: #3ddbb0;
   --chatbox-border-brand: var(--chatbox-brand);
 
-  /* dark neumorphism — deeper gray surfaces, light shadows for depth */
-  --neo-surface: #262b35;
-  --neo-surface-raised: #2c313d;
+  /* dark neumorphism — darker gray surfaces, light shadows for depth */
+  --neo-surface: #1a1d24;
+  --neo-surface-raised: #22262e;
   --neo-shadow-dark: rgba(13, 16, 21, 0.55);
   --neo-shadow-light: rgba(70, 79, 96, 0.35);
   --neo-shadow-offset: 4px;
@@ -178,12 +186,11 @@
   --neo-shadow-inset: inset 4px 4px 10px var(--neo-shadow-dark), inset -4px -4px 10px var(--neo-shadow-light);
 
   --chatbox-background-primary: var(--neo-surface);
-  --chatbox-background-primary-hover: #22262f;
-  --chatbox-background-secondary: var(--neo-surface-raised);
-  --chatbox-background-secondary-hover: #343a48;
-  --chatbox-background-tertiary: #303644;
-  --chatbox-background-tertiary-hover: #3a4150;
-  --chatbox-background-disabled: #2a2f3a;
+  --chatbox-background-primary-hover: #16191f;
+  --chatbox-background-secondary-hover: #2a2f38;
+  --chatbox-background-tertiary: #262b34;
+  --chatbox-background-tertiary-hover: #2f3540;
+  --chatbox-background-disabled: #1e222a;
 
   --chatbox-background-brand-primary: var(--chatbox-brand);
   --chatbox-background-brand-primary-hover: color-mix(in srgb, var(--chatbox-brand), black 12%);
@@ -212,6 +219,18 @@
 
   --chatbox-background-mask-overlay: rgb(31, 31, 31, 0.78);
   --chatbox-background-mask-lighten: rgb(173, 181, 189, 0.48);
+}
+
+/* Halftone dots track data-theme (set pre-paint and on every switch), which is
+   the app source of truth and can briefly differ from Mantine's attribute. */
+:root[data-theme="dark"] {
+  --halftone-color: #4d0b0b;
+  --halftone-opacity: 0.7;
+}
+
+:root[data-theme="light"] {
+  --halftone-color: #a87a7a;
+  --halftone-opacity: 0.4;
 }
 
 :root[data-mantine-color-scheme="light"][data-mantine-color-scheme],
@@ -315,7 +334,7 @@ ul[data-sidebar='menu-sub'] > li {
 
 /* ---------- chat input surface (shared by InputBox + PendingActionBar)
    The app's reference material: large 29px-radius well, hairline border,
-   soft extruded shadow, burgundy focus ring while typing. Every other
+   soft extruded shadow, brand focus ring while typing. Every other
    panel in the app points back at this recipe. */
 .chatbox-input-surface {
   border: 1px solid var(--chatbox-border-primary) !important;
@@ -364,35 +383,81 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 /* circular send / stop button in the composer ----------
-   Minimal solid fill, pointing back at the composer's material language:
-   one burgundy circle, hairline shadow, no gradients or layered
-   highlights. Pressing darkens the fill and scales a hair. */
+   Neumorphic dome adapted from the Uiverse toggle (Nagalapuramhareeswar):
+   soft white halo, layered light-from-top / dark-from-bottom highlights,
+   pressed inset on :active, brand label once the action is ready.
+   Dark mode re-tints the material via --neo-* tokens only. */
 .chatbox-send-button {
+  position: relative;
+  border: none;
   border-radius: 9999px;
-  background-color: var(--chatbox-brand);
-  color: var(--chatbox-tint-white) !important;
-  box-shadow: var(--neo-shadow-outset-xs);
-  transition: background-color 160ms ease, box-shadow 160ms ease, transform 140ms ease;
+  background-color: #eaeaea;
+  color: rgba(0, 0, 0, 0.45);
+  box-shadow:
+    0 8px 16px -4px rgba(0, 0, 0, 0.35),
+    inset 0 -2px 3px -1px rgba(0, 0, 0, 0.18),
+    0 -6px 10px -1px rgba(255, 255, 255, 0.55),
+    inset 0 2px 3px -1px rgba(255, 255, 255, 0.25),
+    inset 0 0 4px 1px rgba(255, 255, 255, 0.75),
+    inset 0 12px 18px 0 rgba(255, 255, 255, 0.22);
+  transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ready-to-send: label lights up brand (Uiverse :checked, re-tinted) */
+.chatbox-send-button:enabled:not(:disabled) {
+  color: var(--chatbox-brand);
 }
 
 .chatbox-send-button:hover:not(:disabled) {
-  background-color: var(--chatbox-background-brand-primary-hover);
+  box-shadow:
+    0 10px 18px -4px rgba(0, 0, 0, 0.4),
+    inset 0 -2px 3px -1px rgba(0, 0, 0, 0.2),
+    0 -6px 10px -1px rgba(255, 255, 255, 0.6),
+    inset 0 2px 3px -1px rgba(255, 255, 255, 0.3),
+    inset 0 0 4px 1px rgba(255, 255, 255, 0.85),
+    inset 0 12px 18px 0 rgba(255, 255, 255, 0.26);
 }
 
+/* pressed (Uiverse input:active ~ .button): flatten + deepen the lower inset */
 .chatbox-send-button:active:not(:disabled) {
+  filter: blur(0.5px);
   transform: scale(0.97);
-  box-shadow: inset 0 1px 2px rgb(0 0 0 / 25%);
+  box-shadow:
+    0 6px 14px -4px rgba(0, 0, 0, 0.3),
+    inset 0 -5px 18px 1px rgba(255, 255, 255, 0.75),
+    0 -6px 10px -1px rgba(255, 255, 255, 0.5),
+    inset 0 5px 16px 0 rgba(0, 0, 0, 0.28),
+    inset 0 0 6px 1px rgba(255, 255, 255, 0.45);
 }
 
 .chatbox-send-button:disabled {
-  background-color: var(--chatbox-background-tertiary);
-  color: var(--chatbox-tint-disabled) !important;
-  box-shadow: none;
+  background-color: var(--neo-surface, #e0e0e4);
+  color: var(--chatbox-tint-disabled);
+  filter: none;
+  box-shadow:
+    inset 2px 2px 5px color-mix(in srgb, var(--neo-shadow-dark, #c4c4c4) 70%, transparent),
+    inset -2px -2px 5px var(--neo-shadow-light, #ffffff);
 }
 
 .chatbox-send-button:focus-visible {
-  outline: 2px solid var(--chatbox-tint-brand);
+  outline: 2px solid color-mix(in srgb, var(--chatbox-brand) 60%, transparent);
   outline-offset: 3px;
+}
+
+html[data-theme='dark'] .chatbox-send-button {
+  background-color: var(--neo-surface-raised, #2c313d);
+  color: rgba(255, 255, 255, 0.4);
+  box-shadow:
+    0 8px 16px -4px rgba(0, 0, 0, 0.55),
+    inset 0 -2px 3px -1px rgba(0, 0, 0, 0.45),
+    0 -6px 10px -1px rgba(96, 108, 132, 0.35),
+    inset 0 2px 3px -1px rgba(96, 108, 132, 0.3),
+    inset 0 0 4px 1px rgba(96, 108, 132, 0.4),
+    inset 0 12px 18px 0 rgba(96, 108, 132, 0.12);
+}
+
+html[data-theme='dark'] .chatbox-send-button:enabled:not(:disabled) {
+  color: var(--chatbox-brand);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -402,6 +467,7 @@ ul[data-sidebar='menu-sub'] > li {
 
   .chatbox-send-button:active:not(:disabled) {
     transform: none;
+    filter: none;
   }
 }
 
@@ -507,19 +573,6 @@ ul[data-sidebar='menu-sub'] > li {
   .chatbox-action-btn:active:not(:disabled) {
     transform: none;
   }
-}
-
-/* home hero: subtle grid backdrop behind the welcome cluster
-   (auth-template reference — centered content on a grid background).
-   Lines come from theme tokens only and fade out toward the edges so
-   the soft material stays calm. */
-.chatbox-hero-grid {
-  background-image:
-    linear-gradient(to right, color-mix(in srgb, var(--neo-shadow-dark) 16%, transparent) 1px, transparent 1px),
-    linear-gradient(to bottom, color-mix(in srgb, var(--neo-shadow-dark) 16%, transparent) 1px, transparent 1px);
-  background-size: 28px 28px;
-  -webkit-mask-image: radial-gradient(ellipse 62% 60% at 50% 42%, black 0%, transparent 74%);
-  mask-image: radial-gradient(ellipse 62% 60% at 50% 42%, black 0%, transparent 74%);
 }
 
 /* blur-text: per-word entrance for the welcome heading. Each word is an

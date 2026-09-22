@@ -110,8 +110,8 @@ function GradientOrb() {
       style={{
         borderRadius: '50%',
         background:
-          'radial-gradient(circle at 34% 28%, #f5d5d8 0%, #87262e 38%, #6b2a32 68%, #3d1520 100%)',
-        boxShadow: '0 8px 32px rgba(135,38,46,0.3), inset 0 -4px 12px rgba(0,0,0,0.15)',
+          'radial-gradient(circle at 34% 28%, #f5d5d5 0%, #8b0000 38%, #6b0000 68%, #3d0000 100%)',
+        boxShadow: '0 8px 32px rgba(139,0,0,0.3), inset 0 -4px 12px rgba(0,0,0,0.15)',
       }}
     />
   )

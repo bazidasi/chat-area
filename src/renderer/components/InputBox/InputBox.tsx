@@ -17,7 +17,6 @@ import {
   useComputedColorScheme,
 } from '@mantine/core'
 import { useReducedMotion, useViewportSize } from '@mantine/hooks'
-import { MetalFx } from 'metal-fx'
 import { TestId } from '@shared/automation/testids'
 import {
   getFileAcceptConfig,
@@ -2050,56 +2049,45 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                   </Box>
 
                   {/* Send / Stop — rightmost control in the toolbar row, like the
-                    reference composer (circle button after the model selector). */}
-                  <MetalFx
-                    preset="chromatic"
-                    variant="circle"
-                    innerShadow
-                    theme={colorScheme}
-                    strength={submitBlocked && !showingStopControl ? 0.15 : 0.8}
-                    paused={false}
-                    disableGlow={false}
-                    normalizeHostStyles={false}
-                    className="shrink-0 ml-1"
-                    style={{ background: 'var(--chatbox-background-secondary)', color: 'var(--chatbox-tint-primary)' }}
+                    reference composer (circle button after the model selector).
+                    Neumorphic dome (Uiverse toggle style) lives on
+                    .chatbox-send-button in globals.css — no Metal chrome. */}
+                  <Tooltip
+                    // `n` rather than `count`, so i18next does not engage plural resolution for a
+                    // label that is only ever shown for more than one reply.
+                    label={
+                      submitControl === 'queue'
+                        ? t('Will send after the current response finishes')
+                        : generatingCount > 1
+                          ? t('Stop all {{n}} replies', { n: generatingCount })
+                          : t('Stop')
+                    }
+                    disabled={submitControl === 'send'}
+                    withArrow
                   >
-                    <Tooltip
-                      // `n` rather than `count`, so i18next does not engage plural resolution for a
-                      // label that is only ever shown for more than one reply.
-                      label={
-                        submitControl === 'queue'
-                          ? t('Will send after the current response finishes')
-                          : generatingCount > 1
-                            ? t('Stop all {{n}} replies', { n: generatingCount })
-                            : t('Stop')
+                    <ActionIcon
+                      data-testid={
+                        submitControl === 'stop'
+                          ? TestId.chat.stop
+                          : submitControl === 'queue'
+                            ? TestId.chat.queuedMessageEnqueue
+                            : TestId.chat.send
                       }
-                      disabled={submitControl === 'send'}
-                      withArrow
+                      disabled={submitBlocked && !showingStopControl}
+                      size={36}
+                      variant="transparent"
+                      aria-label={showingStopControl ? t('Stop') : t('Send')}
+                      onClick={showingStopControl ? onStopGenerating : () => handleSubmit()}
+                      className="chatbox-send-button shrink-0"
+                      style={{ color: 'inherit' }}
                     >
-                      <ActionIcon
-                        data-testid={
-                          submitControl === 'stop'
-                            ? TestId.chat.stop
-                            : submitControl === 'queue'
-                              ? TestId.chat.queuedMessageEnqueue
-                              : TestId.chat.send
-                        }
-                        disabled={submitBlocked && !showingStopControl}
-                        size={36}
-                        variant="transparent"
-                        aria-label={showingStopControl ? t('Stop') : t('Send')}
-                        onClick={showingStopControl ? onStopGenerating : () => handleSubmit()}
-                        className="chatbox-send-button shrink-0"
-                        style={{ color: 'inherit' }}
-                      >
-                        {showingStopControl ? (
-                          <ScalableIcon icon={IconPlayerStopFilled} size={16} />
-                        ) : (
-                          <ScalableIcon icon={IconArrowUp} size={16} />
-                        )}
-                      </ActionIcon>
-                    </Tooltip>
-                  </MetalFx>
+                      {showingStopControl ? (
+                        <ScalableIcon icon={IconPlayerStopFilled} size={16} />
+                      ) : (
+                        <ScalableIcon icon={IconArrowUp} size={16} />
+                      )}
+                    </ActionIcon>
+                  </Tooltip>
                 </Flex>
               </Flex>
             </Box>

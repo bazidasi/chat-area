@@ -20,13 +20,13 @@ export const DEFAULT_INTERFACE_COLORS: InterfaceColors = {
     backgroundPrimary: '#e4e9f1',
     backgroundSecondary: '#e9edf5',
     backgroundTertiary: '#dde3ed',
-    brand: '#87262e',
+    brand: '#8b0000',
   },
   dark: {
-    backgroundPrimary: '#262b35',
-    backgroundSecondary: '#2c313d',
-    backgroundTertiary: '#303644',
-    brand: '#a04050',
+    backgroundPrimary: '#1a1d24',
+    backgroundSecondary: '#22262e',
+    backgroundTertiary: '#262b34',
+    brand: '#b71c1c',
   },
 }
 
@@ -73,6 +73,92 @@ export const INTERFACE_COLOR_PRESETS = [
     },
   },
 ] satisfies ReadonlyArray<InterfaceColorPreset>
+
+/**
+ * Full palettes that shipped as application defaults in earlier releases.
+ * Persisted settings that still match one of these (or the current defaults)
+ * are treated as "never customized" so source palette edits propagate.
+ * Custom user colors and non-default presets are preserved.
+ */
+export const HISTORICAL_DEFAULT_INTERFACE_COLOR_PALETTES: readonly InterfaceColors[] = [
+  {
+    // Pre-commit pink era (shipped as defaults before the first git commit)
+    light: {
+      backgroundPrimary: '#e0e5ec',
+      backgroundSecondary: '#e4e9f2',
+      backgroundTertiary: '#d4dae4',
+      brand: '#f000c0',
+    },
+    dark: {
+      backgroundPrimary: '#24272e',
+      backgroundSecondary: '#2a2e36',
+      backgroundTertiary: '#1d2026',
+      brand: '#ff4fd8',
+    },
+  },
+  {
+    // Initial magenta era
+    light: {
+      backgroundPrimary: '#e4e9f1',
+      backgroundSecondary: '#e9edf5',
+      backgroundTertiary: '#dde3ed',
+      brand: '#e91499',
+    },
+    dark: {
+      backgroundPrimary: '#262b35',
+      backgroundSecondary: '#2c313d',
+      backgroundTertiary: '#303644',
+      brand: '#ff3fae',
+    },
+  },
+  {
+    // Burgundy era
+    light: {
+      backgroundPrimary: '#e4e9f1',
+      backgroundSecondary: '#e9edf5',
+      backgroundTertiary: '#dde3ed',
+      brand: '#87262e',
+    },
+    dark: {
+      backgroundPrimary: '#262b35',
+      backgroundSecondary: '#2c313d',
+      backgroundTertiary: '#303644',
+      brand: '#a04050',
+    },
+  },
+]
+
+function normalizeHex(color: unknown): string {
+  return typeof color === 'string' ? color.trim().toLowerCase() : ''
+}
+
+function themeColorsMatch(a: InterfaceThemeColors | undefined, b: InterfaceThemeColors | undefined): boolean {
+  if (!a || !b) return false
+  return (
+    normalizeHex(a.backgroundPrimary) === normalizeHex(b.backgroundPrimary) &&
+    normalizeHex(a.backgroundSecondary) === normalizeHex(b.backgroundSecondary) &&
+    normalizeHex(a.backgroundTertiary) === normalizeHex(b.backgroundTertiary) &&
+    normalizeHex(a.brand) === normalizeHex(b.brand)
+  )
+}
+
+export function interfaceColorsEqual(a: InterfaceColors, b: InterfaceColors): boolean {
+  return themeColorsMatch(a.light, b.light) && themeColorsMatch(a.dark, b.dark)
+}
+
+/**
+ * True when a persisted palette is a known shipped default (current or historical),
+ * i.e. the user never customized interface colors.
+ */
+export function isDefaultInterfaceColorSnapshot(colors: unknown): boolean {
+  if (!colors || typeof colors !== 'object') return false
+  const candidate = colors as Partial<InterfaceColors>
+  if (!candidate.light || !candidate.dark) return false
+  if (interfaceColorsEqual(candidate as InterfaceColors, getDefaultInterfaceColors())) return true
+  return HISTORICAL_DEFAULT_INTERFACE_COLOR_PALETTES.some((palette) =>
+    interfaceColorsEqual(candidate as InterfaceColors, palette)
+  )
+}
 
 export function getDefaultInterfaceColors(): InterfaceColors {
   return {

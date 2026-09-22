@@ -63,8 +63,8 @@ void main() {
   float f = fbm(cellCenter * 0.004 + u_time * 0.03);
   float dotRadius = cell * 0.35 * (0.4 + 0.6 * f);
 
-  /* Distance from fragment to cell center */
-  float dist = length(gl_FragCoord.xy - cellCenter);
+  /* Distance from fragment to cell center (both in rotated space) */
+  float dist = length(rotated - cellCenter);
 
   /* Smoothstep circle edge by 1px */
   float alpha = 1.0 - smoothstep(dotRadius - 1.0, dotRadius, dist);
@@ -78,10 +78,10 @@ void main() {
      with u_color1 (--foreground) for subtle depth */
   vec3 fg = mix(u_color0.rgb, u_color1.rgb, 0.15);
 
-  /* Low alpha keeps it subtle — text goes on top */
-  float finalAlpha = alpha * mask * 0.28;
+  /* Visible but subtle — text goes on top */
+  float finalAlpha = alpha * mask * 0.55;
 
-  gl_FragColor = vec4(fg * finalAlpha, finalAlpha);
+  gl_FragColor = vec4(fg, finalAlpha);
 }
 `;
 
@@ -107,7 +107,7 @@ export interface HalftoneProps {
  */
 export function Halftone({ className, onContext }: HalftoneProps) {
   return (
-    <div className={cn('absolute inset-0 -z-10', className)}>
+    <div className={cn('pointer-events-none absolute inset-0 z-0', className)}>
       <ShaderCanvas
         fragmentShader={FRAGMENT_SHADER}
         onContext={(gl: WebGLRenderingContext) => {

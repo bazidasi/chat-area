@@ -279,10 +279,9 @@ const Composer: FC<{ autoFocus: boolean }> = ({ autoFocus }) => {
 const ComposerAction: FC = () => {
   const theme = useComputedColorScheme('light')
   const reducedMotion = useReducedMotion()
-  const sendDisabled = useAuiState((s) => s.composer.isEmpty || s.thread.isDisabled)
   return (
     <div className="aui-composer-action-wrapper relative flex items-center justify-between">
-      <Liquid blur={6} contrast={18} fill="#e4e9f1">
+      <Liquid blur={6} contrast={18} fill="var(--neo-surface, #f0f0f0)">
         <Liquid.Item x={0} y={0} transition="bouncy">
           <ComposerAddAttachment />
         </Liquid.Item>
@@ -343,54 +342,32 @@ const ComposerAction: FC = () => {
           </AuiIf>
         </AuiIf>
         <AuiIf condition={(s) => !s.thread.isRunning}>
-          <MetalFx
-            preset="chromatic"
-            variant="circle"
-            innerShadow
-            strength={sendDisabled ? 0.15 : 0.8}
-            theme={theme}
-            paused={reducedMotion || sendDisabled}
-            disableGlow={reducedMotion || sendDisabled}
-            normalizeHostStyles={false}
-          >
-            <ComposerPrimitive.Send asChild>
-              <TooltipIconButton
-                tooltip="Send message"
-                side="bottom"
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="aui-composer-send chatbox-send-button size-9 rounded-full bg-transparent text-inherit hover:bg-transparent"
-                aria-label="Send message"
-              >
-                <ArrowUpIcon className="aui-composer-send-icon size-4" />
-              </TooltipIconButton>
-            </ComposerPrimitive.Send>
-          </MetalFx>
+          <ComposerPrimitive.Send asChild>
+            <TooltipIconButton
+              tooltip="Send message"
+              side="bottom"
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="aui-composer-send chatbox-send-button size-9 rounded-full bg-transparent text-inherit hover:bg-transparent"
+              aria-label="Send message"
+            >
+              <ArrowUpIcon className="aui-composer-send-icon size-4" />
+            </TooltipIconButton>
+          </ComposerPrimitive.Send>
         </AuiIf>
         <AuiIf condition={(s) => s.thread.isRunning}>
-          <MetalFx
-            preset="chromatic"
-            variant="circle"
-            innerShadow
-            strength={0.5}
-            theme={theme}
-            paused={reducedMotion}
-            disableGlow={reducedMotion}
-            normalizeHostStyles={false}
-          >
-            <ComposerPrimitive.Cancel asChild>
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="aui-composer-cancel chatbox-send-button size-9 rounded-full bg-transparent text-inherit hover:bg-transparent"
-                aria-label="Stop generating"
-              >
-                <SquareIcon className="aui-composer-cancel-icon size-3.5 fill-current" />
-              </Button>
-            </ComposerPrimitive.Cancel>
-          </MetalFx>
+          <ComposerPrimitive.Cancel asChild>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="aui-composer-cancel chatbox-send-button size-9 rounded-full bg-transparent text-inherit hover:bg-transparent"
+              aria-label="Stop generating"
+            >
+              <SquareIcon className="aui-composer-cancel-icon size-3.5 fill-current" />
+            </Button>
+          </ComposerPrimitive.Cancel>
         </AuiIf>
       </div>
     </div>

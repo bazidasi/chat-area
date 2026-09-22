@@ -1,7 +1,10 @@
 import { describe, expect, it } from 'vitest'
 import {
   DEFAULT_INTERFACE_COLORS,
+  HISTORICAL_DEFAULT_INTERFACE_COLOR_PALETTES,
   INTERFACE_COLOR_PRESETS,
+  interfaceColorsEqual,
+  isDefaultInterfaceColorSnapshot,
   isInterfaceBrandColorAllowed,
   renameInterfaceColorPreset,
   resolveInterfaceBrandColor,
@@ -51,8 +54,8 @@ describe('interface brand color', () => {
   })
 
   it('replaces white with the default brand color for the active theme', () => {
-    expect(resolveInterfaceBrandColor('#ffffff', 'light')).toBe('#e91499')
-    expect(resolveInterfaceBrandColor('#FFFFFF', 'dark')).toBe('#e91499')
+    expect(resolveInterfaceBrandColor('#ffffff', 'light')).toBe(DEFAULT_INTERFACE_COLORS.light.brand)
+    expect(resolveInterfaceBrandColor('#FFFFFF', 'dark')).toBe(DEFAULT_INTERFACE_COLORS.dark.brand)
     expect(resolveInterfaceBrandColor('#123456', 'light')).toBe('#123456')
   })
 
@@ -63,8 +66,8 @@ describe('interface brand color', () => {
         dark: { ...INTERFACE_COLOR_PRESETS[0].colors.dark, brand: '#FFFFFF' },
       })
     ).toEqual({
-      light: { ...INTERFACE_COLOR_PRESETS[0].colors.light, brand: '#e91499' },
-      dark: { ...INTERFACE_COLOR_PRESETS[0].colors.dark, brand: '#e91499' },
+      light: { ...INTERFACE_COLOR_PRESETS[0].colors.light, brand: DEFAULT_INTERFACE_COLORS.light.brand },
+      dark: { ...INTERFACE_COLOR_PRESETS[0].colors.dark, brand: DEFAULT_INTERFACE_COLORS.dark.brand },
     })
   })
 })
@@ -84,5 +87,46 @@ describe('renameInterfaceColorPreset', () => {
 
   it('does not accept a blank label', () => {
     expect(renameInterfaceColorPreset(presets, 'custom-1', '   ')).toBe(presets)
+  })
+})
+
+describe('isDefaultInterfaceColorSnapshot', () => {
+  it('treats the current defaults as a non-customized snapshot', () => {
+    expect(isDefaultInterfaceColorSnapshot(DEFAULT_INTERFACE_COLORS)).toBe(true)
+  })
+
+  it('treats historical shipped defaults as non-customized snapshots', () => {
+    for (const palette of HISTORICAL_DEFAULT_INTERFACE_COLOR_PALETTES) {
+      expect(isDefaultInterfaceColorSnapshot(palette)).toBe(true)
+    }
+  })
+
+  it('treats custom palettes as customized', () => {
+    const custom = {
+      light: { ...DEFAULT_INTERFACE_COLORS.light, brand: '#123456' },
+      dark: { ...DEFAULT_INTERFACE_COLORS.dark, brand: '#654321' },
+    }
+    expect(isDefaultInterfaceColorSnapshot(custom)).toBe(false)
+    expect(isDefaultInterfaceColorSnapshot(INTERFACE_COLOR_PRESETS[1].colors)).toBe(false)
+    expect(isDefaultInterfaceColorSnapshot(null)).toBe(false)
+  })
+
+  it('compares colors case-insensitively', () => {
+    const upper = {
+      light: {
+        backgroundPrimary: DEFAULT_INTERFACE_COLORS.light.backgroundPrimary.toUpperCase(),
+        backgroundSecondary: DEFAULT_INTERFACE_COLORS.light.backgroundSecondary.toUpperCase(),
+        backgroundTertiary: DEFAULT_INTERFACE_COLORS.light.backgroundTertiary.toUpperCase(),
+        brand: DEFAULT_INTERFACE_COLORS.light.brand.toUpperCase(),
+      },
+      dark: {
+        backgroundPrimary: DEFAULT_INTERFACE_COLORS.dark.backgroundPrimary.toUpperCase(),
+        backgroundSecondary: DEFAULT_INTERFACE_COLORS.dark.backgroundSecondary.toUpperCase(),
+        backgroundTertiary: DEFAULT_INTERFACE_COLORS.dark.backgroundTertiary.toUpperCase(),
+        brand: DEFAULT_INTERFACE_COLORS.dark.brand.toUpperCase(),
+      },
+    }
+    expect(interfaceColorsEqual(upper, DEFAULT_INTERFACE_COLORS)).toBe(true)
+    expect(isDefaultInterfaceColorSnapshot(upper)).toBe(true)
   })
 })
