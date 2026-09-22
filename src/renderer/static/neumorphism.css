@@ -509,6 +509,16 @@ kbd,
   display: inline-block;
 }
 
+/* trim the markdown paragraph margins flush to the pill padding so short
+   messages don't inflate into a tall slab */
+.bubble-user-msg .msg-content p:first-of-type {
+  margin-top: 0;
+}
+
+.bubble-user-msg .msg-content p:last-of-type {
+  margin-bottom: 0;
+}
+
 .bubble-user-msg > div > div > div[class*='rounded-2xl'] {
   box-shadow: var(--neo-shadow-outset-xs);
 }

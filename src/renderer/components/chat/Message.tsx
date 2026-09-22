@@ -795,14 +795,14 @@ const _Message: FC<Props> = (props) => {
           isBubbleLayout
             ? msg.role === 'user'
               ? // reference style: neutral soft pill for the user, tinted text
-                'px-4 py-2 rounded-2xl rounded-br-md bg-chatbox-background-secondary text-chatbox-tint-primary'
+                'px-3 py-1.5 rounded-2xl rounded-br-md bg-chatbox-background-secondary text-chatbox-tint-primary'
               : msg.role === 'assistant' && msg.error && !isErrorReminder
                 ? // only genuine errors keep an alert bubble; normal replies read
                   // as plain text on the page background like the reference
                   'px-4 py-2 rounded-2xl rounded-bl-md bg-chatbox-background-error-secondary border border-solid border-chatbox-border-error'
                 : ''
             : msg.role !== 'assistant'
-              ? 'bg-chatbox-background-secondary px-4 py-2 rounded-2xl'
+              ? 'bg-chatbox-background-secondary px-3 py-1.5 rounded-2xl'
               : ''
         )}
       >
@@ -1239,7 +1239,7 @@ const _Message: FC<Props> = (props) => {
             align="flex-end"
             className={cn(
               'min-w-0',
-              isSmallScreen ? (shouldShowAvatar ? 'max-w-[calc(100%-3rem)]' : 'max-w-[95%]') : 'max-w-[85%]'
+              isSmallScreen ? (shouldShowAvatar ? 'max-w-[calc(100%-3rem)]' : 'max-w-[85%]') : 'max-w-[75%]'
             )}
           >
             {messageContent}
