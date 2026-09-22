@@ -492,6 +492,21 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
     // Agent mode value for conditional toolbar rendering
     const agentModeEntry = useSessionAgentMode(currentSessionId || 'new')
     const sessionMode = resolveSessionMode(agentModeEntry.value)
+
+    // Morph animation state — triggers a scale+ring animation on the
+    // input surface whenever the user switches Chat/Work mode.
+    const [morphActive, setMorphActive] = useState(false)
+    const prevAgentModeRef = useRef(agentModeEntry.value)
+    useEffect(() => {
+      if (agentModeEntry.value !== prevAgentModeRef.current) {
+        prevAgentModeRef.current = agentModeEntry.value
+        setMorphActive(true)
+      }
+    }, [agentModeEntry.value])
+    const handleMorphEnd = useCallback(() => {
+      setMorphActive(false)
+    }, [])
+
     // Chat mode has no message queue (mode policy): streaming keeps the Stop
     // control and submits are blocked with the standard generating notice.
     // Items already queued before the mode split still drain in order.
@@ -1549,12 +1564,14 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
               className={cn(
                 // min-h + justify-between 必须同层，桌面空输入时工具栏贴底
                 INPUT_SURFACE_CLASS_NAME,
+                morphActive && 'chatbox-morphing',
                 !isSmallScreen && INPUT_SURFACE_MIN_HEIGHT_CLASS_NAME,
                 // Kept mounted while a pause takes over the slot so the draft,
                 // attachments and autosized height survive the swap.
                 pauseTakeover && 'hidden'
               )}
               style={INPUT_SURFACE_STYLE}
+              onAnimationEnd={handleMorphEnd}
             >
               {/*
               skill 列表：Portal + Floating UI autoUpdate

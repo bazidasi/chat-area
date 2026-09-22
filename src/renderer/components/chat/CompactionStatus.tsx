@@ -99,7 +99,7 @@ export const CompactionStatus = memo(function CompactionStatus({ sessionId, onVi
 
   if (compactionState.status === 'completed') {
       return (
-      <Box className="chatbox-card-surface rounded-xl bg-chatbox-background-brand-secondary border border-chatbox-border-primary px-3 py-2">
+      <Box className="chatbox-card-surface rounded-xl bg-chatbox-background-secondary border border-chatbox-border-primary px-3 py-2">
         <Flex align="center" justify="space-between" gap="xs">
           <Flex align="center" gap="xs" className="min-w-0">
             <ScalableIcon icon={IconCheck} size={16} className="flex-shrink-0 text-chatbox-tint-brand" />
@@ -126,7 +126,9 @@ export const CompactionStatus = memo(function CompactionStatus({ sessionId, onVi
 
   if (compactionState.status === 'failed') {
     return (
-      <Box className="chatbox-card-surface rounded-xl bg-red-50 dark:bg-red-950/30 border border-red-200 dark:border-red-800 p-3">
+      <Box className="chatbox-card-surface rounded-xl bg-chatbox-background-secondary border px-3 py-2"
+        style={{ borderColor: 'var(--chatbox-border-error)' }}
+      >
         <Flex align="flex-start" justify="space-between" gap="xs">
           <Flex
             align="flex-start"
@@ -134,26 +136,34 @@ export const CompactionStatus = memo(function CompactionStatus({ sessionId, onVi
             className="flex-1 min-w-0 cursor-pointer"
             onClick={() => isTruncated && setExpanded(!expanded)}
           >
-            <ScalableIcon icon={IconAlertCircle} size={16} className="text-red-500 flex-shrink-0 mt-0.5" />
+            <ScalableIcon icon={IconAlertCircle} size={16} className="flex-shrink-0 mt-0.5"
+              style={{ color: 'var(--chatbox-tint-error)' }}
+            />
             {isTruncated ? (
-              <ActionIcon variant="transparent" size="xs" c="red" p={0} className="mt-0.5">
+              <ActionIcon variant="transparent" size="xs" p={0} className="mt-0.5"
+                style={{ color: 'var(--chatbox-tint-error)' }}
+              >
                 {expanded ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />}
               </ActionIcon>
             ) : null}
             <Text
               size="sm"
-              c="red"
+              style={{ color: 'var(--chatbox-tint-error)' }}
               className={`min-w-0 ${isTruncated && !expanded ? 'truncate' : 'whitespace-pre-wrap break-all'}`}
             >
               {isTruncated && !expanded ? getTruncatedText(errorText) : errorText}
             </Text>
           </Flex>
           <Flex align="flex-start" gap="xs" className="flex-shrink-0">
-            <Button size="xs" variant="light" color="red" onClick={handleRetry}>
+            <Button size="xs" variant="light" onClick={handleRetry}
+              style={{ color: 'var(--chatbox-tint-error)', borderColor: 'var(--chatbox-border-error)' }}
+            >
               {t('Retry')}
             </Button>
             <Tooltip label={t('Dismiss')}>
-              <ActionIcon size="xs" variant="subtle" color="red" onClick={handleDismiss}>
+              <ActionIcon size="xs" variant="subtle" onClick={handleDismiss}
+                style={{ color: 'var(--chatbox-tint-error)' }}
+              >
                 <IconX size={14} />
               </ActionIcon>
             </Tooltip>

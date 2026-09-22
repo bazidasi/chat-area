@@ -1,4 +1,3 @@
-import { hasConversationStarted, resolveSessionMode } from '@chatbox/core/session/mode-policy'
 import NiceModal from '@ebay/nice-modal-react'
 import {
   ActionIcon,
@@ -14,7 +13,7 @@ import {
   UnstyledButton,
 } from '@mantine/core'
 import { TestId } from '@shared/automation/testids'
-import type { AgentModeValue, KnowledgeBase } from '@shared/types'
+import type { KnowledgeBase } from '@shared/types'
 import {
   IconAlertCircle,
   IconCheck,
@@ -45,7 +44,6 @@ import {
 } from 'react'
 import { useTranslation } from 'react-i18next'
 import {
-  trackAgentModeSelect,
   trackMemoryClick,
   trackSmartSwitchingClick,
   trackWebSearchClick,
@@ -65,7 +63,6 @@ import { listCopilotMemories, listMemories } from '@/stores/agentPersonaStore'
 import { useAutoValidate } from '@/stores/premiumActions'
 import { setSessionAgentMode, useSessionAgentMode } from '@/stores/session/agent-mode'
 import { useMcpSettings, useSettingsStore } from '@/stores/settingsStore'
-import * as toastActions from '@/stores/toastActions'
 import { useUIStore } from '@/stores/uiStore'
 import { featureFlags } from '@/utils/feature-flags'
 import { ScalableIcon } from '../common/ScalableIcon'
@@ -154,7 +151,7 @@ const MCPServerItem: FC<{
       px="sm"
       py={6}
       className={`rounded ${
-        disabled ? 'opacity-50' : 'hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]'
+        disabled ? 'opacity-50' : 'hover:bg-chatbox-background-tertiary'
       }`}
     >
       <Flex gap="xs" align="center">
@@ -240,7 +237,6 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
 
   // Agent mode state
   const setAgentModeSmartSwitchingDefault = useUIStore((s) => s.setAgentModeSmartSwitchingDefault)
-  const setAgentModeLastSelected = useUIStore((s) => s.setAgentModeLastSelected)
   const entry = useSessionAgentMode(sessionId)
   const agentModeUIState = useMemo(
     () => getAgentModeUIState(entry, modelSupportsAgentMode),
@@ -373,27 +369,6 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
     [skills, enabledSkillNames]
   )
 
-  const handleModeChange = useCallback(
-    (value: AgentModeValue) => {
-      if (value === 'on' && !platform.isDesktopLike) {
-        toastActions.add(t('Work Mode is currently only available on the desktop app.'))
-        return
-      }
-      if (entry.value === value) return
-      trackAgentModeSelect({
-        sessionId,
-        mode: value === 'on' ? 'work_mode' : 'chat_mode',
-        provider: providerId,
-        model: modelId,
-      })
-      // Remember the explicit choice so new chats start in the same mode.
-      if (value !== 'auto') {
-        setAgentModeLastSelected(value)
-      }
-      void setSessionAgentMode(sessionId, value)
-    },
-    [entry.value, modelId, providerId, sessionId, setAgentModeLastSelected, t]
-  )
   const handleSmartSwitchingChange = useCallback(
     (enabled: boolean) => {
       trackSmartSwitchingClick(
@@ -625,58 +600,11 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
   // runs for a newly opened page we fall back to the anchor-based placement.
   const resolvedSubPanelPosition = subPanelPosition?.page === page ? subPanelPosition : null
 
-  // Manual cross-mode switching (chat ↔ work) is only offered before the
-  // conversation starts — mirroring the work-side `entry.locked` in the other
-  // direction. Same-mode toggles are unaffected; the store enforces the same
-  // rule in setSessionAgentMode.
-  const conversationStarted = useMemo(
-    () => (currentSession ? hasConversationStarted(currentSession) : false),
-    [currentSession]
-  )
-
-  // --- Mode button ---
-  const ModeButton: FC<{ value: Extract<AgentModeValue, 'on' | 'off'>; label: string }> = ({ value, label }) => {
-    const isActive = agentModeUIState.displayValue === value
-    const isLockedDisabled = entry.locked && value !== 'on'
-    const isSwitchFrozen = conversationStarted && resolveSessionMode(value) !== resolveSessionMode(entry.value)
-    const isPlatformUnsupported = !platform.isDesktopLike && value === 'on'
-    const isModelDisabled = !isPlatformUnsupported && !modelSupportsAgentMode && value !== 'off'
-    const isDisabled = !isPlatformUnsupported && (isLockedDisabled || isSwitchFrozen || isModelDisabled)
-    const tooltipLabel = isPlatformUnsupported
-      ? t('Work Mode is currently only available on the desktop app.')
-      : isModelDisabled
-        ? t('This model does not support Agent Mode')
-        : t('Locked after the chat starts to keep tools and context consistent — start a new chat to change')
-    return (
-      <Tooltip label={tooltipLabel} disabled={!isDisabled && !isPlatformUnsupported} withArrow zIndex={3000}>
-        <span className="flex min-w-0 flex-1">
-          <Button
-            data-testid={value === 'off' ? TestId.agent.modeChat : TestId.agent.modeWork}
-            size="xs"
-            variant={isActive ? 'filled' : 'default'}
-            color={isActive ? 'chatbox-brand' : undefined}
-            fullWidth
-            disabled={isDisabled}
-            leftSection={<AgentModeStatusIcon mode={value} size={14} />}
-            // Long locales (fr/pt/ru) wrap onto a second line instead of being clipped mid-word
-            styles={{ root: { height: 'auto', minHeight: 26 }, label: { whiteSpace: 'normal', paddingBlock: 4 } }}
-            onClick={() => handleModeChange(value)}
-          >
-            {label}
-          </Button>
-        </span>
-      </Tooltip>
-    )
-  }
-
   const isChatModeSelected = agentModeUIState.displayValue === 'off'
   const smartSwitchingEnabled = entry.value === 'auto' && isChatModeSelected
   const smartSwitchingExpired =
     !isNewSession && Boolean(currentSession?.messages.some((message) => message.role === 'user'))
   const isSmartSwitchingDisabled = entry.locked || !modelSupportsAgentMode || smartSwitchingExpired
-  const modeDescription = agentModeUIState.isActive
-    ? t('Best for multi-step tasks with files, code execution, tools, MCP, skills, or knowledge bases.')
-    : t('Best for quick Q&A, writing, translation, explanations, and web search.')
   const smartSwitchingDescription = smartSwitchingExpired
     ? t('Only available before the first message.')
     : t('Suggest Work Mode on the first message.')
@@ -716,10 +644,10 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
       aria-disabled={disabled}
       className={`rounded outline-none focus-visible:ring-2 focus-visible:ring-[var(--chatbox-tint-brand)] ${
         active
-          ? 'bg-[var(--mantine-color-gray-1)] dark:bg-[var(--mantine-color-dark-5)]'
-          : disabled
-            ? ''
-            : 'hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]'
+          ? 'bg-chatbox-background-tertiary'
+            : disabled
+              ? ''
+              : 'hover:bg-chatbox-background-tertiary'
       } ${disabled ? 'cursor-default opacity-50' : 'cursor-pointer'} ${isTouchLayout ? 'min-h-11' : ''}`}
       onMouseEnter={isTouchLayout ? undefined : (e) => handleExtensionHover(targetPage, e, subPanelAlign)}
       onMouseLeave={isTouchLayout ? undefined : clearSubPanelOpenTimer}
@@ -880,7 +808,7 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
                   py={6}
                   className={`rounded ${
                     available
-                      ? 'cursor-pointer hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]'
+                      ? 'cursor-pointer hover:bg-chatbox-background-tertiary'
                       : 'cursor-default opacity-50'
                   }`}
                   onClick={() => {
@@ -997,7 +925,7 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
                 className={`rounded ${
                   workModeCapabilitiesDisabled
                     ? 'cursor-default opacity-50'
-                    : 'cursor-pointer hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]'
+                    : 'cursor-pointer hover:bg-chatbox-background-tertiary'
                 }`}
                 gap="xs"
                 align="center"
@@ -1105,7 +1033,7 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
                 align="center"
                 px="sm"
                 py={6}
-                className="rounded cursor-pointer hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]"
+                className="rounded cursor-pointer hover:bg-chatbox-background-tertiary"
                 onClick={() => {
                   onKnowledgeBaseSelect(kb.id === currentKnowledgeBaseId ? null : kb)
                   onClose()
@@ -1187,29 +1115,21 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
             <Text fw={600} size="sm" c="chatbox-primary">
               {t('Mode')}
             </Text>
-            {showModeSwitcher ? (
-              <>
-                <Flex gap={6}>
-                  <ModeButton value="off" label={t('Chat Mode')} />
-                  <ModeButton value="on" label={t('Work Mode')} />
-                </Flex>
-                <Text size="xs" c="chatbox-secondary" className="leading-snug max-w-[244px]">
-                  {modeDescription}
+            {/* Read-only mode status. Switching Chat ↔ Work Mode lives on the
+                new-chat screen now, so the panel only reports the current mode. */}
+            <Flex align="flex-start" gap="sm" className="rounded-lg bg-chatbox-background-secondary px-2 py-1.5">
+              <AgentModeStatusIcon mode={agentModeUIState.displayValue} size={14} className="mt-0.5 shrink-0" />
+              <Stack gap={2} className="min-w-0">
+                <Text size="sm" fw={500} c="chatbox-primary">
+                  {agentModeUIState.isActive ? t('Work Mode') : t('Chat Mode')}
                 </Text>
-              </>
-            ) : (
-              <Flex align="flex-start" gap="sm" className="rounded-lg bg-chatbox-background-secondary px-2 py-1.5">
-                <AgentModeStatusIcon mode="off" size={14} className="mt-0.5 shrink-0" />
-                <Stack gap={2} className="min-w-0">
-                  <Text size="sm" fw={500} c="chatbox-primary">
-                    {t('Chat Mode')}
-                  </Text>
+                {!showModeSwitcher && (
                   <Text size="xs" c="chatbox-secondary" className="leading-snug">
                     {t('This app currently supports Chat Mode only. Use Work Mode on the desktop app.')}
                   </Text>
-                </Stack>
-              </Flex>
-            )}
+                )}
+              </Stack>
+            </Flex>
             {showModeSwitcher && isChatModeSelected && (
               <Flex
                 justify="space-between"

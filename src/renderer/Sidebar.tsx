@@ -171,7 +171,12 @@ export default function Sidebar() {
             <SidebarMenu>
               <SidebarMenuItem>
                 <SidebarMenuButton size="lg" onClick={() => navigate({ to: '/about' })}>
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg bg-white shadow-[0_1px_4px_rgba(0,0,0,0.18)]">
+                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg"
+                    style={{
+                      background: 'var(--neo-surface-raised)',
+                      boxShadow: 'var(--neo-shadow-outset-sm), inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 65%, transparent)',
+                    }}
+                  >
                     <img
                       src={icon}
                       alt="Fibonacci Chat Area"

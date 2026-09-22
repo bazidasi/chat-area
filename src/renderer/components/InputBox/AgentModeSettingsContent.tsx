@@ -26,7 +26,7 @@ export const CommandApprovalOptions: FC<{
         className={`rounded ${
           disabled
             ? 'cursor-default opacity-50'
-            : 'cursor-pointer hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]'
+            : 'cursor-pointer hover:bg-chatbox-background-tertiary'
         }`}
         onClick={() => {
           if (disabled) return
@@ -52,7 +52,7 @@ export const CommandApprovalOptions: FC<{
         className={`rounded ${
           disabled
             ? 'cursor-default opacity-50'
-            : 'cursor-pointer hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]'
+            : 'cursor-pointer hover:bg-chatbox-background-tertiary'
         }`}
         onClick={() => {
           if (disabled) return
@@ -147,7 +147,7 @@ export const WorkingDirectoryContent: FC<{
               className={`w-full rounded px-3 py-1.5 text-left ${
                 disabled
                   ? 'cursor-default opacity-50'
-                  : 'hover:bg-[var(--mantine-color-gray-0)] dark:hover:bg-[var(--mantine-color-dark-5)]'
+                  : 'hover:bg-chatbox-background-tertiary'
               }`}
               disabled={disabled}
               aria-label={dir}

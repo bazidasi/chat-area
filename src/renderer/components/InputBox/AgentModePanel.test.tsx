@@ -241,42 +241,29 @@ beforeEach(() => {
   recentDirectoriesStore.setState({ directories: [] })
 })
 
-describe('AgentModePanel mode buttons', () => {
-  test('label the chat and work mode buttons with the same status icons as the composer button', () => {
+describe('AgentModePanel mode status', () => {
+  test('reports the current mode without offering an in-panel switcher', () => {
     const view = renderPanel()
 
-    const chatMode = screen.getByRole('button', { name: 'Chat Mode' })
-    const workMode = screen.getByRole('button', { name: 'Work Mode' })
+    expect(screen.getByText('Chat Mode')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Chat Mode' })).toBeNull()
+    expect(screen.queryByRole('button', { name: 'Work Mode' })).toBeNull()
+    expect(view.container.querySelector('[data-agent-mode-status="off"]')).toBeTruthy()
+  })
 
-    expect(chatMode.querySelector('[data-agent-mode-status="off"]')).toBeTruthy()
-    expect(workMode.querySelector('[data-agent-mode-status="on"]')).toBeTruthy()
-    expect(view.container.querySelectorAll('[data-agent-mode-status]')).toHaveLength(2)
+  test('reports Work Mode as the current state when agent mode is on', () => {
+    mocks.agentModeEntry.value = 'on'
+    renderPanel()
+
+    expect(screen.getByText('Work Mode')).toBeTruthy()
+    expect(screen.queryByRole('button', { name: 'Work Mode' })).toBeNull()
+    expect(screen.queryByText('Smart Switching')).toBeNull()
   })
 
   test('keeps global Agent settings out of the per-chat capability menu', () => {
     renderPanel()
 
     expect(screen.queryByRole('button', { name: 'Soul & Memories' })).toBeNull()
-  })
-
-  test('remembers an explicit switch to Chat Mode for future new chats', () => {
-    mocks.agentModeEntry.value = 'on'
-    renderPanel()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Chat Mode' }))
-
-    expect(mocks.uiState.setAgentModeLastSelected).toHaveBeenCalledWith('off')
-    expect(mocks.setSessionAgentModeMock).toHaveBeenCalledWith('new', 'off')
-  })
-
-  test('remembers an explicit switch to Work Mode for future new chats', () => {
-    mocks.agentModeEntry.value = 'off'
-    renderPanel()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Work Mode' }))
-
-    expect(mocks.uiState.setAgentModeLastSelected).toHaveBeenCalledWith('on')
-    expect(mocks.setSessionAgentModeMock).toHaveBeenCalledWith('new', 'on')
   })
 
   test('shows Chat Mode as the current state on web without a Work Mode switcher', () => {
@@ -306,16 +293,6 @@ describe('AgentModePanel mode buttons', () => {
 
     expect(mocks.useKnowledgeBasesMock).toHaveBeenCalledWith(false)
     expect(screen.queryByRole('button', { name: 'Knowledge Base' })).toBeNull()
-  })
-
-  test('keeps the remembered mode untouched when re-selecting the current mode', () => {
-    mocks.agentModeEntry.value = 'on'
-    renderPanel()
-
-    fireEvent.click(screen.getByRole('button', { name: 'Work Mode' }))
-
-    expect(mocks.uiState.setAgentModeLastSelected).not.toHaveBeenCalled()
-    expect(mocks.setSessionAgentModeMock).not.toHaveBeenCalled()
   })
 
   test('keeps the remembered mode untouched when toggling Smart Switching', () => {

@@ -26,7 +26,7 @@
 }
 
 :root {
-  /* colors — Neumorphism palette (Fibonacci Chat Area) */
+  /* colors — burgundy accent on warm gray, neumorphic surfaces */
   --chatbox-tint-primary: #3d4657;
   --chatbox-tint-secondary: #5f6b80;
   --chatbox-tint-tertiary: #8d97ab;
@@ -36,42 +36,45 @@
   --chatbox-tint-gray: #8d97ab;
 
   --chatbox-tint-disabled: #a9b2c3;
-  --chatbox-brand: #e91499;
+  --chatbox-brand: #87262e;
+  --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-placeholder: #9aa4b8;
-  --chatbox-tint-error: #e04848;
-  --chatbox-tint-error-disabled: #ff8787;
-  --chatbox-tint-warning: #e8940a;
-  --chatbox-tint-success: #10a37f;
+  --chatbox-tint-error: #b3261e;
+  --chatbox-tint-error-disabled: #dda6a1;
+  --chatbox-tint-warning: #8a6100;
+  --chatbox-tint-success: #1f7a4d;
 
   --chatbox-border-primary: #d5dbe7;
   --chatbox-border-secondary: #cdd5e2;
-  --chatbox-border-warning: #e8940a;
-  --chatbox-border-error: #e04848;
-  --chatbox-border-success: #10a37f;
+  --chatbox-border-warning: #8a6100;
+  --chatbox-border-error: #b3261e;
+  --chatbox-border-success: #1f7a4d;
   --chatbox-border-brand: var(--chatbox-brand);
 
-  /* neumorphic surface — one material for the whole app.
-     Shadows are translucent and tight: soft material depth without
-     the muddy dual-glow of full-strength neumorphism. */
-  --neo-surface: #e4e9f1;
-  --neo-surface-raised: #e9edf5;
-  --neo-shadow-dark: rgba(164, 174, 192, 0.55);
-  --neo-shadow-light: rgba(255, 255, 255, 0.9);
+  /* neumorphism reference — soft extruded surfaces
+     radius:29px, bg:#f0f0f0, dual shadows for depth.
+     Tuned: slightly softer offset, slightly more blur for a polished feel. */
+  --neo-surface: #f0f0f0;
+  --neo-surface-raised: #f5f5f7;
+  --neo-shadow-dark: #c4c4c4;
+  --neo-shadow-light: #ffffff;
+  --neo-shadow-offset: 4px;
+  --neo-shadow-blur: 10px;
 
-  --neo-shadow-outset-xs: 1px 1px 3px var(--neo-shadow-dark), -1px -1px 3px var(--neo-shadow-light);
-  --neo-shadow-outset-sm: 3px 3px 7px var(--neo-shadow-dark), -3px -3px 7px var(--neo-shadow-light);
-  --neo-shadow-outset-lg: 6px 6px 14px var(--neo-shadow-dark), -6px -6px 14px var(--neo-shadow-light);
-  --neo-shadow-inset-sm: inset 1px 1px 3px var(--neo-shadow-dark), inset -1px -1px 3px var(--neo-shadow-light);
-  --neo-shadow-inset: inset 3px 3px 7px var(--neo-shadow-dark), inset -3px -3px 7px var(--neo-shadow-light);
+  --neo-shadow-outset-xs: -3px -3px 8px var(--neo-shadow-light), 3px 3px 8px var(--neo-shadow-dark);
+  --neo-shadow-outset-sm: -4px -4px 10px var(--neo-shadow-light), 4px 4px 10px var(--neo-shadow-dark);
+  --neo-shadow-outset-lg: -8px -8px 18px var(--neo-shadow-dark), 8px 8px 18px var(--neo-shadow-light);
+  --neo-shadow-inset-sm: inset 3px 3px 8px var(--neo-shadow-dark), inset -3px -3px 8px var(--neo-shadow-light);
+  --neo-shadow-inset: inset 4px 4px 10px var(--neo-shadow-dark), inset -4px -4px 10px var(--neo-shadow-light);
 
   --chatbox-background-primary: var(--neo-surface);
-  --chatbox-background-primary-hover: #dfe5ee;
+  --chatbox-background-primary-hover: #e8e8ea;
   --chatbox-background-secondary: var(--neo-surface-raised);
-  --chatbox-background-secondary-hover: #dfe5ee;
-  --chatbox-background-tertiary: #dde3ed;
-  --chatbox-background-tertiary-hover: #d2dae7;
-  --chatbox-background-disabled: #d8dee9;
+  --chatbox-background-secondary-hover: #fafafb;
+  --chatbox-background-tertiary: #e4e4e8;
+  --chatbox-background-tertiary-hover: #dbdbe0;
+  --chatbox-background-disabled: #e0e0e4;
 
   --chatbox-background-brand-primary: var(--chatbox-brand);
   --chatbox-background-brand-primary-hover: color-mix(in srgb, var(--chatbox-brand), black 12%);
@@ -80,23 +83,23 @@
 
   --chatbox-background-gray-primary: #868e96;
   --chatbox-background-gray-primary-hover: #495057;
-  --chatbox-background-gray-secondary: rgb(134, 142, 150, 0.1);
-  --chatbox-background-gray-secondary-hover: rgb(134, 142, 150, 0.12);
+  --chatbox-background-gray-secondary: rgb(134, 142, 150, 0.12);
+  --chatbox-background-gray-secondary-hover: rgb(134, 142, 150, 0.16);
 
   --chatbox-background-success-primary: #12b886;
   --chatbox-background-success-primary-hover: #0ca678;
-  --chatbox-background-success-secondary: rgb(18, 184, 134, 0.1);
-  --chatbox-background-success-secondary-hover: rgb(18, 184, 134, 0.12);
+  --chatbox-background-success-secondary: rgb(18, 184, 134, 0.12);
+  --chatbox-background-success-secondary-hover: rgb(18, 184, 134, 0.16);
 
   --chatbox-background-error-primary: #fa5252;
   --chatbox-background-error-primary-hover: #f03e3e;
   --chatbox-background-error-secondary: rgb(250, 82, 82, 0.1);
-  --chatbox-background-error-secondary-hover: rgb(250, 82, 82, 0.12);
+  --chatbox-background-error-secondary-hover: rgb(250, 82, 82, 0.14);
 
   --chatbox-background-warning-primary: #fab005;
   --chatbox-background-warning-primary-hover: #f59f00;
   --chatbox-background-warning-secondary: rgb(250, 176, 5, 0.1);
-  --chatbox-background-warning-secondary-hover: rgb(250, 176, 5, 0.12);
+  --chatbox-background-warning-secondary-hover: rgb(250, 176, 5, 0.14);
 
   --chatbox-background-mask-overlay: rgb(59, 59, 59, 0.64);
   --chatbox-background-mask-lighten: rgb(255, 255, 255, 0.76);
@@ -122,11 +125,11 @@
   --input: var(--chatbox-border-primary);
   --ring: var(--chatbox-tint-brand);
 
-  /* shadcn sidebar — inset (sidebar-08) surfaces on the app's neo material */
+  /* shadcn sidebar — neumorphic inset surfaces */
   --sidebar: var(--neo-surface);
   --sidebar-foreground: var(--chatbox-tint-primary);
-  --sidebar-primary: #ffffff;
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary: var(--neo-surface-raised);
+  --sidebar-primary-foreground: var(--chatbox-tint-primary);
   --sidebar-accent: var(--neo-surface-raised);
   --sidebar-accent-foreground: var(--chatbox-tint-primary);
   --sidebar-border: var(--chatbox-border-primary);
@@ -134,7 +137,7 @@
 }
 
 :root[data-mantine-color-scheme="dark"] {
-  /* colors — Neumorphism dark palette */
+  /* colors — burgundy accent on dark gray */
   --chatbox-tint-primary: #e6eaf2;
   --chatbox-tint-secondary: #b8c1d1;
   --chatbox-tint-tertiary: #7f8999;
@@ -144,34 +147,35 @@
   --chatbox-tint-gray: #7f8999;
 
   --chatbox-tint-disabled: #565f6f;
-  --chatbox-brand: #ff3fae;
+  --chatbox-brand: #a04050;
+  --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-placeholder: #6b7488;
-  --chatbox-tint-error: #ff6b6b;
-  --chatbox-tint-error-disabled: rgb(224, 49, 49, 0.5);
+  --chatbox-tint-error: #ef7b7b;
+  --chatbox-tint-error-disabled: rgb(239, 123, 123, 0.45);
   --chatbox-tint-warning: #ffc86b;
   --chatbox-tint-success: #3ddbb0;
 
   --chatbox-border-primary: #323947;
   --chatbox-border-secondary: #3b4353;
   --chatbox-border-warning: #ffc86b;
-  --chatbox-border-error: #ff6b6b;
+  --chatbox-border-error: #ef7b7b;
   --chatbox-border-success: #3ddbb0;
   --chatbox-border-brand: var(--chatbox-brand);
 
-  /* neumorphic surface — one material for the whole app.
-     Dark theme: low-alpha shadows keep the material subtle instead
-     of the heavy muddy dual-glow. */
+  /* dark neumorphism — deeper gray surfaces, light shadows for depth */
   --neo-surface: #262b35;
   --neo-surface-raised: #2c313d;
-  --neo-shadow-dark: rgba(13, 16, 21, 0.45);
+  --neo-shadow-dark: rgba(13, 16, 21, 0.55);
   --neo-shadow-light: rgba(70, 79, 96, 0.35);
+  --neo-shadow-offset: 4px;
+  --neo-shadow-blur: 10px;
 
-  --neo-shadow-outset-xs: 1px 1px 3px var(--neo-shadow-dark), -1px -1px 3px var(--neo-shadow-light);
-  --neo-shadow-outset-sm: 3px 3px 7px var(--neo-shadow-dark), -3px -3px 7px var(--neo-shadow-light);
-  --neo-shadow-outset-lg: 6px 6px 14px var(--neo-shadow-dark), -6px -6px 14px var(--neo-shadow-light);
-  --neo-shadow-inset-sm: inset 1px 1px 3px var(--neo-shadow-dark), inset -1px -1px 3px var(--neo-shadow-light);
-  --neo-shadow-inset: inset 3px 3px 7px var(--neo-shadow-dark), inset -3px -3px 7px var(--neo-shadow-light);
+  --neo-shadow-outset-xs: -3px -3px 8px var(--neo-shadow-light), 3px 3px 8px var(--neo-shadow-dark);
+  --neo-shadow-outset-sm: -4px -4px 10px var(--neo-shadow-light), 4px 4px 10px var(--neo-shadow-dark);
+  --neo-shadow-outset-lg: -8px -8px 18px var(--neo-shadow-dark), 8px 8px 18px var(--neo-shadow-light);
+  --neo-shadow-inset-sm: inset 3px 3px 8px var(--neo-shadow-dark), inset -3px -3px 8px var(--neo-shadow-light);
+  --neo-shadow-inset: inset 4px 4px 10px var(--neo-shadow-dark), inset -4px -4px 10px var(--neo-shadow-light);
 
   --chatbox-background-primary: var(--neo-surface);
   --chatbox-background-primary-hover: #22262f;
@@ -309,38 +313,50 @@ ul[data-sidebar='menu-sub'] > li {
   list-style: none;
 }
 
-/* ---------- chat input surface (shared by InputBox + PendingActionBar) ----------
-   Large soft well matching the reference design: 24px radius, no hard
-   border, and a magenta focus glow when typing. The lift is the app's
-   dual-shadow soft-UI extrusion (dark bottom-right / light top-left)
-   rather than a single drop shadow, so the well reads as the same
-   material as the surrounding page, pushed out of it. */
+/* ---------- chat input surface (shared by InputBox + PendingActionBar)
+   The app's reference material: large 29px-radius well, hairline border,
+   soft extruded shadow, burgundy focus ring while typing. Every other
+   panel in the app points back at this recipe. */
 .chatbox-input-surface {
-  border: none !important;
-  border-radius: 24px;
-  box-shadow:
-    var(--neo-shadow-outset-sm),
-    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 70%, transparent);
-  transition: box-shadow 180ms ease, background-color 180ms ease;
+  border: 1px solid var(--chatbox-border-primary) !important;
+  border-radius: 29px;
+  box-shadow: var(--neo-shadow-outset-sm);
+  transition: box-shadow 160ms ease, border-color 160ms ease, background-color 160ms ease;
 }
 
 .chatbox-input-surface:focus-within {
+  border-color: color-mix(in srgb, var(--chatbox-brand) 55%, var(--chatbox-border-primary)) !important;
   box-shadow:
     var(--neo-shadow-outset-sm),
-    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 70%, transparent),
-    0 0 0 1.5px color-mix(in srgb, var(--chatbox-brand) 38%, transparent),
-    0 0 0 6px color-mix(in srgb, var(--chatbox-brand) 9%, transparent);
+    0 0 0 3px color-mix(in srgb, var(--chatbox-brand) 14%, transparent);
 }
 
-[data-mantine-color-scheme='dark'] .chatbox-input-surface:focus-within {
-  box-shadow:
-    var(--neo-shadow-outset-sm),
-    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 70%, transparent),
-    0 0 0 1.5px color-mix(in srgb, var(--chatbox-brand) 55%, transparent),
-    0 0 0 6px color-mix(in srgb, var(--chatbox-brand) 12%, transparent);
+/* morph animation — triggered when the user switches Chat/Work mode */
+@keyframes chatbox-morph {
+  0% {
+    transform: scale(1);
+    box-shadow: var(--neo-shadow-outset-sm);
+  }
+  30% {
+    transform: scale(0.985);
+    box-shadow:
+      0 0 0 3px color-mix(in srgb, var(--chatbox-brand) 20%, transparent),
+      var(--neo-shadow-outset-sm);
+  }
+  60% {
+    transform: scale(1.005);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: var(--neo-shadow-outset-sm);
+  }
 }
 
-/* The well's magenta glow is the focus indicator — the textarea itself must
+.chatbox-input-surface.chatbox-morphing {
+  animation: chatbox-morph 450ms cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* The well's ring is the focus indicator — the textarea itself must
    not draw its own rectangular :focus-visible outline (autofocus shows it). */
 .chatbox-input-surface textarea:focus,
 .chatbox-input-surface textarea:focus-visible {
@@ -348,70 +364,35 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 /* circular send / stop button in the composer ----------
-   Layered "pressed metal" pill, adapted from the reference button but built
-   from the app's soft-UI tokens so light and dark follow the theme. The
-   element's own background is the recessed socket and shows as a thin rim;
-   ::before is the raised face sitting 1px inside it. The metal-fx ring still
-   draws over the whole control, so this only supplies the material. */
+   Minimal solid fill, pointing back at the composer's material language:
+   one burgundy circle, hairline shadow, no gradients or layered
+   highlights. Pressing darkens the fill and scales a hair. */
 .chatbox-send-button {
-  position: relative;
   border-radius: 9999px;
-  background-color: color-mix(in srgb, var(--neo-surface-raised) 62%, var(--neo-shadow-dark));
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 60%, transparent);
-  transition: box-shadow 180ms ease, transform 140ms ease;
+  background-color: var(--chatbox-brand);
+  color: var(--chatbox-tint-white) !important;
+  box-shadow: var(--neo-shadow-outset-xs);
+  transition: background-color 160ms ease, box-shadow 160ms ease, transform 140ms ease;
 }
 
-.chatbox-send-button::before {
-  content: '';
-  position: absolute;
-  inset: 1px;
-  z-index: 0;
-  border-radius: inherit;
-  background-image: linear-gradient(
-    135deg,
-    var(--neo-surface-raised),
-    color-mix(in srgb, var(--neo-surface-raised) 78%, var(--neo-shadow-dark))
-  );
-  box-shadow:
-    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 90%, transparent),
-    inset 1px 1px 2px color-mix(in srgb, var(--neo-shadow-light) 65%, transparent),
-    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-dark) 45%, transparent);
-  transition: box-shadow 180ms ease, background-image 180ms ease;
-}
-
-/* icon and loader sit on the face, not under it */
-.chatbox-send-button > span {
-  position: relative;
-  z-index: 1;
-}
-
-/* hover: the face presses in, the socket stops casting a lip */
 .chatbox-send-button:hover:not(:disabled) {
-  box-shadow: none;
-}
-
-.chatbox-send-button:hover:not(:disabled)::before {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--neo-surface-raised) 88%, var(--neo-shadow-dark)),
-    color-mix(in srgb, var(--neo-surface-raised) 72%, var(--neo-shadow-dark))
-  );
-  box-shadow:
-    inset 1px 1px 3px color-mix(in srgb, var(--neo-shadow-dark) 55%, transparent),
-    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-light) 60%, transparent);
+  background-color: var(--chatbox-background-brand-primary-hover);
 }
 
 .chatbox-send-button:active:not(:disabled) {
   transform: scale(0.97);
+  box-shadow: inset 0 1px 2px rgb(0 0 0 / 25%);
 }
 
 .chatbox-send-button:disabled {
-  opacity: 0.4;
+  background-color: var(--chatbox-background-tertiary);
+  color: var(--chatbox-tint-disabled) !important;
+  box-shadow: none;
 }
 
 .chatbox-send-button:focus-visible {
   outline: 2px solid var(--chatbox-tint-brand);
-  outline-offset: 4px;
+  outline-offset: 3px;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -425,21 +406,21 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 /* notification / status cards above the composer ----------
-   Same neumorphic extrusion as the chat input well but at a
-   slightly smaller radius (20px). Applied to the three bars that
+   Same neumorphic extrusion as the chat input well at a
+   matching 29px radius. Applied to the three bars that
    sit between the conversation and the composer
    (CompactionStatus, WebSearchUnavailableBanner, QueuedMessagesBar)
    so they share the same pushed-out soft surface. */
 .chatbox-card-surface {
   border: none !important;
-  border-radius: 20px;
+  border-radius: 29px;
   box-shadow:
     var(--neo-shadow-outset-sm),
     inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 65%, transparent);
   transition: box-shadow 180ms ease, background-color 180ms ease;
 }
 
-/* primary action buttons (approve / continue / deny): pressed-metal
+/* primary action buttons (approve / continue / deny): soft-UI dome
    hover + press animation, mirroring the send button's behaviour so
    all composer-area CTAs share the same tactile language. */
 .chatbox-action-btn {
@@ -447,8 +428,10 @@ ul[data-sidebar='menu-sub'] > li {
   border-radius: 9999px !important;
   background-color: color-mix(in srgb, var(--neo-surface-raised) 62%, var(--neo-shadow-dark)) !important;
   border: none !important;
-  box-shadow: 0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 60%, transparent) !important;
-  transition: box-shadow 180ms ease, transform 140ms ease;
+  box-shadow:
+    0 4px 8px -2px color-mix(in srgb, var(--neo-shadow-dark) 45%, transparent),
+    0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 55%, transparent) !important;
+  transition: box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1), transform 140ms ease;
 }
 
 .chatbox-action-btn::before {
@@ -465,8 +448,9 @@ ul[data-sidebar='menu-sub'] > li {
   box-shadow:
     inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 90%, transparent) !important,
     inset 1px 1px 2px color-mix(in srgb, var(--neo-shadow-light) 65%, transparent) !important,
-    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-dark) 45%, transparent) !important;
-  transition: box-shadow 180ms ease, background-image 180ms ease;
+    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-dark) 45%, transparent) !important,
+    inset 0 2px 4px 0 color-mix(in srgb, var(--neo-shadow-light) 20%, transparent) !important;
+  transition: box-shadow 180ms cubic-bezier(0.23, 1, 0.32, 1), background-image 180ms ease;
 }
 
 .chatbox-action-btn > span {
@@ -475,22 +459,40 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 .chatbox-action-btn:hover:not(:disabled) {
-  box-shadow: none !important;
+  box-shadow:
+    0 2px 5px -1px color-mix(in srgb, var(--neo-shadow-dark) 40%, transparent),
+    0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 50%, transparent) !important;
 }
 
 .chatbox-action-btn:hover:not(:disabled)::before {
   background-image: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--neo-surface-raised) 88%, var(--neo-shadow-dark)),
+    color-mix(in srgb, var(--neo-surface-raised) 90%, var(--neo-shadow-dark)),
     color-mix(in srgb, var(--neo-surface-raised) 72%, var(--neo-shadow-dark))
   );
   box-shadow:
-    inset 1px 1px 3px color-mix(in srgb, var(--neo-shadow-dark) 55%, transparent) !important,
-    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-light) 60%, transparent) !important;
+    inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 80%, transparent) !important,
+    inset 1px 1px 3px color-mix(in srgb, var(--neo-shadow-dark) 30%, transparent) !important,
+    inset -1px -1px 2px color-mix(in srgb, var(--neo-shadow-light) 55%, transparent) !important,
+    inset 0 2px 4px 0 color-mix(in srgb, var(--neo-shadow-dark) 12%, transparent) !important;
 }
 
 .chatbox-action-btn:active:not(:disabled) {
-  transform: scale(0.97) !important;
+  transform: scale(0.96) !important;
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 30%, transparent),
+    inset 0 2px 4px color-mix(in srgb, var(--neo-shadow-dark) 35%, transparent) !important;
+}
+
+.chatbox-action-btn:active:not(:disabled)::before {
+  background-image: linear-gradient(
+    135deg,
+    color-mix(in srgb, var(--neo-surface-raised) 85%, var(--neo-shadow-dark)),
+    color-mix(in srgb, var(--neo-surface-raised) 68%, var(--neo-shadow-dark))
+  );
+  box-shadow:
+    inset 1px 2px 4px color-mix(in srgb, var(--neo-shadow-dark) 55%, transparent) !important,
+    inset -1px -1px 3px color-mix(in srgb, var(--neo-shadow-light) 55%, transparent) !important;
 }
 
 .chatbox-action-btn:disabled {
@@ -507,21 +509,44 @@ ul[data-sidebar='menu-sub'] > li {
   }
 }
 
-/* home hero orb: gentle levitation */
-@keyframes chatbox-orb-float {
-  0%,
-  100% {
-    transform: translateY(0);
+/* home hero: subtle grid backdrop behind the welcome cluster
+   (auth-template reference — centered content on a grid background).
+   Lines come from theme tokens only and fade out toward the edges so
+   the soft material stays calm. */
+.chatbox-hero-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--neo-shadow-dark) 16%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--neo-shadow-dark) 16%, transparent) 1px, transparent 1px);
+  background-size: 28px 28px;
+  -webkit-mask-image: radial-gradient(ellipse 62% 60% at 50% 42%, black 0%, transparent 74%);
+  mask-image: radial-gradient(ellipse 62% 60% at 50% 42%, black 0%, transparent 74%);
+}
+
+/* blur-text: per-word entrance for the welcome heading. Each word is an
+   inline-block span with an increasing delay (set inline by the
+   component); gaps are preserved with &nbsp; and the document direction
+   keeps natural RTL word order. */
+@keyframes chatbox-blur-word-in {
+  from {
+    opacity: 0;
+    filter: blur(8px);
+    transform: translateY(4px);
   }
-  50% {
-    transform: translateY(-8px);
+  to {
+    opacity: 1;
+    filter: blur(0);
+    transform: translateY(0);
   }
 }
 
+.chatbox-blur-word {
+  animation: chatbox-blur-word-in 300ms ease-out both;
+  will-change: opacity, filter, transform;
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .chatbox-orb-float,
-  [style*='chatbox-orb-float'] {
-    animation: none !important;
+  .chatbox-blur-word {
+    animation: none;
   }
 }
 

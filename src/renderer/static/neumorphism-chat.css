@@ -154,22 +154,22 @@ html[data-theme='dark'] .splash-screen {
 }
 
 .splash-screen-logo {
-  color: #d6199b;
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, #d6199b 35%, transparent));
+  color: #87262e;
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, #87262e 35%, transparent));
 }
 
 html[data-theme='dark'] .splash-screen-logo {
-  color: #ff3fae;
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, #ff3fae 30%, transparent));
+  color: #a04050;
+  filter: drop-shadow(0 10px 24px color-mix(in srgb, #a04050 30%, transparent));
 }
 
 .splash-screen-logo-bg {
-  color: #d6199b;
+  color: #87262e;
   opacity: 0.22;
 }
 
 html[data-theme='dark'] .splash-screen-logo-bg {
-  color: #ff3fae;
+  color: #a04050;
   opacity: 0.16;
 }
 

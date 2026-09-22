@@ -29,11 +29,14 @@ import { z } from 'zod'
 import { trackJkClickEvent } from '@/analytics/jk'
 import { JK_EVENTS, JK_PAGE_NAMES } from '@/analytics/jk-events'
 import { rendererApplication } from '@/app/renderer-application'
+import { BlurText } from '@/components/animate-ui/primitives/effects/blur-text'
 import { Fade } from '@/components/animate-ui/primitives/effects/fade'
 import { Slide, Slides } from '@/components/animate-ui/primitives/effects/slide'
+import { Halftone } from '@/components/animate-ui/primitives/effects/halftone'
 import { ScalableIcon } from '@/components/common/ScalableIcon'
 import { ImageInStorage } from '@/components/Image'
 import InputBox, { type InputBoxPayload } from '@/components/InputBox/InputBox'
+import WorkChatModeToggle from '@/components/InputBox/WorkChatModeToggle'
 import Page from '@/components/layout/Page'
 import { getForceShowNewUserScenarioCardsFlag } from '@/dev/devToolsFlags'
 import { useMyCopilots, useRemoteCopilotsByCursor } from '@/hooks/useCopilots'
@@ -442,7 +445,8 @@ function Index() {
 
   return (
     <Page title="">
-      <div className="p-0 flex flex-col h-full min-h-0 overflow-hidden">
+      <div className="relative flex flex-col h-full min-h-0 overflow-hidden pb-md">
+        <Halftone className="absolute inset-0 pointer-events-none" />
         {/* Hero + composer cluster, centered in the viewport when it fits;
             scrolls as one unit when it doesn't. */}
         <div className="flex min-h-0 flex-1 flex-col justify-center overflow-y-auto pb-md">
@@ -452,34 +456,16 @@ function Index() {
             </Stack>
           ) : (
             <Stack align="center" gap="lg" className="w-full pt-14 pb-6" px="md">
-              {/* glowing brand orb, echoing the app splash mark */}
-              <Slide direction="down" offset={18}>
-                <Box className="relative flex items-center justify-center" w={96} h={96}>
-                  <Box
-                    className="absolute inset-0 rounded-full blur-2xl"
-                    style={{
-                      background:
-                        'radial-gradient(circle, rgba(255,63,174,0.5) 0%, rgba(168,85,247,0.25) 55%, transparent 75%)',
-                    }}
-                  />
-                  <Box
-                    className="relative h-20 w-20 rounded-full"
-                    style={{
-                      background:
-                        'radial-gradient(circle at 34% 28%, #ffd9f1 0%, #ff3fae 38%, #b024d1 68%, #4a1d96 100%)',
-                      boxShadow: '0 10px 40px rgba(255,63,174,0.35), inset 0 -6px 14px rgba(0,0,0,0.18)',
-                      animation: 'chatbox-orb-float 6s ease-in-out infinite',
-                    }}
-                  />
-                </Box>
-              </Slide>
+              {/* auth-template reference: centered content on a grid
+                  background, logo on top */}
+              <div aria-hidden className="chatbox-hero-grid pointer-events-none absolute inset-0" />
 
-              <Slide direction="up" offset={16} delay={90}>
-                <Stack align="center" gap={6}>
-                  <Text fw={700} size={isSmallScreen ? 'lg' : 'xl'} ta="center">
-                    {t('What can I help you with today?')}
+              <Slide direction="up" offset={12}>
+                <Stack align="center" gap={6} pt="md">
+                  <Text fw={800} fz={isSmallScreen ? 24 : 34} ta="center" lh={1.15}>
+                    <BlurText text={t('What can I help you with today?')} />
                   </Text>
-                  <span className="h-[3px] w-10 rounded-full bg-gradient-to-r from-chatbox-tint-brand to-[#ff77c8]" />
+                  <span className="h-[3px] w-10 rounded-full bg-chatbox-brand" />
                   {!isSmallScreen && (
                     <Text size="sm" c="chatbox-tertiary" ta="center" mt={4}>
                       {t('Ask anything — chat, create images, analyze files, and more.')}
@@ -526,6 +512,12 @@ function Index() {
             showCopilotsInNewSession && (
               <CopilotPicker onSelect={(copilot) => setSession((old) => ({ ...old, copilotId: copilot?.id }))} />
             )
+          )}
+
+          {/* Chat / Work mode switch — sits between the welcome message and
+              the composer, driving the same agent-mode entry as the panel. */}
+          {!showNewUserScenarios && !session.copilotId && (
+            <WorkChatModeToggle sessionId="new" model={selectedModel} sessionSettings={session.settings} />
           )}
 
           <Box className="w-full max-w-4xl mx-auto">
@@ -606,9 +598,8 @@ const HomeFeatureCard = ({
     onClick={onClick}
     className={clsx(
       'group/card relative flex w-full cursor-pointer flex-col items-start gap-2 text-left',
-      'rounded-2xl bg-chatbox-background-secondary p-4',
-      'transition-all duration-200 hover:-translate-y-0.5 hover:bg-chatbox-background-tertiary',
-      'hover:shadow-[0_10px_30px_-10px_rgba(0,0,0,0.18)]'
+      'chatbox-card-surface rounded-2xl bg-chatbox-background-secondary px-4 py-3',
+      'transition-all duration-200 hover:-translate-y-0.5 hover:bg-chatbox-background-tertiary'
     )}
   >
     <span

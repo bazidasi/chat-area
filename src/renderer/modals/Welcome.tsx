@@ -30,7 +30,13 @@ const Welcome = NiceModal.create(() => {
         body: 'p-0 overflow-hidden',
       }}
     >
-      <Stack gap="xl" align="center" className="w-full bg-white px-8 py-8">
+      <Stack gap="xl" align="center" className="w-full px-8 py-8"
+        style={{
+          borderRadius: '20px',
+          background: 'var(--neo-surface-raised)',
+          boxShadow: 'var(--neo-shadow-outset-sm), inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 65%, transparent)',
+        }}
+      >
         <GradientOrb />
 
         <Stack gap="xs" align="center" pt="md">
@@ -104,8 +110,8 @@ function GradientOrb() {
       style={{
         borderRadius: '50%',
         background:
-          'radial-gradient(circle at 34% 28%, #ffd9f1 0%, #ff3fae 38%, #b024d1 68%, #4a1d96 100%)',
-        boxShadow: '0 8px 32px rgba(255,63,174,0.3), inset 0 -4px 12px rgba(0,0,0,0.15)',
+          'radial-gradient(circle at 34% 28%, #f5d5d8 0%, #87262e 38%, #6b2a32 68%, #3d1520 100%)',
+        boxShadow: '0 8px 32px rgba(135,38,46,0.3), inset 0 -4px 12px rgba(0,0,0,0.15)',
       }}
     />
   )

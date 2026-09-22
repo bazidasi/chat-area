@@ -20,13 +20,13 @@ export const DEFAULT_INTERFACE_COLORS: InterfaceColors = {
     backgroundPrimary: '#e4e9f1',
     backgroundSecondary: '#e9edf5',
     backgroundTertiary: '#dde3ed',
-    brand: '#e91499',
+    brand: '#87262e',
   },
   dark: {
     backgroundPrimary: '#262b35',
     backgroundSecondary: '#2c313d',
     backgroundTertiary: '#303644',
-    brand: '#ff3fae',
+    brand: '#a04050',
   },
 }
 

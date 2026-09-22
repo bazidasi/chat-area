@@ -270,7 +270,11 @@ function GeneratedImageGalleryItem({
                 size="sm"
                 radius="lg"
                 onClick={handleReport}
-                className="absolute right-3 bottom-3 z-[1] !bg-white/70 !text-red-500 shadow-sm opacity-65 transition-opacity hover:opacity-100 pointer-events-auto"
+                className="absolute right-3 bottom-3 z-[1] !text-chatbox-tint-tertiary shadow-sm opacity-65 transition-opacity hover:opacity-100 pointer-events-auto"
+                style={{
+                  background: 'var(--chatbox-background-tertiary)',
+                  border: '1px solid var(--chatbox-border-primary)',
+                }}
               >
                 <IconMessageReport size={14} />
               </ActionIcon>

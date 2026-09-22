@@ -263,7 +263,11 @@ export function GenericMessageError(props: {
           <br />
           {isTruncated ? (
             <div
-              className="text-sm p-2 rounded-lg bg-red-50 dark:bg-red-900/20 cursor-pointer overflow-hidden"
+              className="text-sm p-2 rounded-lg cursor-pointer overflow-hidden"
+              style={{
+                background: 'var(--chatbox-background-tertiary)',
+                border: '1px solid var(--chatbox-border-error)',
+              }}
               onClick={() => setExpanded(!expanded)}
             >
               <Flex align="flex-start" gap="xs" className="min-w-0">
@@ -292,7 +296,12 @@ export function GenericMessageError(props: {
               />
             </div>
           ) : (
-            <div className="text-sm p-2 rounded-lg bg-red-50 dark:bg-red-900/20 overflow-hidden">
+            <div className="text-sm p-2 rounded-lg overflow-hidden"
+              style={{
+                background: 'var(--chatbox-background-tertiary)',
+                border: '1px solid var(--chatbox-border-error)',
+              }}
+            >
               <div className="whitespace-pre-wrap break-all">{displayedErrorMessage}</div>
               <ErrorActionButtons
                 showTranslateButton={showTranslateButton}
