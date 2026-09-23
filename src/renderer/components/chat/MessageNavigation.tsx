@@ -52,7 +52,7 @@ export const MessageNavigation: FC<MessageNavigationProps> = ({
       <Stack
         gap={6}
         p={'xxs'}
-        className="rounded border border-solid border-chatbox-border-primary bg-chatbox-background-primary [&>.mantine-Divider-root]:border-chatbox-border-primary"
+        className="rounded oc-ring bg-chatbox-background-primary [&>.mantine-Divider-root]:border-chatbox-border-primary"
       >
         <MessageNavigationButton icon={<IconChevronsUp />} onClick={onScrollToTop} />
         <Divider />
@@ -95,7 +95,7 @@ export const ScrollToBottomButton = ({ onClick, style }: { onClick?(): void; sty
         p={0}
         bg="var(--chatbox-background-primary)"
         c="chatbox-primary"
-        className="shadow-xl border-chatbox-border-primary"
+        className="oc-ring"
         onClick={onClick}
         style={style}
       >

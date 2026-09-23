@@ -155,7 +155,7 @@ const ContextualActionMenu: FC<ActionMenuProps> = ({
         data-testid={contentTestId}
         miw={156}
         p={4}
-        className="border border-solid border-chatbox-border-primary bg-chatbox-background-primary"
+        className="oc-ring bg-chatbox-background-primary"
         onClick={(e) => e.stopPropagation()}
       >
         {title && (

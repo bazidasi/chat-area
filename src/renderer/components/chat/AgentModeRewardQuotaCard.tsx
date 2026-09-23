@@ -26,7 +26,7 @@ export function AgentModeRewardQuotaCard({
       p={16}
       withBorder
       style={{
-        borderColor: 'rgba(34, 139, 230, 0.35)',
+        borderColor: 'var(--chatbox-border-brand)',
         background: 'var(--chatbox-background-primary)',
       }}
     >
@@ -38,7 +38,7 @@ export function AgentModeRewardQuotaCard({
           style={{
             flexShrink: 0,
             color: 'var(--chatbox-tint-brand)',
-            background: 'rgba(34, 139, 230, 0.1)',
+            background: 'var(--chatbox-background-brand-secondary)',
           }}
         >
           <IconGift size={20} stroke={1.8} />

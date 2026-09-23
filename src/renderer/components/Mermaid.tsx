@@ -100,7 +100,7 @@ function getErrorReason(error: unknown): string {
 
 export function Loading() {
   return (
-    <div className="inline-flex items-center gap-2 border border-solid border-gray-500 rounded-lg p-2 my-2">
+    <div className="inline-flex items-center gap-2 rounded-lg p-2 my-2 oc-ring">
       <ChartBarStacked size={30} strokeWidth={1} />
       <span>Loading...</span>
     </div>

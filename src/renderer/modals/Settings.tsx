@@ -210,11 +210,11 @@ export const SettingsModal: FC<SettingsModalProps> = (props) => {
       size="100%"
       // title={<Title order={3}>{t('Settings')}</Title>}
       withCloseButton={false}
-      classNames={{
-        content: clsx('h-full'),
-        header: 'hidden',
-        body: clsx('!p-0 flex-1  flex flex-col h-full'),
-      }}
+        classNames={{
+          content: clsx('h-full neo-settings-page'),
+          header: 'hidden',
+          body: clsx('!p-0 flex-1  flex flex-col h-full neo-settings-page'),
+        }}
       transitionProps={{ transition: 'fade-up' }}
     >
       <Flex flex="0 0 auto" className="title-bar border-0 border-b border-chatbox-border-primary border-solid">
@@ -245,7 +245,7 @@ export const SettingsModal: FC<SettingsModalProps> = (props) => {
         </Flex>
         <div className={clsx('flex-[1_1_0]')} />
       </Flex>
-      <Box flex={1} w="100%" maw={1200} mx="auto" className="overflow-auto">
+      <Box flex={1} w="100%" maw={1200} mx="auto" className="overflow-auto neo-settings-content">
         <RouterProvider router={modalRouter} />
       </Box>
       <Toaster richColors position="bottom-center" style={{ zIndex: 2147483647 }} />

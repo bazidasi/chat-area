@@ -12,15 +12,16 @@ export type PageProps = {
   title: string | React.ReactNode
   left?: React.ReactNode
   right?: React.ReactNode
+  className?: string
 }
 
-export const Page: FC<PageProps> = ({ children, title, left, right }) => {
+export const Page: FC<PageProps> = ({ children, title, left, right, className }) => {
   const showSidebar = useUIStore((s) => s.showSidebar)
   const setShowSidebar = useUIStore((s) => s.setShowSidebar)
   const isSmallScreen = useIsSmallScreen()
   const { needRoomForMacWindowControls } = useNeedRoomForWinControls()
   return (
-    <div className="flex flex-col h-full">
+    <div className={clsx('flex flex-col h-full', className)}>
       <Flex
         h={48}
         align="center"

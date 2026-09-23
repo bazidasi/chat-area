@@ -14,7 +14,7 @@ export const EMPTY_MODEL_IDS: string[] = []
 export const CARD_SURFACE_STYLE: CSSProperties = {
   background: 'var(--chatbox-background-primary)',
   borderColor: 'color-mix(in srgb, var(--chatbox-border-secondary), transparent 18%)',
-  boxShadow: '0 14px 36px rgb(0 0 0 / 0.14)',
+  boxShadow: 'var(--neo-shadow-outset-lg)',
 }
 
 export const DRAWER_SURFACE_STYLE: CSSProperties = {

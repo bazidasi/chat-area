@@ -409,7 +409,7 @@ const MessageMinimapRail = ({ anchors, className, onJump }: MessageMinimapRailPr
         <div
           className={cn(
             'pointer-events-none absolute left-12 z-20 w-[360px]',
-            'rounded-lg border border-solid border-chatbox-border-primary bg-chatbox-background-primary px-3 py-2',
+            'rounded-lg oc-ring bg-chatbox-background-primary px-3 py-2',
             'shadow-lg'
           )}
           style={{ top: hoveredTop, transform: 'translateY(-50%)', maxWidth: 'min(360px, calc(100vw - 96px))' }}

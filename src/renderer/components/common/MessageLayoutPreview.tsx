@@ -32,7 +32,7 @@ export function MessageLayoutSelector({ value, onValueChange, size = 'md', ...pr
             <Box
               p={size === 'sm' ? 10 : 16}
               className={clsx(
-                'rounded-lg border border-solid border-chatbox-border-primary',
+                'rounded-lg oc-ring',
                 selected ? 'border-chatbox-tint-brand outline-2 outline outline-chatbox-tint-brand' : ''
               )}
             >

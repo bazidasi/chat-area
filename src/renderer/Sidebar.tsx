@@ -174,14 +174,14 @@ export default function Sidebar() {
                   <div className="flex aspect-square size-8 items-center justify-center rounded-lg"
                     style={{
                       background: 'var(--neo-surface-raised)',
-                      boxShadow: 'var(--neo-shadow-outset-sm), inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 65%, transparent)',
+                      boxShadow: 'var(--neo-shadow-outset-sm)',
                     }}
                   >
                     <img
                       src={icon}
                       alt="Fibonacci Chat Area"
                       className="size-4"
-                      style={{ filter: 'drop-shadow(0 1px 3px rgba(214, 25, 155, 0.35))' }}
+                      style={{ filter: 'drop-shadow(0 1px 2px hsl(0 0% 0% / 0.35))' }}
                     />
                   </div>
                   <div className="grid flex-1 text-left text-sm leading-tight">

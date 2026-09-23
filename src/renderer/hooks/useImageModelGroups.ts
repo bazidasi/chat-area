@@ -50,6 +50,7 @@ export function useImageModelGroups(): ImageModelGroup[] {
   const chatboxProvider = providers.find((p) => p.id === ModelProviderEnum.ChatboxAI)
   const openAIProvider = providers.find((p) => p.id === ModelProviderEnum.OpenAI)
   const geminiProvider = providers.find((p) => p.id === ModelProviderEnum.Gemini)
+  const fibonacciProvider = providers.find((p) => p.id === ModelProviderEnum.Fibonacci)
   const customGeminiProviders = providers.filter((p) => p.isCustom && p.type === ModelProviderType.Gemini)
 
   const openAIImageModels = useProviderImageModels(ModelProviderEnum.OpenAI, !!openAIProvider)
@@ -101,6 +102,19 @@ export function useImageModelGroups(): ImageModelGroup[] {
       }
     }
 
+    if (fibonacciProvider) {
+      const manualModels = (providerSettingsMap?.[fibonacciProvider.id]?.models || [])
+        .filter((model) => model.type === 'image')
+        .map(manualImageModelToOption)
+      if (manualModels.length > 0) {
+        groups.push({
+          label: fibonacciProvider.name,
+          providerId: fibonacciProvider.id,
+          models: manualModels,
+        })
+      }
+    }
+
     if (openAIProvider && isOpenAIImageGenerationAuthSupported(providerSettingsMap)) {
       const manualModels = (providerSettingsMap?.[openAIProvider.id]?.models || [])
         .filter((model) => model.type === 'image')
@@ -120,6 +134,7 @@ export function useImageModelGroups(): ImageModelGroup[] {
     chatboxProvider,
     openAIProvider,
     geminiProvider,
+    fibonacciProvider,
     customGeminiProviders,
     providerSettingsMap,
     chatboxAIImageModels,

@@ -336,7 +336,7 @@ export default function ForkGroup(props: ForkGroupProps) {
             gap={0}
             mx="md"
             p="xs"
-            className="rounded-lg border border-solid border-chatbox-border-primary bg-chatbox-background-primary shadow-sm"
+            className="rounded-lg oc-ring bg-chatbox-background-primary shadow-sm"
           >
             <Flex justify="space-between" align="center" gap="xs" wrap="wrap" px="xs" pb="xxs">
               <Text size="xs" c="chatbox-tertiary">

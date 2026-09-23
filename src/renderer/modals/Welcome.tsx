@@ -34,7 +34,7 @@ const Welcome = NiceModal.create(() => {
         style={{
           borderRadius: '20px',
           background: 'var(--neo-surface-raised)',
-          boxShadow: 'var(--neo-shadow-outset-sm), inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 65%, transparent)',
+          boxShadow: 'var(--neo-shadow-outset-sm)',
         }}
       >
         <GradientOrb />
@@ -111,7 +111,7 @@ function GradientOrb() {
         borderRadius: '50%',
         background:
           'radial-gradient(circle at 34% 28%, #f5d5d5 0%, #8b0000 38%, #6b0000 68%, #3d0000 100%)',
-        boxShadow: '0 8px 32px rgba(139,0,0,0.3), inset 0 -4px 12px rgba(0,0,0,0.15)',
+        boxShadow: 'var(--neo-shadow-outset-lg)',
       }}
     />
   )

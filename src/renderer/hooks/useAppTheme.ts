@@ -119,9 +119,10 @@ export function getThemeDesign(
         ? {}
         : {
             // MUI 内部无法处理 css 变量，需要使用具体颜色值
+            // (OpenCode dark palette: background-base / raised surface)
             background: {
-              default: '#242424',
-              paper: '#242424',
+              default: '#101010',
+              paper: '#1c1c1c',
             },
           }),
     },
@@ -129,7 +130,7 @@ export function getThemeDesign(
       MuiSnackbarContent: {
         styleOverrides: {
           root: {
-            backgroundColor: realTheme === 'dark' ? '#333333' : undefined,
+            backgroundColor: realTheme === 'dark' ? '#282828' : undefined,
             color: realTheme === 'dark' ? '#ffffff' : undefined,
           },
         },

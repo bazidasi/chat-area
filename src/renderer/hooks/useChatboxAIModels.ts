@@ -57,7 +57,7 @@ const useChatboxAIModels = () => {
         }),
       ])
       const modelListModels = modelListToProviderModels(modelList)
-      const models = modelListModels.length > 0 ? modelListModels : manifest.models.map(toProviderModelInfo)
+      const models = modelListModels.length > 0 ? modelListModels : (manifest.models ?? []).map(toProviderModelInfo)
 
       // 只更新 ChatboxAI provider 的 models 配置，不影响其他 provider
       if (models.length > 0) {

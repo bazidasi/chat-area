@@ -15,17 +15,22 @@ export type InterfaceColorPreset = {
   colors: InterfaceColors
 }
 
+/**
+ * Default interface palette — mirrors the OpenCode palette in
+ * src/renderer/static/globals.css (background-base, the raised
+ * surface, background-weak / border-weaker-base). Brand stays dark red.
+ */
 export const DEFAULT_INTERFACE_COLORS: InterfaceColors = {
   light: {
-    backgroundPrimary: '#e4e9f1',
-    backgroundSecondary: '#e9edf5',
-    backgroundTertiary: '#dde3ed',
+    backgroundPrimary: '#f8f8f8',
+    backgroundSecondary: '#ffffff',
+    backgroundTertiary: '#f3f3f3',
     brand: '#8b0000',
   },
   dark: {
-    backgroundPrimary: '#1a1d24',
-    backgroundSecondary: '#22262e',
-    backgroundTertiary: '#262b34',
+    backgroundPrimary: '#101010',
+    backgroundSecondary: '#1c1c1c',
+    backgroundTertiary: '#202020',
     brand: '#b71c1c',
   },
 }
@@ -124,6 +129,36 @@ export const HISTORICAL_DEFAULT_INTERFACE_COLOR_PALETTES: readonly InterfaceColo
       backgroundSecondary: '#2c313d',
       backgroundTertiary: '#303644',
       brand: '#a04050',
+    },
+  },
+  {
+    // Pre pure-black era: dark gray/blue main page
+    light: {
+      backgroundPrimary: '#e4e9f1',
+      backgroundSecondary: '#e9edf5',
+      backgroundTertiary: '#dde3ed',
+      brand: '#8b0000',
+    },
+    dark: {
+      backgroundPrimary: '#1a1d24',
+      backgroundSecondary: '#22262e',
+      backgroundTertiary: '#262b34',
+      brand: '#b71c1c',
+    },
+  },
+  {
+    // Previous default: pure-black main page (pre OpenCode palette)
+    light: {
+      backgroundPrimary: '#e4e9f1',
+      backgroundSecondary: '#e9edf5',
+      backgroundTertiary: '#dde3ed',
+      brand: '#8b0000',
+    },
+    dark: {
+      backgroundPrimary: '#000000',
+      backgroundSecondary: '#1a1919',
+      backgroundTertiary: '#141414',
+      brand: '#b71c1c',
     },
   },
 ]

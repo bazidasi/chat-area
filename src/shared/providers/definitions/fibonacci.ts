@@ -1,6 +1,6 @@
 import { ModelProviderEnum, ModelProviderType } from '../../types'
 import { defineProvider } from '../registry'
-import FibonacciAI, { FIBONACCI_MODELS } from './models/fibonacci'
+import FibonacciAI, { FIBONACCI_IMAGE_MODELS, FIBONACCI_MODELS } from './models/fibonacci'
 
 /**
  * Fibonacci AI provider — https://my.fibonacci.monster
@@ -31,7 +31,7 @@ export const fibonacciProvider = defineProvider({
   defaultSettings: {
     apiHost: 'https://my.fibonacci.monster/api/v1',
     apiPath: '/chat/completions',
-    models: FIBONACCI_MODELS.map((m) => ({ ...m, type: 'chat' as const })),
+    models: [...FIBONACCI_MODELS.map((m) => ({ ...m, type: 'chat' as const })), ...FIBONACCI_IMAGE_MODELS],
   },
   createModel: (config) => {
     return new FibonacciAI(

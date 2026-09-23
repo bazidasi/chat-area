@@ -554,7 +554,7 @@ const ModelManifestResponseSchema = z.object({
   success: z.boolean().optional(),
   data: z.object({
     groupName: z.string(),
-    models: z.array(RemoteModelInfoSchema),
+    models: z.array(RemoteModelInfoSchema).nullable().default([]),
     imageModels: z.array(RemoteModelInfoSchema).optional().default([]),
   }),
 })

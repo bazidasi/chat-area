@@ -794,7 +794,7 @@ const CopilotItem = ({
             alt={name}
             size={isSmallScreen ? 20 : 24}
             radius="lg"
-            className="flex-shrink-0 border border-solid border-chatbox-border-primary"
+            className="flex-shrink-0 oc-ring"
           >
             {avatar?.type === 'storage-key' ? (
               <ImageInStorage storageKey={avatar.storageKey} className="object-cover object-center w-full h-full" />

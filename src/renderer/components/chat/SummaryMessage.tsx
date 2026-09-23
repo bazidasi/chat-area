@@ -110,7 +110,7 @@ const SummaryMessage: FC<SummaryMessageProps> = ({
       </Flex>
 
       <Collapse in={expanded}>
-        <div className="msg-block mt-3 mx-4 p-3 rounded-lg bg-chatbox-background-secondary border border-solid border-chatbox-border-primary">
+        <div className="msg-block mt-3 mx-4 p-3 rounded-lg bg-chatbox-background-secondary oc-ring">
           {enableMarkdownRendering ? (
             <Markdown
               uniqueId={`summary-${msg.id}`}

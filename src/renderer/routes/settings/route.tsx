@@ -121,6 +121,7 @@ export function RouteComponent() {
 
   return (
     <Page
+      className="neo-settings-page"
       title={t('Settings')}
       left={
         isSmallScreen && canGoBack ? (
@@ -157,7 +158,7 @@ export function SettingsRoot() {
           gap={isSmallScreen ? 0 : 'xs'}
           maw={isSmallScreen ? undefined : 256}
           className={clsx(
-            'border-solid border-0 border-r overflow-auto border-chatbox-border-primary',
+            'border-solid border-0 border-r overflow-auto border-chatbox-border-primary neo-settings-nav',
             isSmallScreen ? 'w-full border-r-0' : 'flex-[1_0_auto]'
           )}
         >
@@ -246,7 +247,7 @@ export function SettingsRoot() {
         </Stack>
       )}
       {!(isSmallScreen && routerState.location.pathname === '/settings') && (
-        <Box flex="1 1 80%" className="overflow-auto">
+        <Box flex="1 1 80%" className="overflow-auto neo-settings-content">
           <Outlet />
         </Box>
       )}

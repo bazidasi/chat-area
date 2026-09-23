@@ -1,8 +1,7 @@
 /* ============================================================
-   Fibonacci Chat Area — Neumorphism (Soft UI) component layer
-   One soft material, dual shadows (dark bottom-right / light
-   top-left). Extruded surfaces for interactive elements,
-   inset surfaces for wells (inputs, tracks, screens).
+   Fibonacci Chat Area — OpenCode elevation component layer
+   Soft multi-layer black shadows (xs / md / lg) from OpenCode's
+   packages/ui theme.css. Wells use a soft inset + hairline.
    ============================================================ */
 
 /* ---------- app shell ---------- */
@@ -11,22 +10,29 @@ html {
   background-color: var(--neo-surface);
 }
 
-/* window bottom edge: same 1px line as the sidebar, so the frame reads
-   closed on all sides */
-.App::after {
-  content: '';
-  position: fixed;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  height: 1px;
-  background: var(--sidebar-border);
-  z-index: 9999;
-  pointer-events: none;
+/* OpenCode neumorphic elevation — replaces hard borders on dark surfaces
+   Uses multi-layer soft shadow (ring + depth) for 3D raised feel */
+.oc-ring {
+  box-shadow: var(--neo-shadow-outset-sm);
+  border: none !important;
 }
 
-/* main frame: replace hard border + single drop shadow with a
-   soft neumorphic extrusion */
+.oc-ring-inset {
+  box-shadow: var(--neo-shadow-inset-sm);
+  border: none !important;
+}
+
+/* One continuous 1px frame around the main column (left = sidebar
+   divider → top → right → bottom, all four corners meeting). Replaces
+   the old bottom-only .App::after line, which sat at window bottom:0
+   below the inset content and read as a second, disconnected stroke. */
+.neo-main-frame {
+  border: none;
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+/* main frame: keep the outer chrome transparent so the one-piece
+   border + OpenCode elevation on the inner content read cleanly */
 .App > .grid > .relative,
 .App .title-bar ~ * {
   border-color: transparent !important;
@@ -87,14 +93,10 @@ html {
   box-shadow: var(--neo-shadow-inset-sm);
 }
 
-/* filled/brand: extrusion with a soft brand glow, red-tinted highlight.
-   The highlight mixes toward a lighter red (#e57373 light / #ef9a9a
-   dark). */
+/* filled/brand: OpenCode elevation, no colored glow on the drop shadow */
 .mantine-Button-root[data-variant='filled'] {
   border: none;
-  box-shadow:
-    var(--neo-shadow-outset-sm),
-    0 6px 18px color-mix(in srgb, var(--chatbox-brand) 32%, transparent);
+  box-shadow: var(--neo-shadow-outset-sm);
   background-image: linear-gradient(
     135deg,
     color-mix(in srgb, var(--chatbox-brand), #e57373 24%),
@@ -116,9 +118,7 @@ html[data-theme='dark'] .mantine-Button-root[data-variant='filled'] {
     color-mix(in srgb, var(--chatbox-brand), #e57373 10%),
     color-mix(in srgb, var(--chatbox-brand), black 6%)
   );
-  box-shadow:
-    var(--neo-shadow-outset-lg),
-    0 8px 22px color-mix(in srgb, var(--chatbox-brand) 40%, transparent);
+  box-shadow: var(--neo-shadow-outset-lg);
 }
 
 html[data-theme='dark'] .mantine-Button-root[data-variant='filled']:hover {
@@ -131,9 +131,7 @@ html[data-theme='dark'] .mantine-Button-root[data-variant='filled']:hover {
 
 .mantine-Button-root[data-variant='filled']:active {
   transform: translateY(1px);
-  box-shadow:
-    var(--neo-shadow-inset-sm),
-    0 3px 10px color-mix(in srgb, var(--chatbox-brand) 24%, transparent);
+  box-shadow: var(--neo-shadow-inset-sm);
 }
 
 /* ---------- ActionIcon ---------- */
@@ -193,14 +191,14 @@ textarea.mantine-Input-input {
   box-shadow: none;
 }
 
-/* ---------- Modal / Drawer ----------
-   Floating overlays read as elevation, not extrusion — plain soft
-   drop shadow instead of the dual neumorphic pair. */
+/* ---------- Modal / Drawer — OpenCode dialog elevation ----------
+   Upstream recipe: surface-raised-stronger background + --shadow-lg-border-base
+   (1px weak ring + wide soft elevation), no CSS border. */
 .mantine-Modal-content,
 .mantine-Drawer-content {
-  background: var(--neo-surface);
-  border: 1px solid var(--chatbox-border-primary);
-  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3);
+  background: var(--neo-surface-raised);
+  border: none;
+  box-shadow: var(--neo-shadow-outset-lg);
 }
 
 .mantine-Modal-header,
@@ -216,15 +214,15 @@ textarea.mantine-Input-input {
 }
 
 /* ---------- Dropdowns: Menu, Popover, Select, Combobox ----------
-   Floating overlays get a plain elevation shadow (no neumorphic
-   extrusion) so they detach cleanly from the surface beneath. */
+   OpenCode popover recipe: raised-stronger surface, a half-strength
+   hairline and --shadow-md so the overlay floats above the page. */
 .mantine-Menu-dropdown,
 .mantine-Popover-dropdown,
 .mantine-Combobox-dropdown,
 .mantine-Select-dropdown {
   background: var(--neo-surface-raised);
-  border: 1px solid var(--chatbox-border-primary);
-  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.24), 0 2px 8px rgba(0, 0, 0, 0.16);
+  border: 1px solid color-mix(in srgb, var(--border-base) 50%, transparent);
+  box-shadow: var(--neo-shadow-float);
 }
 
 .mantine-Menu-item,
@@ -237,11 +235,14 @@ textarea.mantine-Input-input {
   background: color-mix(in srgb, var(--chatbox-brand) 10%, var(--neo-surface-raised));
 }
 
+/* ---------- Tooltip: OpenCode float surface ----------
+   Upstream keeps tooltips on the always-dark --surface-float-base with
+   inverted text, a --border-weak-base hairline and --shadow-md. */
 .mantine-Tooltip-tooltip {
-  background: var(--neo-surface-raised);
-  color: var(--chatbox-tint-primary);
-  border: 1px solid var(--chatbox-border-primary);
-  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.22);
+  background: var(--surface-float-base);
+  color: var(--text-invert-strong);
+  border: 1px solid var(--border-weak-base);
+  box-shadow: var(--neo-shadow-float);
 }
 
 /* ---------- SegmentedControl ---------- */
@@ -275,7 +276,7 @@ textarea.mantine-Input-input {
 
 .mantine-Switch-input:checked::before {
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  box-shadow: var(--neo-shadow-outset-xs);
 }
 
 /* ---------- Checkbox / Radio ---------- */
@@ -415,6 +416,22 @@ html[data-theme='dark'] .mantine-Slider-bar {
   background: var(--neo-surface-raised);
 }
 
+/* settings: entire page (title bar, nav, content) on sidebar gray so
+   the route reads as one continuous panel in both themes */
+.neo-settings-page {
+  background: var(--sidebar);
+}
+.neo-settings-page .title-bar {
+  background: var(--sidebar);
+}
+.neo-settings-nav {
+  background: var(--sidebar);
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+.neo-settings-content {
+  background: var(--sidebar);
+}
+
 .mantine-Accordion-control:hover {
   background: color-mix(in srgb, var(--chatbox-tint-tertiary) 8%, transparent);
 }
@@ -455,9 +472,7 @@ html[data-theme='dark'] .mantine-Slider-bar {
 .mantine-Badge-root[data-variant='filled'] {
   background-color: var(--chatbox-brand) !important;
   color: #fff !important;
-  box-shadow:
-    var(--neo-shadow-outset-xs),
-    0 4px 10px color-mix(in srgb, var(--chatbox-brand) 28%, transparent);
+  box-shadow: var(--neo-shadow-outset-xs);
 }
 
 .mantine-Badge-root[data-variant='outline'] {
@@ -483,7 +498,7 @@ pre,
   background: color-mix(in srgb, var(--neo-shadow-dark) 18%, var(--neo-surface));
   border: none;
   border-radius: 4px;
-  box-shadow: inset 0 1px 2px color-mix(in srgb, var(--neo-shadow-dark) 35%, transparent);
+  box-shadow: var(--neo-shadow-inset-sm);
 }
 
 /* ---------- kbd chips ---------- */
@@ -504,7 +519,7 @@ kbd,
   box-shadow: none;
 }
 
-/* keep the neumorphic softness on the actual text pill */
+/* soft pill on the actual text */
 .bubble-user-msg .msg-content {
   display: inline-block;
 }

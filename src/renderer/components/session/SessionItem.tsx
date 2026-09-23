@@ -19,7 +19,6 @@ import { useSessionActivity } from '@/stores/sessionActivityStore'
 import * as toastActions from '@/stores/toastActions'
 import { useUIStore } from '@/stores/uiStore'
 import ActionMenu, { type ActionMenuItemProps } from '../ActionMenu'
-import { AssistantAvatar } from '../common/Avatar'
 import { ScalableIcon } from '../common/ScalableIcon'
 
 const ARCHIVE_TIP_STORAGE_KEY = 'chatbox:lastArchiveSessionTipAt'
@@ -283,15 +282,6 @@ function SessionItem(props: Props) {
       onPointerLeave={handlePointerLeave}
       onPointerCancel={clearLongPressTimer}
     >
-      <AssistantAvatar
-        avatarKey={session.assistantAvatarKey}
-        picUrl={session.picUrl}
-        sessionType={session.type}
-        size="sm"
-        type="chat"
-        c={selected ? 'chatbox-brand' : 'chatbox-primary'}
-      />
-
       {renaming ? (
         <Input
           data-testid={TestId.sidebar.sessionTitle}

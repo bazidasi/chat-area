@@ -890,7 +890,7 @@ const _Message: FC<Props> = (props) => {
                   ) : item.type === 'agent-mode-suggestion' ? (
                     <Flex key={`agent-mode-suggestion-${msg.id}-${index}`} className="mb-2 w-full">
                       <Flex
-                        className="w-full max-w-[760px] bg-chatbox-background-secondary border border-solid border-chatbox-border-primary rounded-lg shadow-sm overflow-hidden"
+                        className="w-full max-w-[760px] bg-chatbox-background-secondary oc-ring rounded-lg overflow-hidden"
                         align="stretch"
                       >
                         <div className="w-1 bg-chatbox-tint-brand" />
@@ -1086,7 +1086,7 @@ const _Message: FC<Props> = (props) => {
         gap={0}
         className={
           isSmallScreen
-            ? 'p-xxs bg-chatbox-background-primary rounded-lg border-[0.5px] border-solid border-chatbox-border-primary shadow-sm'
+            ? 'p-xxs bg-chatbox-background-primary rounded-lg oc-ring'
             : ''
         }
       >
@@ -1111,7 +1111,7 @@ const _Message: FC<Props> = (props) => {
         gap={0}
         className={
           isSmallScreen
-            ? 'p-xxs bg-chatbox-background-primary rounded-lg border-[0.5px] border-solid border-chatbox-border-primary shadow-sm'
+            ? 'p-xxs bg-chatbox-background-primary rounded-lg oc-ring'
             : ''
         }
       >

@@ -154,5 +154,9 @@ export async function getAvailableImageModels(
     )
   }
 
+  if (isBuiltinProviderConfigured(ModelProviderEnum.Fibonacci, settings)) {
+    catalog.push(...catalogEntries(ModelProviderEnum.Fibonacci, manualImageModels(settings, ModelProviderEnum.Fibonacci)))
+  }
+
   return catalog
 }

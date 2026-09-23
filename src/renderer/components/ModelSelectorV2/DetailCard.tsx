@@ -133,7 +133,7 @@ function TieredPricingTag({
           color: 'var(--chatbox-tint-primary)',
           border: '1px solid var(--chatbox-border-primary)',
           borderRadius: 8,
-          boxShadow: '0 12px 30px rgb(0 0 0 / 0.12)',
+          boxShadow: 'var(--neo-shadow-outset-lg)',
           padding: 12,
         },
         arrow: {

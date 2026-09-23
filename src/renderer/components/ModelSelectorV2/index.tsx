@@ -402,7 +402,7 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
                   background: 'var(--chatbox-background-secondary)',
                 },
                 indicator: {
-                  boxShadow: '0 1px 3px rgb(0 0 0 / 0.08)',
+                  boxShadow: 'var(--neo-shadow-outset-xs)',
                 },
                 label: {
                   minHeight: 30,

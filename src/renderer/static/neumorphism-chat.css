@@ -146,11 +146,11 @@ a:hover {
 
 /* ---------- splash screen: brand spiral on soft surface ---------- */
 .splash-screen {
-  background-color: var(--chatbox-background-primary, #f2f5fa);
+  background-color: var(--chatbox-background-primary, #f8f8f8);
 }
 
 html[data-theme='dark'] .splash-screen {
-  background-color: var(--chatbox-background-primary, #1a1d24);
+  background-color: var(--chatbox-background-primary, #101010);
 }
 
 .splash-screen-logo {

@@ -26,87 +26,212 @@
 }
 
 :root {
-  /* colors — dark red accent on warm gray, neumorphic surfaces */
-  --chatbox-tint-primary: #3d4657;
-  --chatbox-tint-secondary: #5f6b80;
-  --chatbox-tint-tertiary: #8d97ab;
+  /* ==========================================================
+     OpenCode palette — raw tokens (light).
+     Mirrors packages/ui/src/styles/theme.css in sst/opencode: every
+     value below is the light column of an upstream light-dark() pair,
+     so this block can be diffed against upstream. Fibonacci's own
+     semantic tokens (--chatbox-*) and the neumorphic layer (--neo-*)
+     are mapped onto them further down. The brand stays dark red.
+     ========================================================== */
+  --background-base: #f8f8f8;
+  --background-weak: #f3f3f3;
+  --background-strong: #fcfcfc;
+  --background-stronger: #fcfcfc;
+
+  --surface-base-hover: rgba(0, 0, 0, 0.059);
+  --surface-base-active: rgba(0, 0, 0, 0.051);
+  --surface-raised-base: rgba(0, 0, 0, 0.031);
+  --surface-raised-base-hover: rgba(0, 0, 0, 0.051);
+  --surface-raised-base-active: rgba(0, 0, 0, 0.09);
+  --surface-raised-strong: #fcfcfc;
+  --surface-raised-stronger-non-alpha: #ffffff;
+  --surface-weak: rgba(0, 0, 0, 0.051);
+  --surface-weaker: rgba(0, 0, 0, 0.071);
+  --surface-strong: #ffffff;
+  --surface-float-base: #161616;
+  --surface-float-base-hover: #1c1c1c;
+  --surface-inset-base: rgba(0, 0, 0, 0.5);
+
+  --input-base: #fcfcfc;
+  --input-hover: #f8f8f8;
+  --input-disabled: #ededed;
+
+  --button-primary-base: #171717;
+  --button-secondary-base: #fcfcfc;
+  --button-secondary-hover: #f8f8f8;
+
+  --text-strong: #171717;
+  --text-stronger: #171717;
+  --text-base: #6f6f6f;
+  --text-weak: #8f8f8f;
+  --text-weaker: #c7c7c7;
+  --text-invert-strong: #fcfcfc;
+  --text-on-critical-base: #ed4831;
+  --text-on-critical-strong: #601a0f;
+  --text-on-success-base: #2dba26;
+
+  --border-base: rgba(0, 0, 0, 0.162);
+  --border-hover: rgba(0, 0, 0, 0.236);
+  --border-weak-base: #e5e5e5;
+  --border-weak-hover: rgba(0, 0, 0, 0.118);
+  --border-weak-selected: rgba(139, 0, 0, 0.29);
+  --border-strong-base: rgba(0, 0, 0, 0.151);
+  --border-weaker-base: #f0f0f0;
+  --border-critical-base: #fdc3b7;
+  --border-critical-hover: #ffa796;
+  --border-critical-selected: #fc533a;
+  --border-critical-weak: rgba(251, 34, 0, 0.18);
+
+  --icon-base: #8f8f8f;
+  --icon-hover: #6f6f6f;
+  --icon-strong-base: #171717;
+  --icon-weak-base: #dbdbdb;
+  --icon-success-active: #078901;
+  --icon-warning-active: #95671b;
+  --icon-critical-base: #ed4831;
+  --icon-critical-hover: #ca2d17;
+  --icon-info-base: #e6a8ea;
+
+  --surface-success-strong: #12c905;
+  --surface-success-base: #dbfed7;
+  --surface-success-weak: #f0feee;
+  --surface-warning-strong: #fbdd46;
+  --surface-warning-base: #fcf3cb;
+  --surface-warning-weak: #fdfaec;
+  --surface-critical-strong: #fc533a;
+  --surface-critical-base: #fff2f0;
+  --surface-critical-weak: #fff8f6;
+  --surface-info-strong: #a753ae;
+  --surface-info-base: #fdecfe;
+  --surface-info-weak: #fef7ff;
+
+  /* ---- mapping: Fibonacci tints -> OpenCode palette ---- */
+  --chatbox-tint-primary: var(--text-strong);
+  --chatbox-tint-secondary: var(--text-base);
+  --chatbox-tint-tertiary: var(--text-weak);
+  --chatbox-tint-gray: var(--text-weak);
 
   --chatbox-tint-white: #ffffff;
   --chatbox-tint-black: #000000;
-  --chatbox-tint-gray: #8d97ab;
 
-  --chatbox-tint-disabled: #a9b2c3;
+  --chatbox-tint-disabled: var(--text-weaker);
+  --chatbox-tint-placeholder: var(--text-weak);
+
   --chatbox-brand: #8b0000;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
-  --chatbox-tint-placeholder: #9aa4b8;
-  --chatbox-tint-error: #b3261e;
-  --chatbox-tint-error-disabled: #dda6a1;
-  --chatbox-tint-warning: #8a6100;
-  --chatbox-tint-success: #1f7a4d;
+  --chatbox-tint-error: var(--text-on-critical-base);
+  --chatbox-tint-error-disabled: color-mix(in srgb, var(--text-on-critical-base) 45%, transparent);
+  --chatbox-tint-warning: var(--icon-warning-active);
+  --chatbox-tint-success: var(--icon-success-active);
 
-  /* home halftone background — soft muted brick, tuned low-contrast for day mode */
+  /* home halftone background — the red accent, muted for day mode */
   --halftone-color: #a87a7a;
   --halftone-opacity: 0.4;
 
-  --chatbox-border-primary: #d5dbe7;
-  --chatbox-border-secondary: #cdd5e2;
-  --chatbox-border-warning: #8a6100;
-  --chatbox-border-error: #b3261e;
-  --chatbox-border-success: #1f7a4d;
+  --chatbox-border-primary: var(--border-base);
+  --chatbox-border-secondary: var(--border-weak-base);
+  --chatbox-border-warning: var(--icon-warning-active);
+  --chatbox-border-error: var(--text-on-critical-base);
+  --chatbox-border-success: var(--icon-success-active);
   --chatbox-border-brand: var(--chatbox-brand);
 
-  /* neumorphism reference — soft extruded surfaces
-     radius:29px, bg:#f0f0f0, dual shadows for depth.
-     Tuned: slightly softer offset, slightly more blur for a polished feel. */
-  --neo-surface: #f0f0f0;
-  --neo-surface-raised: #f5f5f7;
-  --neo-shadow-dark: #c4c4c4;
-  --neo-shadow-light: #ffffff;
+  /* ==========================================================
+     OpenCode elevation — the "shadow box".
+     Upstream resolves each pair with light-dark(); Fibonacci paints
+     its two themes from its own selectors, so the soft black shadows
+     are restated in the dark block below. The *-border variants are
+     declared once: they reference theme-aware border tokens, which
+     resolve per theme. Focus/select rings use the brand red where
+     upstream uses its blue.
+     ========================================================== */
+  --shadow-xs: 0 1px 2px -0.5px rgba(0, 0, 0, 0.04), 0 0.5px 1.5px 0 rgba(0, 0, 0, 0.025),
+    0 1px 3px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 6px 12px -2px rgba(0, 0, 0, 0.075), 0 4px 8px -2px rgba(0, 0, 0, 0.075),
+    0 1px 2px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 16px 48px -6px rgba(0, 0, 0, 0.05), 0 6px 12px -2px rgba(0, 0, 0, 0.025),
+    0 1px 2.5px rgba(0, 0, 0, 0.025);
+  --shadow-xxs-border: 0 0 0 0.5px var(--border-weak-base);
+  --shadow-xs-border: 0 0 0 1px var(--border-base), 0 1px 2px -1px rgba(19, 16, 16, 0.04),
+    0 1px 2px 0 rgba(19, 16, 16, 0.06), 0 1px 3px 0 rgba(19, 16, 16, 0.08);
+  --shadow-xs-border-base: 0 0 0 1px var(--border-weak-base), 0 1px 2px -1px rgba(19, 16, 16, 0.04),
+    0 1px 2px 0 rgba(19, 16, 16, 0.06), 0 1px 3px 0 rgba(19, 16, 16, 0.08);
+  --shadow-xs-border-hover: 0 0 0 1px var(--border-weak-hover), 0 1px 2px -1px rgba(19, 16, 16, 0.04),
+    0 1px 2px 0 rgba(19, 16, 16, 0.06), 0 1px 3px 0 rgba(19, 16, 16, 0.08);
+  --shadow-xs-border-select: 0 0 0 3px var(--border-weak-selected), 0 0 0 1px var(--chatbox-brand),
+    0 1px 2px -1px rgba(19, 16, 16, 0.25), 0 1px 2px 0 rgba(19, 16, 16, 0.08),
+    0 1px 3px 0 rgba(19, 16, 16, 0.12);
+  --shadow-xs-border-focus: 0 0 0 1px var(--border-base), 0 1px 2px -1px rgba(19, 16, 16, 0.25),
+    0 1px 2px 0 rgba(19, 16, 16, 0.08), 0 1px 3px 0 rgba(19, 16, 16, 0.12),
+    0 0 0 2px var(--background-weak), 0 0 0 3px var(--chatbox-brand);
+  --shadow-xs-border-critical-base: 0 0 0 1px var(--border-critical-selected);
+  --shadow-xs-border-critical-focus: 0 0 0 3px var(--border-critical-weak),
+    0 0 0 1px var(--border-critical-selected), 0 1px 2px -1px rgba(19, 16, 16, 0.25),
+    0 1px 2px 0 rgba(19, 16, 16, 0.08), 0 1px 3px 0 rgba(19, 16, 16, 0.12);
+  --shadow-lg-border-base: 0 0 0 1px var(--border-weak-base), 0 36px 80px 0 rgba(0, 0, 0, 0.03),
+    0 13.141px 29.201px 0 rgba(0, 0, 0, 0.04), 0 6.38px 14.177px 0 rgba(0, 0, 0, 0.05),
+    0 3.127px 6.95px 0 rgba(0, 0, 0, 0.06), 0 1.237px 2.748px 0 rgba(0, 0, 0, 0.09);
+
+  /* ---- neumorphic layer: surfaces + OpenCode shadow box ----
+     The --neo-* names are the historical tokens the component layer
+     (neumorphism.css / neumorphism-chat.css) is written against; they
+     now point at OpenCode surfaces and elevation instead of dual
+     light/dark soft shadows. */
+  --neo-surface: var(--background-base);
+  --neo-surface-raised: var(--surface-raised-stronger-non-alpha);
+  --neo-shadow-dark: color-mix(in srgb, var(--surface-float-base) 50%, transparent);
+  --neo-shadow-light: var(--surface-raised-strong);
   --neo-shadow-offset: 4px;
   --neo-shadow-blur: 10px;
 
-  --neo-shadow-outset-xs: -3px -3px 8px var(--neo-shadow-light), 3px 3px 8px var(--neo-shadow-dark);
-  --neo-shadow-outset-sm: -4px -4px 10px var(--neo-shadow-light), 4px 4px 10px var(--neo-shadow-dark);
-  --neo-shadow-outset-lg: -8px -8px 18px var(--neo-shadow-dark), 8px 8px 18px var(--neo-shadow-light);
-  --neo-shadow-inset-sm: inset 3px 3px 8px var(--neo-shadow-dark), inset -3px -3px 8px var(--neo-shadow-light);
-  --neo-shadow-inset: inset 4px 4px 10px var(--neo-shadow-dark), inset -4px -4px 10px var(--neo-shadow-light);
+  --neo-shadow-outset-xs: var(--shadow-xs-border-base);
+  --neo-shadow-outset-sm: var(--shadow-xs-border);
+  --neo-shadow-outset-lg: var(--shadow-lg-border-base);
+  --neo-shadow-outset-hover: var(--shadow-xs-border-hover);
+  --neo-shadow-focus: var(--shadow-xs-border-focus);
+  --neo-shadow-select: var(--shadow-xs-border-select);
+  --neo-shadow-float: var(--shadow-md);
+  --neo-shadow-inset-sm: inset 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 2px 4px -1px rgba(0, 0, 0, 0.04);
+  --neo-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 4px 8px -2px rgba(0, 0, 0, 0.05);
 
-  --chatbox-background-primary: var(--neo-surface);
-  --chatbox-background-primary-hover: #e8e8ea;
-  --chatbox-background-secondary: var(--neo-surface-raised);
-  --chatbox-background-secondary-hover: #fafafb;
-  --chatbox-background-tertiary: #e4e4e8;
-  --chatbox-background-tertiary-hover: #dbdbe0;
-  --chatbox-background-disabled: #e0e0e4;
+
+  /* ---- mapping: Fibonacci surfaces -> OpenCode palette ---- */
+  --chatbox-background-primary: var(--background-base);
+  --chatbox-background-primary-hover: var(--surface-base-hover);
+  --chatbox-background-secondary: var(--surface-raised-stronger-non-alpha);
+  --chatbox-background-secondary-hover: var(--surface-raised-base-hover);
+  --chatbox-background-tertiary: var(--background-weak);
+  --chatbox-background-tertiary-hover: var(--surface-weaker);
+  --chatbox-background-disabled: var(--input-disabled);
 
   --chatbox-background-brand-primary: var(--chatbox-brand);
   --chatbox-background-brand-primary-hover: color-mix(in srgb, var(--chatbox-brand), black 12%);
   --chatbox-background-brand-secondary: color-mix(in srgb, var(--chatbox-brand), transparent 92%);
   --chatbox-background-brand-secondary-hover: color-mix(in srgb, var(--chatbox-brand), transparent 84%);
 
-  --chatbox-background-gray-primary: #868e96;
-  --chatbox-background-gray-primary-hover: #495057;
-  --chatbox-background-gray-secondary: rgb(134, 142, 150, 0.12);
-  --chatbox-background-gray-secondary-hover: rgb(134, 142, 150, 0.16);
+  --chatbox-background-gray-primary: var(--icon-base);
+  --chatbox-background-gray-primary-hover: var(--icon-hover);
+  --chatbox-background-gray-secondary: color-mix(in srgb, var(--icon-base) 12%, transparent);
+  --chatbox-background-gray-secondary-hover: color-mix(in srgb, var(--icon-base) 16%, transparent);
 
-  --chatbox-background-success-primary: #12b886;
-  --chatbox-background-success-primary-hover: #0ca678;
-  --chatbox-background-success-secondary: rgb(18, 184, 134, 0.12);
-  --chatbox-background-success-secondary-hover: rgb(18, 184, 134, 0.16);
+  --chatbox-background-success-primary: var(--surface-success-strong);
+  --chatbox-background-success-primary-hover: color-mix(in srgb, var(--surface-success-strong), black 10%);
+  --chatbox-background-success-secondary: var(--surface-success-base);
+  --chatbox-background-success-secondary-hover: var(--surface-success-weak);
 
-  --chatbox-background-error-primary: #fa5252;
-  --chatbox-background-error-primary-hover: #f03e3e;
-  --chatbox-background-error-secondary: rgb(250, 82, 82, 0.1);
-  --chatbox-background-error-secondary-hover: rgb(250, 82, 82, 0.14);
+  --chatbox-background-error-primary: var(--surface-critical-strong);
+  --chatbox-background-error-primary-hover: var(--icon-critical-hover);
+  --chatbox-background-error-secondary: var(--surface-critical-base);
+  --chatbox-background-error-secondary-hover: var(--surface-critical-weak);
 
-  --chatbox-background-warning-primary: #fab005;
-  --chatbox-background-warning-primary-hover: #f59f00;
-  --chatbox-background-warning-secondary: rgb(250, 176, 5, 0.1);
-  --chatbox-background-warning-secondary-hover: rgb(250, 176, 5, 0.14);
+  --chatbox-background-warning-primary: var(--surface-warning-strong);
+  --chatbox-background-warning-primary-hover: color-mix(in srgb, var(--surface-warning-strong), black 10%);
+  --chatbox-background-warning-secondary: var(--surface-warning-base);
+  --chatbox-background-warning-secondary-hover: var(--surface-warning-weak);
 
-  --chatbox-background-mask-overlay: rgb(59, 59, 59, 0.64);
-  --chatbox-background-mask-lighten: rgb(255, 255, 255, 0.76);
+  --chatbox-background-mask-overlay: color-mix(in srgb, var(--surface-float-base) 64%, transparent);
+  --chatbox-background-mask-lighten: color-mix(in srgb, #ffffff 76%, transparent);
 
   /* shadcn semantic colors */
   --background: var(--chatbox-background-primary);
@@ -129,7 +254,7 @@
   --input: var(--chatbox-border-primary);
   --ring: var(--chatbox-tint-brand);
 
-  /* shadcn sidebar — neumorphic inset surfaces */
+  /* shadcn sidebar — OpenCode base + raised surfaces */
   --sidebar: var(--neo-surface);
   --sidebar-foreground: var(--chatbox-tint-primary);
   --sidebar-primary: var(--neo-surface-raised);
@@ -141,84 +266,122 @@
 }
 
 :root[data-mantine-color-scheme="dark"] {
-  /* colors — dark red accent on darker gray */
-  --chatbox-tint-primary: #e6eaf2;
-  --chatbox-tint-secondary: #b8c1d1;
-  --chatbox-tint-tertiary: #7f8999;
+  /* ==========================================================
+     OpenCode palette — raw tokens (dark).
+     The dark column of every light-dark() pair in
+     packages/ui/src/styles/theme.css. Everything not restated here
+     (the semantic --chatbox-* / --neo-* mapping in :root) resolves
+     against these values automatically.
+     ========================================================== */
+  --background-base: #101010;
+  --background-weak: #1e1e1e;
+  --background-strong: #121212;
+  --background-stronger: #151515;
 
-  --chatbox-tint-white: #ffffff;
-  --chatbox-tint-black: #000000;
-  --chatbox-tint-gray: #7f8999;
+  --surface-base-hover: rgba(255, 255, 255, 0.039);
+  --surface-base-active: rgba(255, 255, 255, 0.059);
+  --surface-raised-base: rgba(255, 255, 255, 0.059);
+  --surface-raised-base-hover: rgba(255, 255, 255, 0.078);
+  --surface-raised-base-active: rgba(255, 255, 255, 0.102);
+  --surface-raised-strong: rgba(255, 255, 255, 0.078);
+  --surface-raised-stronger-non-alpha: #1c1c1c;
+  --surface-weak: rgba(255, 255, 255, 0.078);
+  --surface-weaker: rgba(255, 255, 255, 0.102);
+  --surface-strong: rgba(255, 255, 255, 0.169);
+  --surface-float-base: #161616;
+  --surface-float-base-hover: #1c1c1c;
+  --surface-inset-base: rgba(0, 0, 0, 0.5);
 
-  --chatbox-tint-disabled: #565f6f;
+  --input-base: #1c1c1c;
+  --input-hover: #1c1c1c;
+  --input-disabled: #282828;
+
+  --button-primary-base: #ededed;
+  --button-secondary-base: #1c1c1c;
+  --button-secondary-hover: rgba(255, 255, 255, 0.039);
+
+  --text-strong: rgba(255, 255, 255, 0.936);
+  --text-stronger: rgba(255, 255, 255, 0.936);
+  --text-base: rgba(255, 255, 255, 0.618);
+  --text-weak: rgba(255, 255, 255, 0.422);
+  --text-weaker: rgba(255, 255, 255, 0.284);
+  --text-invert-strong: #ededed;
+  --text-on-critical-base: #fc533a;
+  --text-on-critical-strong: #ffe0da;
+  --text-on-success-base: #12c905;
+
+  --border-base: rgba(255, 255, 255, 0.195);
+  --border-hover: rgba(255, 255, 255, 0.284);
+  --border-weak-base: #282828;
+  --border-weak-hover: rgba(255, 255, 255, 0.181);
+  --border-weak-selected: rgba(183, 28, 28, 0.4);
+  --border-strong-base: rgba(255, 255, 255, 0.266);
+  --border-weaker-base: #202020;
+  --border-critical-base: #6a1206;
+  --border-critical-hover: #952414;
+  --border-critical-selected: #fc533a;
+  --border-critical-weak: rgba(252, 83, 58, 0.25);
+
+  --icon-base: #7e7e7e;
+  --icon-hover: #a0a0a0;
+  --icon-strong-base: #ededed;
+  --icon-weak-base: #343434;
+  --icon-success-hover: #35c02d;
+  --icon-warning-base: #fbb73c;
+  --icon-critical-hover: #faa494;
+  --icon-info-base: #68446b;
+
+  --surface-success-strong: #12c905;
+  --surface-success-base: #062d04;
+  --surface-success-weak: #0a1e08;
+  --surface-warning-strong: #fcd53a;
+  --surface-warning-base: #fdf3cf;
+  --surface-warning-weak: #fdfaed;
+  --surface-critical-strong: #fc533a;
+  --surface-critical-base: #1f0603;
+  --surface-critical-weak: #28110c;
+  --surface-info-strong: #edb2f1;
+  --surface-info-base: #feecfe;
+  --surface-info-weak: #fdf7fe;
+
+  /* OpenCode shadow box — dark column of light-dark(). Only the soft
+     black layers change; the *-border variants in :root inherit. */
+  --shadow-xs: 0 1px 2px -0.5px rgba(0, 0, 0, 0.06), 0 0.5px 1.5px 0 rgba(0, 0, 0, 0.08),
+    0 1px 3px 0 rgba(0, 0, 0, 0.1);
+  --shadow-md: 0 6px 12px -2px rgba(0, 0, 0, 0.1), 0 4px 8px -2px rgba(0, 0, 0, 0.15),
+    0 1px 2px rgba(0, 0, 0, 0.15);
+  --shadow-lg: 0 16px 48px -6px rgba(0, 0, 0, 0.15), 0 6px 12px -2px rgba(0, 0, 0, 0.1),
+    0 1px 2.5px rgba(0, 0, 0, 0.1);
+
+  /* wells read as recesses on a dark surface, so the inset pair deepens */
+  --neo-shadow-inset-sm: inset 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+  --neo-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.45), inset 0 4px 8px -2px rgba(0, 0, 0, 0.35);
+
+  /* ---- overrides: tokens whose OpenCode source differs per theme ---- */
+  /* tertiary sits one step above the raised surface on dark */
+  --chatbox-background-tertiary: var(--border-weaker-base);
   --chatbox-brand: #b71c1c;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
-  --chatbox-tint-placeholder: #6b7488;
-  --chatbox-tint-error: #ef7b7b;
-  --chatbox-tint-error-disabled: rgb(239, 123, 123, 0.45);
-  --chatbox-tint-warning: #ffc86b;
-  --chatbox-tint-success: #3ddbb0;
+  --chatbox-tint-error: var(--icon-critical-hover);
+  --chatbox-tint-error-disabled: color-mix(in srgb, var(--icon-critical-hover) 45%, transparent);
+  --chatbox-tint-warning: var(--icon-warning-base);
+  --chatbox-tint-success: var(--icon-success-hover);
+
+  --chatbox-border-warning: var(--icon-warning-base);
+  --chatbox-border-error: var(--text-on-critical-base);
+  --chatbox-border-success: var(--icon-success-hover);
 
   /* home halftone background — very dark red on the dark surface */
   --halftone-color: #4d0b0b;
   --halftone-opacity: 0.7;
 
-  --chatbox-border-primary: #2b313e;
-  --chatbox-border-secondary: #333a48;
-  --chatbox-border-warning: #ffc86b;
-  --chatbox-border-error: #ef7b7b;
-  --chatbox-border-success: #3ddbb0;
-  --chatbox-border-brand: var(--chatbox-brand);
-
-  /* dark neumorphism — darker gray surfaces, light shadows for depth */
-  --neo-surface: #1a1d24;
-  --neo-surface-raised: #22262e;
-  --neo-shadow-dark: rgba(13, 16, 21, 0.55);
-  --neo-shadow-light: rgba(70, 79, 96, 0.35);
-  --neo-shadow-offset: 4px;
-  --neo-shadow-blur: 10px;
-
-  --neo-shadow-outset-xs: -3px -3px 8px var(--neo-shadow-light), 3px 3px 8px var(--neo-shadow-dark);
-  --neo-shadow-outset-sm: -4px -4px 10px var(--neo-shadow-light), 4px 4px 10px var(--neo-shadow-dark);
-  --neo-shadow-outset-lg: -8px -8px 18px var(--neo-shadow-dark), 8px 8px 18px var(--neo-shadow-light);
-  --neo-shadow-inset-sm: inset 3px 3px 8px var(--neo-shadow-dark), inset -3px -3px 8px var(--neo-shadow-light);
-  --neo-shadow-inset: inset 4px 4px 10px var(--neo-shadow-dark), inset -4px -4px 10px var(--neo-shadow-light);
-
-  --chatbox-background-primary: var(--neo-surface);
-  --chatbox-background-primary-hover: #16191f;
-  --chatbox-background-secondary-hover: #2a2f38;
-  --chatbox-background-tertiary: #262b34;
-  --chatbox-background-tertiary-hover: #2f3540;
-  --chatbox-background-disabled: #1e222a;
-
-  --chatbox-background-brand-primary: var(--chatbox-brand);
   --chatbox-background-brand-primary-hover: color-mix(in srgb, var(--chatbox-brand), black 12%);
   --chatbox-background-brand-secondary: color-mix(in srgb, var(--chatbox-brand), transparent 80%);
   --chatbox-background-brand-secondary-hover: color-mix(in srgb, var(--chatbox-brand), transparent 76%);
 
-  --chatbox-background-gray-primary: #343a40;
-  --chatbox-background-gray-primary-hover: #212529;
-  --chatbox-background-gray-secondary: rgb(134, 142, 150, 0.15);
-  --chatbox-background-gray-secondary-hover: rgb(134, 142, 150, 0.2);
-
-  --chatbox-background-success-primary: #099268;
-  --chatbox-background-success-primary-hover: #087f5b;
-  --chatbox-background-success-secondary: rgb(18, 184, 134, 0.15);
-  --chatbox-background-success-secondary-hover: rgb(18, 184, 134, 0.2);
-
-  --chatbox-background-error-primary: #e03131;
-  --chatbox-background-error-primary-hover: #c92a2a;
-  --chatbox-background-error-secondary: rgb(250, 82, 82, 0.15);
-  --chatbox-background-error-secondary-hover: rgb(250, 82, 82, 0.2);
-
-  --chatbox-background-warning-primary: #f08c00;
-  --chatbox-background-warning-primary-hover: #e67700;
-  --chatbox-background-warning-secondary: rgb(250, 176, 5, 0.15);
-  --chatbox-background-warning-secondary-hover: rgb(250, 176, 5, 0.2);
-
-  --chatbox-background-mask-overlay: rgb(31, 31, 31, 0.78);
-  --chatbox-background-mask-lighten: rgb(173, 181, 189, 0.48);
+  --chatbox-background-mask-overlay: color-mix(in srgb, var(--surface-float-base) 78%, transparent);
+  --chatbox-background-mask-lighten: color-mix(in srgb, #ffffff 48%, transparent);
 }
 
 /* Halftone dots track data-theme (set pre-paint and on every switch), which is
@@ -333,21 +496,19 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 /* ---------- chat input surface (shared by InputBox + PendingActionBar)
-   The app's reference material: large 29px-radius well, hairline border,
-   soft extruded shadow, brand focus ring while typing. Every other
-   panel in the app points back at this recipe. */
+   The app's reference material: large 29px-radius well carrying OpenCode's
+   raised-surface shadow (1px ring + layered soft depth), brand-red focus
+   ring while typing. Every other panel in the app points back at this
+   recipe. The ring lives in the shadow, so no CSS border is used. */
 .chatbox-input-surface {
-  border: 1px solid var(--chatbox-border-primary) !important;
+  border: none !important;
   border-radius: 29px;
   box-shadow: var(--neo-shadow-outset-sm);
-  transition: box-shadow 160ms ease, border-color 160ms ease, background-color 160ms ease;
+  transition: box-shadow 160ms ease, background-color 160ms ease;
 }
 
 .chatbox-input-surface:focus-within {
-  border-color: color-mix(in srgb, var(--chatbox-brand) 55%, var(--chatbox-border-primary)) !important;
-  box-shadow:
-    var(--neo-shadow-outset-sm),
-    0 0 0 3px color-mix(in srgb, var(--chatbox-brand) 14%, transparent);
+  box-shadow: var(--neo-shadow-focus);
 }
 
 /* morph animation — triggered when the user switches Chat/Work mode */
@@ -383,24 +544,19 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 /* circular send / stop button in the composer ----------
-   Neumorphic dome adapted from the Uiverse toggle (Nagalapuramhareeswar):
-   soft white halo, layered light-from-top / dark-from-bottom highlights,
-   pressed inset on :active, brand label once the action is ready.
-   Dark mode re-tints the material via --neo-* tokens only. */
+   OpenCode secondary-button material: raised surface with the ring +
+   soft-depth shadow, pressed inset on :active, hover on the
+   --button-secondary-hover overlay, brand-red label once the action is
+   ready. Both themes come from tokens, so no dark override is needed. */
 .chatbox-send-button {
   position: relative;
   border: none;
   border-radius: 9999px;
-  background-color: #eaeaea;
-  color: rgba(0, 0, 0, 0.45);
-  box-shadow:
-    0 8px 16px -4px rgba(0, 0, 0, 0.35),
-    inset 0 -2px 3px -1px rgba(0, 0, 0, 0.18),
-    0 -6px 10px -1px rgba(255, 255, 255, 0.55),
-    inset 0 2px 3px -1px rgba(255, 255, 255, 0.25),
-    inset 0 0 4px 1px rgba(255, 255, 255, 0.75),
-    inset 0 12px 18px 0 rgba(255, 255, 255, 0.22);
-  transition: all 300ms cubic-bezier(0.23, 1, 0.32, 1);
+  background-color: var(--button-secondary-base);
+  color: var(--icon-base);
+  box-shadow: var(--shadow-xs-border-base);
+  transition: box-shadow 200ms cubic-bezier(0.23, 1, 0.32, 1), background-color 200ms ease,
+    color 200ms ease, transform 140ms ease;
 }
 
 /* ready-to-send: label lights up brand (Uiverse :checked, re-tinted) */
@@ -409,55 +565,25 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 .chatbox-send-button:hover:not(:disabled) {
-  box-shadow:
-    0 10px 18px -4px rgba(0, 0, 0, 0.4),
-    inset 0 -2px 3px -1px rgba(0, 0, 0, 0.2),
-    0 -6px 10px -1px rgba(255, 255, 255, 0.6),
-    inset 0 2px 3px -1px rgba(255, 255, 255, 0.3),
-    inset 0 0 4px 1px rgba(255, 255, 255, 0.85),
-    inset 0 12px 18px 0 rgba(255, 255, 255, 0.26);
+  background-color: var(--button-secondary-hover);
+  box-shadow: var(--shadow-xs-border-hover);
 }
 
-/* pressed (Uiverse input:active ~ .button): flatten + deepen the lower inset */
+/* pressed: press in instead of out */
 .chatbox-send-button:active:not(:disabled) {
-  filter: blur(0.5px);
-  transform: scale(0.97);
-  box-shadow:
-    0 6px 14px -4px rgba(0, 0, 0, 0.3),
-    inset 0 -5px 18px 1px rgba(255, 255, 255, 0.75),
-    0 -6px 10px -1px rgba(255, 255, 255, 0.5),
-    inset 0 5px 16px 0 rgba(0, 0, 0, 0.28),
-    inset 0 0 6px 1px rgba(255, 255, 255, 0.45);
+  transform: translateY(0.5px) scale(0.98);
+  box-shadow: var(--neo-shadow-inset-sm);
 }
 
 .chatbox-send-button:disabled {
-  background-color: var(--neo-surface, #e0e0e4);
+  background-color: var(--input-disabled);
   color: var(--chatbox-tint-disabled);
-  filter: none;
-  box-shadow:
-    inset 2px 2px 5px color-mix(in srgb, var(--neo-shadow-dark, #c4c4c4) 70%, transparent),
-    inset -2px -2px 5px var(--neo-shadow-light, #ffffff);
+  box-shadow: var(--neo-shadow-inset-sm);
 }
 
 .chatbox-send-button:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--chatbox-brand) 60%, transparent);
-  outline-offset: 3px;
-}
-
-html[data-theme='dark'] .chatbox-send-button {
-  background-color: var(--neo-surface-raised, #2c313d);
-  color: rgba(255, 255, 255, 0.4);
-  box-shadow:
-    0 8px 16px -4px rgba(0, 0, 0, 0.55),
-    inset 0 -2px 3px -1px rgba(0, 0, 0, 0.45),
-    0 -6px 10px -1px rgba(96, 108, 132, 0.35),
-    inset 0 2px 3px -1px rgba(96, 108, 132, 0.3),
-    inset 0 0 4px 1px rgba(96, 108, 132, 0.4),
-    inset 0 12px 18px 0 rgba(96, 108, 132, 0.12);
-}
-
-html[data-theme='dark'] .chatbox-send-button:enabled:not(:disabled) {
-  color: var(--chatbox-brand);
+  outline: none;
+  box-shadow: var(--neo-shadow-focus);
 }
 
 @media (prefers-reduced-motion: reduce) {

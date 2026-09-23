@@ -155,7 +155,7 @@ export function ArtifactWithButtons(props: {
     <div
       className={cn(
         'w-full',
-        'border border-solid rounded border-gray-500/40',
+        'rounded oc-ring',
         'flex',
         isSmallScreen ? 'flex-col-reverse' : 'flex-row'
       )}
@@ -164,8 +164,7 @@ export function ArtifactWithButtons(props: {
       <ButtonGroup
         orientation={isSmallScreen ? 'horizontal' : 'vertical'}
         className={cn(
-          'border-solid border-gray-500/20',
-          isSmallScreen ? 'border-r-0 border-b-1 border-l-0 border-t-0' : 'border-r-0 border-b-0 border-l-1 border-t-0'
+          'oc-ring',
         )}
       >
         <IconButton onClick={onReplay} color="primary">

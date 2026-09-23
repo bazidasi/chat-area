@@ -1510,7 +1510,7 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
         <Box pt={0} pb={isSmallScreen ? 'md' : 'sm'} px="sm" id={dom.InputBoxID}>
           <Stack
             className={cn(
-              'rounded-lg bg-chatbox-background-secondary shadow-[0_8px_48px_-8px_rgba(0,0,0,0.15)] dark:shadow-[0_8px_48px_-8px_rgba(0,0,0,0.5)]',
+              'rounded-lg bg-chatbox-background-secondary shadow-[var(--neo-shadow-outset-lg)]',
               widthFull ? 'w-full' : 'max-w-4xl mx-auto'
             )}
             gap="xs"
@@ -1582,7 +1582,7 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                 createPortal(
                   <Box
                     ref={skillMenuFloatingRef}
-                    className="z-[400] overflow-y-auto rounded-lg border border-solid border-chatbox-border-primary bg-chatbox-background-primary py-1 shadow-lg"
+                    className="z-[400] overflow-y-auto rounded-lg oc-ring bg-chatbox-background-primary py-1 shadow-lg"
                     style={{ position: 'fixed', top: 0, left: 0 }}
                   >
                     {matchingInputSkills.map((skill, index) => (
@@ -1877,7 +1877,7 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                 />
 
                 {/* Left Group: Tool Buttons */}
-                <Liquid blur={6} contrast={18} fill="#e4e9f1" className="flex items-center gap-0">
+                <Liquid blur={6} contrast={18} fill="#fcfcfc" className="flex items-center gap-0">
                   <AttachmentMenu onImageUploadClick={onImageUploadClick} onFileUploadClick={onFileUploadClick} t={t} />
 
                   <ReasoningControlButton

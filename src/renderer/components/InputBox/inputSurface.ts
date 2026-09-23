@@ -1,8 +1,8 @@
 // The input box surface, shared with PendingActionBar so a pause can take over
 // the same slot without the frame or the height shifting.
 // Matches the reference composer: large 29px-radius well, no hard border.
-// The soft-UI extrusion lift and the brand focus glow both live on
-// .chatbox-input-surface in globals.css so light and dark stay in one place.
+// OpenCode elevation (outset-lg + dark hairline edge) and the brand focus
+// glow both live on .chatbox-input-surface in globals.css.
 export const INPUT_SURFACE_CLASS_NAME =
   'chatbox-input-surface relative flex flex-col justify-between gap-xs rounded-[29px] bg-chatbox-background-secondary px-3.5 pt-3 pb-2'
 

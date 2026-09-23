@@ -159,7 +159,7 @@ function SettingsModalErrorFallback({ retry }: { error: Error; retry: () => void
   const { t } = useTranslation()
   return (
     <div className="pointer-events-none fixed inset-x-0 bottom-4 z-[400] flex justify-center px-4">
-      <div className="pointer-events-auto flex items-center gap-3 rounded-lg border border-solid border-chatbox-border-primary bg-chatbox-background-primary px-4 py-3 shadow-lg">
+      <div className="pointer-events-auto flex items-center gap-3 rounded-lg oc-ring bg-chatbox-background-primary px-4 py-3">
         <Text size="sm">{t('Settings failed to load')}</Text>
         <Button size="xs" variant="light" onClick={retry}>
           {t('Try Again')}
@@ -358,7 +358,7 @@ function Root() {
         className="h-svh"
       >
         <Sidebar />
-        <SidebarInset className="relative z-[1] h-svh overflow-hidden">
+        <SidebarInset className="neo-main-frame relative z-[1] h-svh overflow-hidden">
           <Box className="title-bar absolute inset-x-0 top-0 hidden sm:block" sx={{ height: '10px' }} />
           <Box
             className="h-full box-border"
@@ -372,7 +372,7 @@ function Root() {
               }`}
               sx={{
                 borderRadius: { xs: 0, sm: '16px' },
-                boxShadow: { xs: 'none', sm: '0 1px 3px rgba(0, 0, 0, 0.10)' },
+                boxShadow: { xs: 'none', sm: 'var(--neo-shadow-outset-xs)' },
               }}
             >
               <ErrorBoundary name="main">
@@ -499,9 +499,8 @@ const creteMantineTheme = (scale = 1) =>
       xl: 'calc(1.5rem * var(--mantine-scale))',
       xxl: 'calc(2rem * var(--mantine-scale))',
     },
-    // Neumorphism (Soft UI): dual shadows — dark bottom-right, light top-left.
-    // Applied to every Mantine component that uses named shadows
-    // (Paper, Card, Modal, Menu, Popover, Tooltip...).
+    // OpenCode elevation: soft multi-layer black shadows (xs / md / lg)
+    // from packages/ui theme.css, applied via the --neo-shadow-* tokens.
     shadows: {
       xs: 'var(--neo-shadow-outset-xs)',
       sm: 'var(--neo-shadow-outset-sm)',

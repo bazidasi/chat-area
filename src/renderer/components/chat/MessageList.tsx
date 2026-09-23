@@ -828,7 +828,7 @@ const ThreadLabel: FC<ThreadLabelProps> = memo(({ thread, sessionId, sessionMode
       >
         <span
           data-testid={TestId.message.threadLabel}
-          className="cursor-pointer font-bold border-solid border rounded-xxl py-2 px-3 border-slate-400/25"
+          className="cursor-pointer font-bold rounded-xxl py-2 px-3 oc-ring"
           onDoubleClick={handleOpenHistoryDrawer}
           // onClick={onClick}
         >
