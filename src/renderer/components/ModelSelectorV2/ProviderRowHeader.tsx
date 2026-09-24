@@ -24,7 +24,7 @@ export function ProviderRowHeader({
       type="button"
       onClick={onToggle}
       className={clsx(
-        'w-full flex items-center gap-2 border-0 border-b border-solid text-chatbox-tint-primary cursor-pointer transition-colors focus:outline-none focus-visible:outline-none',
+        'oc-ring--interactive w-full flex items-center gap-2 border-0 border-b border-solid text-chatbox-tint-primary cursor-pointer transition-colors focus:outline-none focus-visible:outline-none',
         isChatbox
           ? ['sticky top-0 z-20 h-11 pl-4 pr-2.5 border-chatbox-border-primary', MODEL_SELECTOR_SURFACE_CLASS]
           : [

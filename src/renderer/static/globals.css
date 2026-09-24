@@ -189,11 +189,17 @@
   --neo-shadow-outset-sm: var(--shadow-xs-border);
   --neo-shadow-outset-lg: var(--shadow-lg-border-base);
   --neo-shadow-outset-hover: var(--shadow-xs-border-hover);
+  --neo-shadow-boxed: var(--shadow-md);
+  --neo-shadow-boxed-hover: var(--shadow-lg);
   --neo-shadow-focus: var(--shadow-xs-border-focus);
+  --neo-shadow-boxed-focus: inset 0 0 12px color-mix(in srgb, var(--chatbox-brand) 18%, transparent),
+    inset 0 1px 0 color-mix(in srgb, white 10%, transparent), var(--shadow-md);
+  --neo-shadow-critical-focus: var(--shadow-xs-border-critical-focus);
   --neo-shadow-select: var(--shadow-xs-border-select);
-  --neo-shadow-float: var(--shadow-md);
+  --neo-shadow-float: var(--shadow-xs-border-base), var(--shadow-md);
   --neo-shadow-inset-sm: inset 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 2px 4px -1px rgba(0, 0, 0, 0.04);
   --neo-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 4px 8px -2px rgba(0, 0, 0, 0.05);
+  --neo-shadow-inset-focus: var(--neo-shadow-inset), 0 0 0 2px color-mix(in srgb, var(--chatbox-brand) 45%, transparent);
 
 
   /* ---- mapping: Fibonacci surfaces -> OpenCode palette ---- */
@@ -496,39 +502,71 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 /* ---------- chat input surface (shared by InputBox + PendingActionBar)
-   The app's reference material: large 29px-radius well carrying OpenCode's
-   raised-surface shadow (1px ring + layered soft depth), brand-red focus
-   ring while typing. Every other panel in the app points back at this
-   recipe. The ring lives in the shadow, so no CSS border is used. */
+   OpenCode depth-only elevation: md shadow at rest, lg on hover. No ring
+   layer and no CSS border, so the surface reads as shadow-raised. */
 .chatbox-input-surface {
   border: none !important;
   border-radius: 29px;
-  box-shadow: var(--neo-shadow-outset-sm);
+  box-shadow: var(--neo-shadow-boxed);
   transition: box-shadow 160ms ease, background-color 160ms ease;
 }
 
+.chatbox-mode-switch {
+  border: none !important;
+  box-shadow: var(--neo-shadow-boxed);
+}
+
+.chatbox-mode-switch > span[aria-hidden='true'] {
+  box-shadow: var(--shadow-lg);
+}
+
 .chatbox-input-surface:focus-within {
-  box-shadow: var(--neo-shadow-focus);
+  box-shadow: var(--neo-shadow-boxed-focus);
+}
+
+.chatbox-suggestion-card {
+  border: none;
+  box-shadow: var(--neo-shadow-boxed);
+  transition:
+    box-shadow 180ms ease,
+    background-color 180ms ease,
+    transform 180ms ease;
+}
+
+.chatbox-suggestion-card:hover:not(:disabled) {
+  background: var(--chatbox-background-tertiary);
+  box-shadow: var(--neo-shadow-boxed-hover);
+  transform: translateY(-2px);
+}
+
+.chatbox-suggestion-card:active:not(:disabled) {
+  box-shadow: var(--neo-shadow-inset-sm);
+  transform: translateY(0);
+}
+
+.chatbox-suggestion-card:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-boxed-focus);
 }
 
 /* morph animation — triggered when the user switches Chat/Work mode */
 @keyframes chatbox-morph {
   0% {
     transform: scale(1);
-    box-shadow: var(--neo-shadow-outset-sm);
+    box-shadow: var(--neo-shadow-boxed);
   }
   30% {
     transform: scale(0.985);
     box-shadow:
       0 0 0 3px color-mix(in srgb, var(--chatbox-brand) 20%, transparent),
-      var(--neo-shadow-outset-sm);
+      var(--neo-shadow-boxed);
   }
   60% {
     transform: scale(1.005);
   }
   100% {
     transform: scale(1);
-    box-shadow: var(--neo-shadow-outset-sm);
+    box-shadow: var(--neo-shadow-boxed);
   }
 }
 
@@ -610,6 +648,13 @@ ul[data-sidebar='menu-sub'] > li {
     var(--neo-shadow-outset-sm),
     inset 0 1px 0 color-mix(in srgb, var(--neo-shadow-light) 65%, transparent);
   transition: box-shadow 180ms ease, background-color 180ms ease;
+}
+
+.chatbox-warning-callout {
+  border: none;
+  box-shadow:
+    inset 3px 0 0 var(--chatbox-border-warning),
+    var(--neo-shadow-outset-sm);
 }
 
 /* primary action buttons (approve / continue / deny): soft-UI dome

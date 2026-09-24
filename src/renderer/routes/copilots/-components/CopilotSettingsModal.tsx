@@ -162,7 +162,7 @@ const CopilotSettingsModal = NiceModal.create(
       >
         <Stack
           gap="md"
-          className="max-h-[70vh] overflow-y-auto border border-solid border-chatbox-border-primary rounded-lg p-sm"
+          className="oc-ring-inset max-h-[70vh] overflow-y-auto rounded-lg p-sm"
         >
           {/* Title */}
           <TextInput
@@ -195,7 +195,7 @@ const CopilotSettingsModal = NiceModal.create(
                     alt={formData.name}
                     size={48}
                     radius="lg"
-                    className="flex-shrink-0 border border-solid border-chatbox-border-primary"
+                    className="flex-shrink-0"
                   >
                     {formData.avatar?.type === 'storage-key' ? (
                       <ImageInStorage
@@ -248,7 +248,7 @@ const CopilotSettingsModal = NiceModal.create(
                     src={formData.backgroundImage?.type === 'url' ? formData.backgroundImage.url : ''}
                     size={48}
                     radius="lg"
-                    className="flex-shrink-0 border border-solid border-chatbox-border-primary"
+                    className="flex-shrink-0"
                   >
                     {formData.backgroundImage?.type === 'storage-key' && (
                       <ImageInStorage

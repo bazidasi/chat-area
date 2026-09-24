@@ -628,10 +628,7 @@ function ImageCreatorPage() {
                 onChange={(e) => handleImageUpload(e.target.files)}
               />
 
-              <Box
-                className="rounded-lg bg-[var(--chatbox-background-secondary)] px-3 py-2"
-                style={{ border: '1px solid var(--chatbox-border-primary)' }}
-              >
+              <Box className="oc-ring oc-ring--large rounded-lg bg-[var(--chatbox-background-secondary)] px-3 py-2">
                 <Stack gap="xs">
                   {/* Input Row */}
                   <Flex align="flex-end" gap={4}>

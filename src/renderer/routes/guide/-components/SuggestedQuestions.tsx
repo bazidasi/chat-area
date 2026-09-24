@@ -40,12 +40,11 @@ export function SuggestedQuestions({ onQuestionClick, disabled }: SuggestedQuest
             onClick={() => !disabled && onQuestionClick(question)}
             disabled={disabled}
             className={`
-              group
+              oc-ring oc-ring--interactive group
               px-3 py-2 rounded-lg
               bg-chatbox-background-secondary
-              border border-chatbox-border-primary
               transition-all duration-200
-              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:border-chatbox-tint-brand/50 hover:bg-chatbox-background-brand-secondary/30'}
+              ${disabled ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-chatbox-background-brand-secondary/30'}
             `}
           >
             <Text

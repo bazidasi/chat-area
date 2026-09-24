@@ -31,7 +31,7 @@ const toggleSizeClasses: Record<ToggleSize, string> = {
 }
 
 const toggleBaseClasses =
-  'relative z-[1] inline-flex select-none items-center justify-center whitespace-nowrap rounded-full font-medium outline-none transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none'
+  'oc-toggle-item relative z-[1] inline-flex select-none items-center justify-center whitespace-nowrap rounded-full font-medium outline-none transition-colors duration-150 disabled:pointer-events-none disabled:opacity-50 motion-reduce:transition-none'
 
 
 interface ToggleGroupContextValue {
@@ -68,7 +68,7 @@ export interface ToggleGroupProps extends Omit<React.HTMLAttributes<HTMLDivEleme
   defaultValue?: string | string[]
   onValueChange?: (value: string | undefined | string[]) => void
   size?: ToggleSize
-  /** "outline" boxes the whole group with a border. */
+  /** "outline" gives the whole group a raised OpenCode surface. */
   variant?: 'default' | 'outline'
   disabled?: boolean
 }
@@ -197,7 +197,7 @@ const ToggleGroup = React.forwardRef<HTMLDivElement, ToggleGroupProps>(
           className={cn(
             'relative inline-flex items-center gap-1 rounded-full p-1',
             variant === 'outline'
-              ? 'border border-solid border-border bg-background'
+              ? 'oc-ring oc-ring--subtle bg-background'
               : 'bg-[var(--neo-surface)] shadow-[var(--neo-shadow-inset-sm)]',
             disabled && 'opacity-50',
             className

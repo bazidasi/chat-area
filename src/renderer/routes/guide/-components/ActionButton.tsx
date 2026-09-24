@@ -364,7 +364,9 @@ export function NewChatTip() {
       style={{
         borderRadius: 'var(--mantine-radius-md)',
         background: 'var(--mantine-color-yellow-light)',
-        border: '1px solid var(--mantine-color-yellow-light-color)',
+        border: 'none',
+        boxShadow:
+          'inset 3px 0 0 var(--mantine-color-yellow-light-color), var(--neo-shadow-outset-sm)',
       }}
     >
       <Flex align="center" gap="xs" mb={4}>

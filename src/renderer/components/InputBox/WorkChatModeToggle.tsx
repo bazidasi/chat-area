@@ -46,6 +46,7 @@ const WorkChatModeToggle: FC<WorkChatModeToggleProps> = ({ sessionId, model, ses
         size="md"
         aria-label={t('Mode') || undefined}
         value={uiState.isActive ? 'on' : 'off'}
+        className="chatbox-mode-switch"
         onValueChange={(value) => {
           // single groups can clear the value; the mode always stays set
           if (typeof value !== 'string') return

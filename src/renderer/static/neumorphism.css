@@ -17,9 +17,43 @@ html {
   border: none !important;
 }
 
+.oc-ring--subtle {
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+.oc-ring--large {
+  box-shadow: var(--neo-shadow-outset-lg);
+}
+
+.oc-ring--floating {
+  box-shadow: var(--neo-shadow-float);
+}
+
+.oc-ring--interactive {
+  transition: box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.oc-ring--interactive:hover:not(:disabled, [aria-disabled='true']) {
+  box-shadow: var(--neo-shadow-outset-hover);
+}
+
+.oc-ring--interactive:active:not(:disabled, [aria-disabled='true']) {
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.oc-ring--interactive:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-focus);
+}
+
 .oc-ring-inset {
   box-shadow: var(--neo-shadow-inset-sm);
   border: none !important;
+}
+
+.oc-overlay {
+  background-color: var(--chatbox-background-mask-overlay) !important;
+  backdrop-filter: blur(3px);
 }
 
 /* One continuous 1px frame around the main column (left = sidebar
@@ -28,7 +62,19 @@ html {
    below the inset content and read as a second, disconnected stroke. */
 .neo-main-frame {
   border: none;
-  box-shadow: var(--neo-shadow-outset-xs);
+  box-shadow:
+    0 -1px 0 0 var(--border-weak-base),
+    0 1px 0 0 var(--border-weak-base),
+    1px 0 0 0 var(--border-weak-base),
+    var(--shadow-xs);
+}
+
+[dir='rtl'] .neo-main-frame {
+  box-shadow:
+    0 -1px 0 0 var(--border-weak-base),
+    0 1px 0 0 var(--border-weak-base),
+    -1px 0 0 0 var(--border-weak-base),
+    var(--shadow-xs);
 }
 
 /* main frame: keep the outer chrome transparent so the one-piece
@@ -52,7 +98,72 @@ html {
   border: none;
 }
 
-/* ---------- Buttons ---------- */
+/* ---------- shared shadcn / animate-ui controls ---------- */
+.oc-button {
+  border: none;
+  box-shadow: var(--neo-shadow-outset-sm);
+  transition: box-shadow 160ms ease, transform 120ms ease, background-color 160ms ease, color 160ms ease;
+}
+
+.oc-button--secondary {
+  background-color: var(--button-secondary-base);
+}
+
+.oc-button--filled {
+  box-shadow: var(--neo-shadow-outset-sm);
+}
+
+.oc-button--flat {
+  box-shadow: none;
+}
+
+.oc-button:hover:not(:disabled) {
+  box-shadow: var(--neo-shadow-outset-hover);
+}
+
+.oc-button:active:not(:disabled) {
+  transform: translateY(0.5px);
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.oc-button:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-focus);
+}
+
+.oc-button--critical:focus-visible,
+.oc-button[aria-invalid='true']:focus-visible {
+  box-shadow: var(--neo-shadow-critical-focus);
+}
+
+.oc-input {
+  border: none;
+  background: var(--input-base);
+  box-shadow: var(--neo-shadow-inset-sm);
+  transition: box-shadow 160ms ease, background-color 160ms ease;
+}
+
+.oc-input:hover:not(:disabled) {
+  background: var(--input-hover);
+}
+
+.oc-input:focus,
+.oc-input:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-inset-focus);
+}
+
+.oc-input:disabled {
+  background: var(--input-disabled);
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.oc-toggle-item:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-focus);
+}
+
+/* ---------- Mantine buttons ---------- */
 .mantine-Button-root {
   border: none;
   transition: box-shadow 160ms ease, transform 120ms ease, background-color 160ms ease;
@@ -90,6 +201,31 @@ html {
 }
 
 .mantine-Button-root[data-variant='light']:active {
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.mantine-Button-root[data-variant='outline'] {
+  border: none;
+  background-color: var(--neo-surface-raised);
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+.mantine-Button-root[data-variant='outline']:hover {
+  background-color: var(--neo-surface);
+  box-shadow: var(--neo-shadow-outset-hover);
+}
+
+.mantine-Button-root[data-variant='outline']:active {
+  transform: translateY(0.5px);
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.mantine-Button-root[data-variant='outline']:focus-visible {
+  box-shadow: var(--neo-shadow-focus);
+}
+
+.mantine-Button-root[data-variant='outline']:disabled {
+  background-color: var(--input-disabled);
   box-shadow: var(--neo-shadow-inset-sm);
 }
 
@@ -150,6 +286,21 @@ html[data-theme='dark'] .mantine-Button-root[data-variant='filled']:hover {
   box-shadow: var(--neo-shadow-inset-sm);
 }
 
+.mantine-ActionIcon-root[data-variant='outline'] {
+  border: none;
+  background: var(--neo-surface-raised);
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+.mantine-ActionIcon-root[data-variant='outline']:hover {
+  background: var(--neo-surface);
+  box-shadow: var(--neo-shadow-outset-hover);
+}
+
+.mantine-ActionIcon-root[data-variant='outline']:active {
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
 /* ---------- Inputs (inset wells) ----------
    Generic inputs keep the soft inset well, EXCEPT inside the chat
    composer: the reference composer is a flat surface inside the
@@ -163,9 +314,7 @@ html[data-theme='dark'] .mantine-Button-root[data-variant='filled']:hover {
 
 .mantine-Input-input:focus {
   border: none;
-  box-shadow:
-    var(--neo-shadow-inset),
-    0 0 0 2px color-mix(in srgb, var(--chatbox-brand) 45%, transparent);
+  box-shadow: var(--neo-shadow-inset-focus);
 }
 
 .mantine-Input-input::placeholder {
@@ -221,7 +370,7 @@ textarea.mantine-Input-input {
 .mantine-Combobox-dropdown,
 .mantine-Select-dropdown {
   background: var(--neo-surface-raised);
-  border: 1px solid color-mix(in srgb, var(--border-base) 50%, transparent);
+  border: none;
   box-shadow: var(--neo-shadow-float);
 }
 
@@ -235,13 +384,18 @@ textarea.mantine-Input-input {
   background: color-mix(in srgb, var(--chatbox-brand) 10%, var(--neo-surface-raised));
 }
 
+.mantine-Menu-item[data-hovered],
+.mantine-Combobox-option[data-combobox-selected] {
+  box-shadow: var(--neo-shadow-select);
+}
+
 /* ---------- Tooltip: OpenCode float surface ----------
    Upstream keeps tooltips on the always-dark --surface-float-base with
    inverted text, a --border-weak-base hairline and --shadow-md. */
 .mantine-Tooltip-tooltip {
   background: var(--surface-float-base);
   color: var(--text-invert-strong);
-  border: 1px solid var(--border-weak-base);
+  border: none;
   box-shadow: var(--neo-shadow-float);
 }
 
@@ -476,8 +630,8 @@ html[data-theme='dark'] .mantine-Slider-bar {
 }
 
 .mantine-Badge-root[data-variant='outline'] {
-  background: transparent;
-  box-shadow: none;
+  background: var(--neo-surface-raised);
+  box-shadow: var(--neo-shadow-outset-xs);
 }
 
 /* ---------- avatars: soft coin edge ---------- */

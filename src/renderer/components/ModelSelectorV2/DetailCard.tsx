@@ -97,7 +97,7 @@ function TieredPricingTag({
     <Badge
       variant="light"
       size="xs"
-      className="cursor-help normal-case border border-solid border-chatbox-border-primary bg-chatbox-background-secondary px-1 py-0.5 text-[10px] font-medium leading-none text-chatbox-tint-secondary"
+      className="cursor-help normal-case bg-chatbox-background-secondary px-1 py-0.5 text-[10px] font-medium leading-none text-chatbox-tint-secondary"
     >
       {t('Tiered pricing')}
     </Badge>
@@ -131,14 +131,13 @@ function TieredPricingTag({
         tooltip: {
           background: 'var(--chatbox-background-primary)',
           color: 'var(--chatbox-tint-primary)',
-          border: '1px solid var(--chatbox-border-primary)',
+          border: 'none',
           borderRadius: 8,
-          boxShadow: 'var(--neo-shadow-outset-lg)',
+          boxShadow: 'var(--neo-shadow-float)',
           padding: 12,
         },
         arrow: {
           background: 'var(--chatbox-background-primary)',
-          border: '1px solid var(--chatbox-border-primary)',
         },
       }}
     >
@@ -230,7 +229,7 @@ function PricingBlock({
         </Stack>
       )}
       {mobile && hasTieredPricing && mobileTieredOpen && (
-        <div className="rounded-lg border border-solid border-chatbox-border-primary bg-chatbox-background-primary px-3 py-2">
+        <div className="oc-ring-inset rounded-lg bg-chatbox-background-primary px-3 py-2">
           <TieredPricingDetails tiers={pricing.tieredPricing} t={t} isCN={isCN} />
         </div>
       )}
@@ -305,9 +304,11 @@ export function DetailCard({
     <Stack
       gap={mobile ? 'md' : 'md'}
       className={clsx(
-        'relative border border-solid text-chatbox-tint-primary',
+        'relative text-chatbox-tint-primary',
         MODEL_SELECTOR_SURFACE_CLASS,
-        mobile ? 'm-[4px] border-0 px-4 pb-4 pt-3 rounded-[12px]' : 'm-[4px] w-[320px] rounded-[12px] px-4 pb-4 pt-4'
+        mobile
+          ? 'm-[4px] border-0 px-4 pb-4 pt-3 rounded-[12px]'
+          : 'oc-ring oc-ring--large m-[4px] w-[320px] rounded-[12px] px-4 pb-4 pt-4'
       )}
       style={mobile ? undefined : CARD_SURFACE_STYLE}
     >

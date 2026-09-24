@@ -92,12 +92,13 @@ function TagChip({
     <button
       type="button"
       onClick={onClick}
+      aria-pressed={selected}
       className={`
-        px-sm py-xxs rounded-full text-xs font-normal transition-colors cursor-pointer select-none
+        oc-ring oc-ring--interactive px-sm py-xxs rounded-full text-xs font-normal transition-colors cursor-pointer select-none
         ${
           selected
-            ? 'border border-chatbox-tint-brand text-chatbox-tint-brand bg-transparent'
-            : 'border border-transparent bg-chatbox-background-gray-secondary text-chatbox-tint-secondary'
+            ? 'oc-ring--subtle text-chatbox-tint-brand bg-transparent [box-shadow:var(--neo-shadow-select)]'
+            : 'oc-ring--subtle bg-chatbox-background-gray-secondary text-chatbox-tint-secondary'
         }
       `}
     >

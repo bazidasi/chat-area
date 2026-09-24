@@ -1371,12 +1371,12 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
           ref={subPanelRef}
           gap={0}
           py="xs"
-          className={`absolute overflow-y-auto bg-[var(--mantine-color-body)] shadow-lg border-[var(--mantine-color-default-border)] ${
+          className={`oc-ring oc-ring--floating absolute overflow-y-auto bg-[var(--mantine-color-body)] ${
             resolvedSubPanelPosition?.placement === 'overlay'
-              ? 'rounded-lg border'
+              ? 'rounded-lg'
               : resolvedSubPanelPosition?.placement === 'left'
-                ? 'right-full rounded-l-lg border-r'
-                : 'left-full rounded-r-lg border-l'
+                ? 'right-full rounded-l-lg'
+                : 'left-full rounded-r-lg'
           }`}
           style={{
             width: resolvedSubPanelPosition?.width ?? SUB_PANEL_WIDTH,

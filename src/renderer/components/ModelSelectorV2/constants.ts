@@ -1,6 +1,7 @@
 import type { CSSProperties } from 'react'
 
-export const SELECTED_CLASS = '!bg-chatbox-background-brand-secondary text-chatbox-tint-primary'
+export const SELECTED_CLASS =
+  '!bg-chatbox-background-brand-secondary text-chatbox-tint-primary [box-shadow:var(--neo-shadow-select)]'
 export const HOVER_CLASS = 'hover:bg-chatbox-background-secondary-hover'
 export const MODEL_SELECTOR_SURFACE_CLASS = 'bg-chatbox-background-primary'
 export const FALLBACK_UPGRADE_URL = 'https://chatboxai.app/#pricing'
@@ -13,13 +14,11 @@ export const EMPTY_MODEL_IDS: string[] = []
 
 export const CARD_SURFACE_STYLE: CSSProperties = {
   background: 'var(--chatbox-background-primary)',
-  borderColor: 'color-mix(in srgb, var(--chatbox-border-secondary), transparent 18%)',
   boxShadow: 'var(--neo-shadow-outset-lg)',
 }
 
 export const DRAWER_SURFACE_STYLE: CSSProperties = {
   background: 'var(--chatbox-background-primary)',
-  borderColor: 'color-mix(in srgb, var(--chatbox-border-secondary), transparent 12%)',
 }
 
 export const MOBILE_TAP_RESET_STYLE: CSSProperties = {

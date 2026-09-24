@@ -281,8 +281,8 @@ const AgentModeButton: FC<AgentModeButtonProps> = ({
           repositionInputs={false}
         >
           <Drawer.Portal>
-            <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
-            <Drawer.Content className="flex flex-col h-fit max-h-[min(85dvh,720px)] fixed bottom-0 left-0 right-0 outline-none bg-[var(--chatbox-background-primary)] rounded-t-lg">
+            <Drawer.Overlay className="oc-overlay fixed inset-0" />
+            <Drawer.Content className="oc-ring oc-ring--large flex flex-col h-fit max-h-[min(85dvh,720px)] fixed bottom-0 left-0 right-0 outline-none bg-[var(--chatbox-background-primary)] rounded-t-lg">
               <Drawer.Handle />
               <Drawer.Title className="sr-only">{modeLabel}</Drawer.Title>
               <div className="min-h-0 overflow-y-auto overscroll-contain">{panel}</div>

@@ -69,11 +69,7 @@ export function UserTypeCards({ onSelect, disabled }: UserTypeCardsProps) {
                 background: highlighted
                   ? 'linear-gradient(180deg, rgba(183, 28, 28, 0.08) 0%, rgba(183, 28, 28, 0.02) 100%)'
                   : 'linear-gradient(180deg, rgba(134, 142, 150, 0.06) 0%, rgba(134, 142, 150, 0.02) 100%)',
-                border: isSelected
-                  ? '2px solid var(--chatbox-border-brand)'
-                  : highlighted
-                    ? '2px solid var(--chatbox-border-brand)'
-                    : '2px solid var(--chatbox-border-secondary)',
+                boxShadow: isSelected ? 'var(--neo-shadow-select)' : 'var(--neo-shadow-outset-sm)',
               }}
             >
               {/* Recommended badge - positioned at top-right corner */}

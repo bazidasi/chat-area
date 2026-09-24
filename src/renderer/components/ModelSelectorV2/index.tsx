@@ -381,7 +381,7 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
         className={clsx(
           'overflow-hidden',
           MODEL_SELECTOR_SURFACE_CLASS,
-          isMobile ? 'border-0' : 'rounded-[10px] border border-solid border-chatbox-border-primary shadow-lg'
+          isMobile ? 'border-0' : 'oc-ring oc-ring--large rounded-[10px]'
         )}
       >
         {isMobile && (
@@ -442,7 +442,7 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
             <button
               type="button"
               className={clsx(
-                'w-full h-9 px-2.5 text-left border-0 bg-transparent cursor-pointer text-sm text-chatbox-tint-primary',
+                'oc-ring--interactive w-full h-9 px-2.5 text-left border-0 bg-transparent cursor-pointer text-sm text-chatbox-tint-primary',
                 !selectedProviderId && !selectedModelId ? SELECTED_CLASS : HOVER_CLASS
               )}
               onClick={() => handleSelect('', '')}
@@ -574,12 +574,12 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
           <Drawer.Root open={mobileOpen} onOpenChange={handleMobileOpenChange} noBodyStyles>
             <Drawer.Trigger asChild>{children}</Drawer.Trigger>
             <Drawer.Portal>
-              <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
+              <Drawer.Overlay className="oc-overlay fixed inset-0" />
               <Drawer.Content className="fixed bottom-0 left-0 right-0 outline-none">
                 <Stack
                   gap={0}
                   className={clsx(
-                    'max-h-[88vh] rounded-t-[16px] border border-b-0 border-solid',
+                    'oc-ring oc-ring--large max-h-[88vh] rounded-t-[16px]',
                     MODEL_SELECTOR_SURFACE_CLASS
                   )}
                   style={DRAWER_SURFACE_STYLE}
@@ -601,11 +601,14 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
             noBodyStyles
           >
             <Drawer.Portal>
-              <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
+              <Drawer.Overlay className="oc-overlay fixed inset-0" />
               <Drawer.Content className="fixed bottom-0 left-0 right-0 outline-none">
                 <Stack
                   gap={0}
-                  className={clsx('rounded-t-[16px] border border-b-0 border-solid', MODEL_SELECTOR_SURFACE_CLASS)}
+                  className={clsx(
+                    'oc-ring oc-ring--large rounded-t-[16px]',
+                    MODEL_SELECTOR_SURFACE_CLASS
+                  )}
                   style={DRAWER_SURFACE_STYLE}
                 >
                   <div aria-hidden className="mx-auto my-3 h-1 w-14 rounded-full bg-chatbox-tint-tertiary opacity-70" />

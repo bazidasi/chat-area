@@ -76,7 +76,7 @@ export function ModelRow({
       aria-current={selected ? 'true' : undefined}
       aria-disabled={isDisabled}
       className={clsx(
-        'w-full flex items-center border-0 bg-transparent text-left cursor-pointer text-chatbox-tint-primary focus:outline-none focus-visible:outline-none',
+        'oc-ring--interactive w-full flex items-center border-0 bg-transparent text-left cursor-pointer text-chatbox-tint-primary focus:outline-none focus-visible:outline-none',
         mobile
           ? clsx('min-h-11 pr-3 gap-2.5', brandedInset ? 'pl-4' : 'pl-3')
           : clsx('h-9 pr-2.5 gap-1.5', brandedInset ? 'pl-4' : 'pl-2.5'),

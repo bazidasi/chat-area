@@ -61,7 +61,7 @@ export const ImageModelSelect = forwardRef<HTMLButtonElement, ImageModelSelectPr
           </button>
         </Combobox.Target>
 
-        <Combobox.Dropdown className="!rounded-lg !border-[var(--chatbox-border-primary)] !shadow-lg overflow-hidden">
+        <Combobox.Dropdown className="!rounded-lg overflow-hidden">
           <Combobox.Options mah={400} style={{ overflowY: 'auto' }} className="p-1">
             {modelGroups.length === 0 ? (
               <Text size="sm" c="dimmed" px="sm" py="xs">

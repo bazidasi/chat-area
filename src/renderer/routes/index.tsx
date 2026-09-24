@@ -600,9 +600,8 @@ const HomeFeatureCard = ({
     type="button"
     onClick={onClick}
     className={clsx(
-      'group/card relative flex w-full cursor-pointer flex-col items-start gap-2 text-left',
-      'chatbox-card-surface rounded-2xl bg-chatbox-background-secondary px-4 py-3',
-      'transition-all duration-200 hover:-translate-y-0.5 hover:bg-chatbox-background-tertiary'
+      'chatbox-suggestion-card group/card relative flex w-full cursor-pointer flex-col items-start gap-2 text-left',
+      'rounded-2xl bg-chatbox-background-secondary px-4 py-3'
     )}
   >
     <span

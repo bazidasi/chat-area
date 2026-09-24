@@ -18,7 +18,7 @@ const TooltipContent = React.forwardRef<
       ref={ref}
       sideOffset={sideOffset}
       className={cn(
-        'z-50 overflow-hidden rounded-md border bg-primary px-3 py-1.5 text-sm text-primary-foreground shadow-md animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-tooltip-content-transform-origin]',
+        'oc-ring oc-ring--floating z-50 overflow-hidden rounded-md bg-[var(--surface-float-base)] px-3 py-1.5 text-sm text-[var(--text-invert-strong)] animate-in fade-in-0 zoom-in-95 data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=closed]:zoom-out-95 data-[side=bottom]:slide-in-from-top-2 data-[side=left]:slide-in-from-right-2 data-[side=right]:slide-in-from-left-2 data-[side=top]:slide-in-from-bottom-2 origin-[--radix-tooltip-content-transform-origin]',
         className
       )}
       {...props}
@@ -138,7 +138,7 @@ function AppTooltip({
   const arrowFill =
     typeof customArrowFill === 'number'
       ? String(customArrowFill)
-      : (customArrowFill ?? colorStyle?.backgroundColor ?? 'var(--primary)')
+      : (customArrowFill ?? colorStyle?.backgroundColor ?? 'var(--surface-float-base)')
   const resolvedOpened = opened ?? (openOnTouch ? touchOpened : undefined)
   const handleOpenChange = (nextOpened: boolean) => {
     if (opened === undefined && openOnTouch) {

@@ -333,11 +333,7 @@ function GuidePage() {
       {showInputArea && (
         <Box px="sm" pb="md" pt="sm" className="flex-shrink-0">
           <Stack gap="xs" maw="56rem" mx="auto">
-            <Stack
-              className="bg-chatbox-background-secondary rounded-lg p-3"
-              style={{ border: '1px solid var(--chatbox-border-primary)' }}
-              gap="xs"
-            >
+            <Stack className="oc-ring oc-ring--large bg-chatbox-background-secondary rounded-lg p-3" gap="xs">
               {/* Input Row */}
               <Flex align="flex-end" gap={4}>
                 <Textarea

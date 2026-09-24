@@ -289,11 +289,12 @@ const ModelSelectContent = forwardRef<
       px={12}
       py={6}
       component="button"
+      type="button"
       data-testid={testId}
       align="center"
       c="chatbox-tertiary"
       w={320}
-      className="border-solid border border-chatbox-border-primary rounded-lg cursor-pointer bg-transparent"
+      className="oc-ring oc-ring--subtle oc-ring--interactive rounded-lg cursor-pointer bg-transparent"
       onClick={onClick}
     >
       <Text span flex={1} className=" text-left">

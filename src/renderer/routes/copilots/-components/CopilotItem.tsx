@@ -52,14 +52,23 @@ export function CopilotItem({ copilot, type = 'local', highlightTerm = '' }: Cop
   return (
     <>
       <Stack
+        role="button"
+        tabIndex={0}
+        aria-label={name}
         onClick={() => setDetailOpened(true)}
+        onKeyDown={(event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault()
+            setDetailOpened(true)
+          }
+        }}
         className="
+        oc-ring oc-ring--interactive
         group
         relative
         p-xs
         gap-xs
         rounded-lg
-        border border-solid border-chatbox-border-primary
         bg-chatbox-background-primary
         cursor-pointer
       "
@@ -72,7 +81,7 @@ export function CopilotItem({ copilot, type = 'local', highlightTerm = '' }: Cop
               alt={name}
               size={36}
               radius="lg"
-              className="flex-shrink-0 border border-solid border-chatbox-border-primary"
+              className="flex-shrink-0"
             >
               {avatar?.type === 'storage-key' ? (
                 <ImageInStorage storageKey={avatar.storageKey} className="object-cover object-center w-full h-full" />

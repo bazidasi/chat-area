@@ -88,9 +88,9 @@ export function ImageMiniCard(props: { storageKey: string; onDelete: () => void 
   return (
     <div
       key={storageKey}
-      className="w-[100px] h-[100px] p-1 m-1 inline-flex items-center justify-center
-                                bg-white shadow-sm rounded-lg border-solid border-gray-400/20
-                                hover:shadow-lg hover:cursor-pointer hover:scale-105 transition-all duration-200
+      className="oc-ring oc-ring--interactive w-[100px] h-[100px] p-1 m-1 inline-flex items-center justify-center
+                                bg-[var(--neo-surface-raised)] rounded-lg
+                                hover:cursor-pointer hover:scale-105 transition-all duration-200
                                 group/image-mini-card"
     >
       <ImageInStorage storageKey={storageKey} />
@@ -194,9 +194,9 @@ export function FileMiniCard(props: {
 
   return (
     <div
-      className="w-[132px] h-[108px] px-2.5 pt-2 pb-3 m-1 inline-flex items-center justify-center
-                                bg-white shadow-sm rounded-lg border-solid border-gray-400/20
-                                hover:shadow-lg hover:cursor-pointer hover:scale-105 transition-all duration-200
+      className="oc-ring oc-ring--interactive w-[132px] h-[108px] px-2.5 pt-2 pb-3 m-1 inline-flex items-center justify-center
+                                bg-[var(--neo-surface-raised)] rounded-lg
+                                hover:cursor-pointer hover:scale-105 transition-all duration-200
                                 group/file-mini-card relative"
       onClick={handleClick}
     >

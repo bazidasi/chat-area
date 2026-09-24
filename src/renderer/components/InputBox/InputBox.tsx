@@ -1664,10 +1664,8 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                       aria-live="polite"
                       align="center"
                       gap={8}
-                      className="w-full rounded-lg px-2.5 py-2 mb-1"
+                      className="chatbox-warning-callout w-full rounded-lg px-2.5 py-2 mb-1"
                       style={{
-                        border: '1px solid var(--chatbox-border-primary)',
-                        borderLeft: '3px solid var(--chatbox-tint-warning)',
                         background: 'var(--chatbox-background-primary)',
                       }}
                     >
@@ -1695,10 +1693,8 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                       aria-live="polite"
                       align="center"
                       gap={8}
-                      className="w-full rounded-lg px-2.5 py-2 mb-1"
+                      className="chatbox-warning-callout w-full rounded-lg px-2.5 py-2 mb-1"
                       style={{
-                        border: '1px solid var(--chatbox-border-primary)',
-                        borderLeft: '3px solid var(--chatbox-tint-warning)',
                         background: 'var(--chatbox-background-primary)',
                       }}
                     >
