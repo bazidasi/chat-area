@@ -15,7 +15,11 @@ describe('OpenCode shadow surface system', () => {
     expect(globalStyles).toContain('--neo-shadow-boxed: var(--shadow-md);')
     expect(globalStyles).toContain('--neo-shadow-boxed-hover: var(--shadow-lg);')
     expect(globalStyles).toContain(
-      '--neo-shadow-boxed-focus: inset 0 0 12px color-mix(in srgb, var(--chatbox-brand) 18%, transparent)'
+      '--neo-shadow-boxed: -1px -1px 0 rgba(255, 255, 255, 0.12),'
+    )
+    expect(globalStyles).toContain('1px 1px 0 rgba(0, 0, 0, 0.7), var(--shadow-md);')
+    expect(globalStyles).toContain(
+      '--neo-shadow-boxed-focus: -1px -1px 0 rgba(255, 255, 255, 0.18),'
     )
     expect(globalStyles).not.toContain(
       '--neo-shadow-boxed-focus: 0 0 0 3px color-mix(in srgb, var(--chatbox-brand)'
@@ -23,8 +27,13 @@ describe('OpenCode shadow surface system', () => {
     expect(globalStyles).toContain('--neo-shadow-inset-focus: var(--neo-shadow-inset)')
     expect(globalStyles).toContain('--neo-shadow-critical-focus: var(--shadow-xs-border-critical-focus);')
     expect(globalStyles).toMatch(
+      /\.chatbox-input-beam\s*\{[^}]*overflow:\s*visible !important;[^}]*\}/s
+    )
+    expect(globalStyles).toMatch(
       /\.chatbox-input-surface\s*\{[^}]*box-shadow:\s*var\(--neo-shadow-boxed\);/s
     )
+    expect(readRendererSource('components/InputBox/InputBox.tsx')).toContain('chatbox-input-beam')
+    expect(readRendererSource('components/InputBox/InputBox.tsx')).toContain('borderRadius={29}')
     expect(globalStyles).toMatch(
       /\.chatbox-suggestion-card\s*\{[^}]*box-shadow:\s*var\(--neo-shadow-boxed\);/s
     )
@@ -32,8 +41,9 @@ describe('OpenCode shadow surface system', () => {
       /\.chatbox-mode-switch\s*\{[^}]*box-shadow:\s*var\(--neo-shadow-boxed\);/s
     )
     expect(componentStyles).toMatch(
-      /\.neo-main-frame\s*\{[^}]*1px 0 0 0 var\(--border-weak-base\)/s
+      /\.neo-main-frame\s*\{[^}]*box-shadow:\s*0 -1px 0 0 var\(--border-weak-base\)/s
     )
+    expect(componentStyles).not.toMatch(/\.neo-main-frame\s*\{[^}]*1px 0 0 0 var\(--border-weak-base\)/s)
     expect(componentStyles).toMatch(/\.oc-ring\s*\{[^}]*box-shadow:\s*var\(--neo-shadow-outset-sm\);/s)
   })
 

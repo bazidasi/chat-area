@@ -56,16 +56,12 @@ html {
   backdrop-filter: blur(3px);
 }
 
-/* One continuous 1px frame around the main column (left = sidebar
-   divider → top → right → bottom, all four corners meeting). Replaces
-   the old bottom-only .App::after line, which sat at window bottom:0
-   below the inset content and read as a second, disconnected stroke. */
+/* One continuous frame around the main column, excluding the sidebar-facing edge. */
 .neo-main-frame {
   border: none;
   box-shadow:
     0 -1px 0 0 var(--border-weak-base),
     0 1px 0 0 var(--border-weak-base),
-    1px 0 0 0 var(--border-weak-base),
     var(--shadow-xs);
 }
 
@@ -73,7 +69,6 @@ html {
   box-shadow:
     0 -1px 0 0 var(--border-weak-base),
     0 1px 0 0 var(--border-weak-base),
-    -1px 0 0 0 var(--border-weak-base),
     var(--shadow-xs);
 }
 

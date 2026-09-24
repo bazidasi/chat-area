@@ -359,6 +359,21 @@
   --shadow-lg: 0 16px 48px -6px rgba(0, 0, 0, 0.15), 0 6px 12px -2px rgba(0, 0, 0, 0.1),
     0 1px 2.5px rgba(0, 0, 0, 0.1);
 
+  /* Dark mode keeps OpenCode's thin, sharp elevation. Diagonal highlights
+     read as light without becoming a grey perimeter. */
+  --neo-shadow-boxed: -1px -1px 0 rgba(255, 255, 255, 0.12),
+    1px 1px 0 rgba(0, 0, 0, 0.7), var(--shadow-md);
+  --neo-shadow-boxed-hover: -1px -1px 0 rgba(255, 255, 255, 0.16),
+    1px 1px 0 rgba(0, 0, 0, 0.75), var(--shadow-lg);
+  --neo-shadow-boxed-focus: -1px -1px 0 rgba(255, 255, 255, 0.18),
+    1px 1px 0 rgba(0, 0, 0, 0.75), var(--shadow-md);
+  --neo-shadow-outset-xs: -1px -1px 0 rgba(255, 255, 255, 0.09),
+    1px 1px 0 rgba(0, 0, 0, 0.65), var(--shadow-xs-border-base);
+  --neo-shadow-outset-sm: -1px -1px 0 rgba(255, 255, 255, 0.12),
+    1px 1px 0 rgba(0, 0, 0, 0.7), var(--shadow-xs-border);
+  --neo-shadow-outset-lg: -1px -1px 0 rgba(255, 255, 255, 0.14),
+    1px 1px 0 rgba(0, 0, 0, 0.75), var(--shadow-lg-border-base);
+
   /* wells read as recesses on a dark surface, so the inset pair deepens */
   --neo-shadow-inset-sm: inset 0 1px 2px rgba(0, 0, 0, 0.4), inset 0 2px 4px -1px rgba(0, 0, 0, 0.3);
   --neo-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.45), inset 0 4px 8px -2px rgba(0, 0, 0, 0.35);
@@ -504,6 +519,12 @@ ul[data-sidebar='menu-sub'] > li {
 /* ---------- chat input surface (shared by InputBox + PendingActionBar)
    OpenCode depth-only elevation: md shadow at rest, lg on hover. No ring
    layer and no CSS border, so the surface reads as shadow-raised. */
+/* BorderBeam's default wrapper clips descendants. Let the input shadow
+   escape so the full OpenCode elevation is visible around the rounded well. */
+.chatbox-input-beam {
+  overflow: visible !important;
+}
+
 .chatbox-input-surface {
   border: none !important;
   border-radius: 29px;
