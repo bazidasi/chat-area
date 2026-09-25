@@ -29,6 +29,7 @@ function createTestRecord(session: Session, sortOrder: number): SessionMetaRecor
     id: session.id,
     name: session.name,
     type: session.type,
+    ...(session.projectId ? { projectId: session.projectId } : {}),
     sortOrder,
     createdAt: sortOrder,
   }
@@ -65,9 +66,86 @@ describe('session query definitions', () => {
     firstClient.setQueryData(QueryKeys.ChatSessionsList, undefined)
     expect(secondClient.getQueryData(QueryKeys.ChatSessionsList)).toBeDefined()
   })
+
+  test('keeps global and project-scoped list caches isolated and forwards structured filters', async () => {
+    const page: SessionMetaPage = { items: [], nextCursor: null, total: 0 }
+    const listSessionsMetaPage = vi.fn(() => Promise.resolve(page))
+    const definitions = createSessionQueryDefinitions({
+      getSession: () => Promise.resolve(null),
+      listSessionsMetaPage,
+      listArchivedSessionsMetaPage: () => Promise.resolve(page),
+    })
+    const queryClient = new QueryClient()
+
+    await queryClient.fetchInfiniteQuery(definitions.sessions({ projectId: 'project-1' }))
+    await queryClient.fetchInfiniteQuery(definitions.sessions({ projectId: 'project-2' }))
+    await queryClient.fetchInfiniteQuery(definitions.sessions)
+
+    expect(QueryKeys.ChatSessionsListFor({ projectId: 'project-1' })).not.toEqual(
+      QueryKeys.ChatSessionsListFor({ projectId: 'project-2' })
+    )
+    expect(QueryKeys.ChatSessionsList).not.toEqual(QueryKeys.ChatSessionsListFor({ projectId: 'project-1' }))
+    expect(listSessionsMetaPage.mock.calls).toEqual([
+      [0, undefined, { projectId: 'project-1' }],
+      [0, undefined, { projectId: 'project-2' }],
+      [0, undefined, undefined],
+    ])
+  })
 })
 
 describe('SessionQueryBridge', () => {
+  test('projects creates, project moves, and deletes only into matching list caches', async () => {
+    const repository = new InMemorySessionRepository()
+    const first = { ...createTestSession('project-one'), projectId: 'project-1' }
+    const second = { ...createTestSession('project-two'), projectId: 'project-2' }
+    const unscoped = createTestSession('unscoped')
+    for (const [session, sortOrder] of [
+      [first, 3],
+      [second, 2],
+      [unscoped, 1],
+    ] as const) {
+      repository.sessions.set(session.id, session)
+      repository.records.set(session.id, createTestRecord(session, sortOrder))
+    }
+    const events = new SessionEventBus()
+    const service = createService(repository, events)
+    const queryClient = new QueryClient()
+    const bridge = new SessionQueryBridge(queryClient, service, events)
+    const projectOneKey = QueryKeys.ChatSessionsListFor({ projectId: 'project-1' })
+    const projectTwoKey = QueryKeys.ChatSessionsListFor({ projectId: 'project-2' })
+
+    await queryClient.fetchInfiniteQuery(bridge.definitions.sessions)
+    await queryClient.fetchInfiniteQuery(bridge.definitions.sessions({ projectId: 'project-1' }))
+    await queryClient.fetchInfiniteQuery(bridge.definitions.sessions({ projectId: 'project-2' }))
+
+    const ids = (key: readonly unknown[]) =>
+      queryClient
+        .getQueryData<InfiniteSessionData>(key)
+        ?.pages.flatMap((page) => page.items)
+        .map(({ id }) => id) ?? []
+    expect(ids(projectOneKey)).toEqual(['project-one'])
+    expect(ids(projectTwoKey)).toEqual(['project-two'])
+
+    const created = await service.createSession({
+      name: 'Created in one',
+      type: 'chat',
+      messages: [],
+      projectId: 'project-1',
+    })
+    expect(ids(QueryKeys.ChatSessionsList)).toEqual(['created', 'project-one', 'project-two'])
+    expect(ids(projectOneKey)).toEqual(['created', 'project-one'])
+    expect(ids(projectTwoKey)).toEqual(['project-two'])
+
+    await service.updateSession(created.id, { projectId: 'project-2' })
+    expect(ids(QueryKeys.ChatSessionsList)).toEqual(['created', 'project-one', 'project-two'])
+    expect(ids(projectOneKey)).toEqual(['project-one'])
+    expect(ids(projectTwoKey)).toEqual(['created', 'project-two'])
+
+    await service.deleteSession(created.id)
+    expect(ids(projectOneKey)).toEqual(['project-one'])
+    expect(ids(projectTwoKey)).toEqual(['project-two'])
+  })
+
   test('distinguishes an absent cache entry from a cached missing session', () => {
     const repository = new InMemorySessionRepository()
     const events = new SessionEventBus()

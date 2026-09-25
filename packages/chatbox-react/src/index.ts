@@ -27,6 +27,7 @@ export {
   SessionQueryBridge,
   type SessionQueryDefinitions,
   type SessionQuerySource,
+  type SessionListScope,
 } from './query'
 export {
   AUTH_INFO_PERSIST_KEY,

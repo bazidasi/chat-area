@@ -3,6 +3,8 @@ import type {
   Session,
   SessionApplicationEvent,
   SessionEventBus,
+  SessionListFilter,
+  SessionMeta,
   SessionMetaPage,
   SessionMetaRecord,
   Updater,
@@ -10,7 +12,7 @@ import type {
 import { applyMessageUpdate } from '@chatbox/core/application/session'
 import { sortSessionRecords, uniqueSessionRecords } from '@chatbox/core/utils/session-sort'
 import type { InfiniteData, QueryClient } from '@tanstack/react-query'
-import { QueryKeys } from './query-keys'
+import { QueryKeys, sessionListQueryKey } from './query-keys'
 import { mergeCachedGeneratingMessages } from './session-cache-policy'
 import {
   createSessionQueryDefinitions,
@@ -19,6 +21,38 @@ import {
 } from './session-query-options'
 
 export type InfiniteSessionData = InfiniteData<SessionMetaPage, number>
+
+type SessionListCache = {
+  queryKey: readonly unknown[]
+  filter?: SessionListFilter
+  archived: boolean
+}
+
+function matchesFilter(record: SessionMetaRecord, filter?: SessionListFilter): boolean {
+  return filter?.projectId === undefined || record.projectId === filter.projectId
+}
+
+function filterFromQueryKey(queryKey: readonly unknown[]): SessionListFilter | undefined {
+  if (queryKey.length === 1) return undefined
+  const scope = queryKey[1]
+  if (typeof scope !== 'string' || !scope.startsWith('project:')) return undefined
+  return { projectId: scope.slice('project:'.length) }
+}
+
+function listCaches(queryClient: QueryClient, baseKey: readonly string[]): SessionListCache[] {
+  return queryClient
+    .getQueryCache()
+    .findAll({ queryKey: baseKey })
+    .filter((query) => {
+      if (query.queryKey.length > 2) return false
+      return query.queryKey.length === 1 || (typeof query.queryKey[1] === 'string' && query.queryKey[1].startsWith('project:'))
+    })
+    .map((query) => ({
+      queryKey: query.queryKey,
+      filter: filterFromQueryKey(query.queryKey),
+      archived: baseKey[0] === 'archived-chat-sessions-list',
+    }))
+}
 
 export function applySessionListUpdate(
   old: InfiniteSessionData,
@@ -44,7 +78,7 @@ export function applySessionListUpdate(
 
 function updateListData(
   queryClient: QueryClient,
-  queryKey: string[],
+  queryKey: readonly unknown[],
   updater: (items: SessionMetaRecord[]) => SessionMetaRecord[]
 ): void {
   queryClient.setQueryData<InfiniteSessionData>(queryKey, (old) => {
@@ -73,8 +107,8 @@ export class SessionQueryBridge {
     this.unsubscribe()
   }
 
-  getCachedSessionsMeta(): SessionMetaRecord[] {
-    const data = this.queryClient.getQueryData<InfiniteSessionData>(QueryKeys.ChatSessionsList)
+  getCachedSessionsMeta(filter?: SessionListFilter): SessionMetaRecord[] {
+    const data = this.queryClient.getQueryData<InfiniteSessionData>(QueryKeys.ChatSessionsListFor(filter))
     return uniqueSessionRecords(data?.pages.flatMap((page) => page.items) ?? [])
   }
 
@@ -82,10 +116,10 @@ export class SessionQueryBridge {
     return this.queryClient.getQueryData<Session | null>(QueryKeys.ChatSession(sessionId))
   }
 
-  async listSessionsMeta(): Promise<SessionMetaRecord[]> {
-    const cached = this.getCachedSessionsMeta()
+  async listSessionsMeta(filter?: SessionListFilter): Promise<SessionMetaRecord[]> {
+    const cached = this.getCachedSessionsMeta(filter)
     if (cached.length > 0) return cached
-    const data = await this.queryClient.fetchInfiniteQuery(this.definitions.sessions)
+    const data = await this.queryClient.fetchInfiniteQuery(this.definitions.sessions(filter))
     return uniqueSessionRecords(data.pages.flatMap((page) => page.items))
   }
 
@@ -97,23 +131,45 @@ export class SessionQueryBridge {
     this.queryClient.removeQueries({ queryKey: QueryKeys.ChatSession(sessionId), exact: true })
   }
 
-  updateSessionListData(updater: (items: SessionMetaRecord[]) => SessionMetaRecord[]): void {
+  updateSessionListData(
+    updater: (items: SessionMetaRecord[]) => SessionMetaRecord[],
+    filter?: SessionListFilter
+  ): void {
+    if (filter !== undefined) {
+      updateListData(this.queryClient, QueryKeys.ChatSessionsListFor(filter), updater)
+      return
+    }
     updateListData(this.queryClient, QueryKeys.ChatSessionsList, updater)
+    this.updateAllListData(
+      this.visibleListCaches().filter((cache) => cache.filter !== undefined),
+      updater
+    )
   }
 
-  updateArchivedSessionListData(updater: (items: SessionMetaRecord[]) => SessionMetaRecord[]): void {
+  updateArchivedSessionListData(
+    updater: (items: SessionMetaRecord[]) => SessionMetaRecord[],
+    filter?: SessionListFilter
+  ): void {
+    if (filter !== undefined) {
+      updateListData(this.queryClient, QueryKeys.ArchivedChatSessionsListFor(filter), updater)
+      return
+    }
     updateListData(this.queryClient, QueryKeys.ArchivedChatSessionsList, updater)
+    this.updateAllListData(
+      this.archivedListCaches().filter((cache) => cache.filter !== undefined),
+      updater
+    )
   }
 
-  resetSessionList(page: SessionMetaPage): void {
-    this.queryClient.setQueryData<InfiniteSessionData>(QueryKeys.ChatSessionsList, {
+  resetSessionList(page: SessionMetaPage, filter?: SessionListFilter): void {
+    this.queryClient.setQueryData<InfiniteSessionData>(QueryKeys.ChatSessionsListFor(filter), {
       pages: [page],
       pageParams: [0],
     })
   }
 
-  resetArchivedSessionList(page: SessionMetaPage): void {
-    this.queryClient.setQueryData<InfiniteSessionData>(QueryKeys.ArchivedChatSessionsList, {
+  resetArchivedSessionList(page: SessionMetaPage, filter?: SessionListFilter): void {
+    this.queryClient.setQueryData<InfiniteSessionData>(QueryKeys.ArchivedChatSessionsListFor(filter), {
       pages: [page],
       pageParams: [0],
     })
@@ -137,6 +193,23 @@ export class SessionQueryBridge {
     this.updateSessionCache(sessionId, (current) => applyMessageUpdate(current, sessionId, messageId, updater))
   }
 
+  private visibleListCaches(): SessionListCache[] {
+    return listCaches(this.queryClient, QueryKeys.ChatSessionsList)
+  }
+
+  private archivedListCaches(): SessionListCache[] {
+    return listCaches(this.queryClient, QueryKeys.ArchivedChatSessionsList)
+  }
+
+  private updateAllListData(
+    caches: SessionListCache[],
+    updater: (items: SessionMetaRecord[], cache: SessionListCache) => SessionMetaRecord[]
+  ): void {
+    for (const cache of caches) {
+      updateListData(this.queryClient, cache.queryKey, (items) => updater(items, cache))
+    }
+  }
+
   private invalidateVisibleListRefresh(): void {
     this.visibleListRefreshGeneration += 1
   }
@@ -146,51 +219,88 @@ export class SessionQueryBridge {
     // React Query fetch, so cancelQueries cannot abort it. Queue refreshes and
     // drop superseded results so an older page cannot overwrite a newer one.
     const generation = ++this.visibleListRefreshGeneration
+    const caches = this.visibleListCaches()
     const refresh = this.visibleListRefreshTail
       .catch(() => undefined)
       .then(async () => {
-        if (generation !== this.visibleListRefreshGeneration) {
-          return
-        }
+        if (generation !== this.visibleListRefreshGeneration) return
         await this.queryClient.cancelQueries({ queryKey: QueryKeys.ChatSessionsList })
-        if (generation !== this.visibleListRefreshGeneration) {
-          return
+        if (generation !== this.visibleListRefreshGeneration) return
+        const pages = await Promise.all(
+          caches.map(async (cache) => ({
+            cache,
+            page: await this.readVisibleSessionListPage(cache.filter, generation),
+          }))
+        )
+        if (generation !== this.visibleListRefreshGeneration) return
+        for (const { cache, page } of pages) {
+          if (page) this.resetSessionList(page, cache.filter)
         }
-        const page = await this.readVisibleSessionListPage(generation)
-        if (!page || generation !== this.visibleListRefreshGeneration) {
-          return
-        }
-        this.resetSessionList(page)
       })
     this.visibleListRefreshTail = refresh
     this.visibleListRefreshPending = true
     return refresh.finally(() => {
-      if (this.visibleListRefreshTail === refresh) {
-        this.visibleListRefreshPending = false
-      }
+      if (this.visibleListRefreshTail === refresh) this.visibleListRefreshPending = false
     })
   }
 
-  private async readVisibleSessionListPage(generation: number): Promise<SessionMetaPage | null> {
+  private async readVisibleSessionListPage(
+    filter: SessionListFilter | undefined,
+    generation: number
+  ): Promise<SessionMetaPage | null> {
     try {
-      return await this.source.listSessionsMetaPage(0)
+      return await this.source.listSessionsMetaPage(0, undefined, filter)
     } catch {
-      if (generation !== this.visibleListRefreshGeneration) {
-        return null
-      }
+      if (generation !== this.visibleListRefreshGeneration) return null
       try {
-        return await this.source.listSessionsMetaPage(0)
+        return await this.source.listSessionsMetaPage(0, undefined, filter)
       } catch {
-        if (generation !== this.visibleListRefreshGeneration) {
-          return null
-        }
+        if (generation !== this.visibleListRefreshGeneration) return null
         // The optimistic pin patch can leave a pagination-inconsistent prefix.
         // Infinite staleTime would keep that cache authoritative after a read
         // failure, so mark the list stale and let observers refetch.
-        await this.queryClient.invalidateQueries({ queryKey: QueryKeys.ChatSessionsList }).catch(() => undefined)
+        await this.queryClient
+          .invalidateQueries({ queryKey: QueryKeys.ChatSessionsListFor(filter) })
+          .catch(() => undefined)
         return null
       }
     }
+  }
+
+  private async refreshScopedListReset(archived: boolean): Promise<void> {
+    const baseKey = archived ? QueryKeys.ArchivedChatSessionsList : QueryKeys.ChatSessionsList
+    const caches = listCaches(this.queryClient, baseKey).filter((cache) => cache.filter)
+    await Promise.all(
+      caches.map(async (cache) => {
+        try {
+          const page = archived
+            ? await this.source.listArchivedSessionsMetaPage(0, undefined, cache.filter)
+            : await this.source.listSessionsMetaPage(0, undefined, cache.filter)
+          if (archived) this.resetArchivedSessionList(page, cache.filter)
+          else this.resetSessionList(page, cache.filter)
+        } catch {
+          await this.queryClient
+            .invalidateQueries({ queryKey: sessionListQueryKey(baseKey, cache.filter) })
+            .catch(() => undefined)
+        }
+      })
+    )
+  }
+
+  private projectRecordUpdate(
+    items: SessionMetaRecord[],
+    session: Session,
+    meta: SessionMeta,
+    filter: SessionListFilter | undefined,
+    oldRecord?: SessionMetaRecord
+  ): SessionMetaRecord[] {
+    const current = items.find((item) => item.id === session.id)
+    if (!current && !oldRecord) return items
+    const base = current ?? oldRecord!
+    const updated = { ...base, ...meta, id: session.id }
+    if (!matchesFilter(updated, filter)) return items.filter((item) => item.id !== session.id)
+    if (current) return items.map((item) => (item.id === session.id ? updated : item))
+    return sortSessionRecords([...items, updated])
   }
 
   private async project(event: SessionApplicationEvent): Promise<void> {
@@ -199,19 +309,17 @@ export class SessionQueryBridge {
         const refreshPending = this.visibleListRefreshPending
         this.invalidateVisibleListRefresh()
         this.queryClient.setQueryData(QueryKeys.ChatSession(event.session.id), event.session)
-        this.updateSessionListData((items) => sortSessionRecords([...items, event.record]))
-        // A record that sorts to the tail of a still-paginated window may truly
-        // belong on a page that is not loaded yet (a copy of a session outside
-        // the window), which would shift every later offset. The cache alone
-        // cannot tell, so reload the first page from the repository.
-        const data = this.queryClient.getQueryData<InfiniteSessionData>(QueryKeys.ChatSessionsList)
-        const lastPage = data?.pages[data.pages.length - 1]
-        if (
-          refreshPending ||
-          (lastPage && lastPage.nextCursor !== null && lastPage.items.at(-1)?.id === event.record.id)
-        ) {
-          await this.refreshVisibleSessionList()
-        }
+        this.updateAllListData(this.visibleListCaches(), (items, cache) => {
+          if (!matchesFilter(event.record, cache.filter)) return items.filter((item) => item.id !== event.record.id)
+          return sortSessionRecords([...items.filter((item) => item.id !== event.record.id), event.record])
+        })
+        const caches = this.visibleListCaches().filter((cache) => matchesFilter(event.record, cache.filter))
+        const needsRefresh = caches.some((cache) => {
+          const data = this.queryClient.getQueryData<InfiniteSessionData>(cache.queryKey)
+          const lastPage = data?.pages[data.pages.length - 1]
+          return lastPage?.nextCursor !== null && lastPage?.items.at(-1)?.id === event.record.id
+        })
+        if (refreshPending || needsRefresh) await this.refreshVisibleSessionList()
         break
       }
       case 'session-updated':
@@ -223,43 +331,62 @@ export class SessionQueryBridge {
           this.queryClient.setQueryData(QueryKeys.ChatSession(event.session.id), event.session)
         }
         if (event.meta) {
+          const oldRecords = [...this.visibleListCaches(), ...this.archivedListCaches()].map((cache) => ({
+            cache,
+            record: this.queryClient
+              .getQueryData<InfiniteSessionData>(cache.queryKey)
+              ?.pages.flatMap((page) => page.items)
+              .find((item) => item.id === event.session.id),
+          }))
+          const migrationEntry = oldRecords.find(({ record }) => record !== undefined)
+          const migrationRecord = migrationEntry?.record
+          const projectChanged =
+            migrationRecord !== undefined &&
+            Object.hasOwn(event.meta, 'projectId') &&
+            migrationRecord.projectId !== event.meta.projectId
           const refreshPending = this.visibleListRefreshPending
-          const cached = this.getCachedSessionsMeta().find((item) => item.id === event.session.id)
-          // Pin state changes the global starred/unstarred window. Patching the
-          // already-loaded pages leaves a stale prefix, so the next page overlaps
-          // and the same chat repeats until the app restarts.
-          const starredChanged = cached !== undefined && Boolean(cached.starred) !== Boolean(event.session.starred)
-          if (starredChanged || refreshPending) {
-            this.invalidateVisibleListRefresh()
+          const starredChanged = this.visibleListCaches().some((cache) => {
+            const cached = this.queryClient
+              .getQueryData<InfiniteSessionData>(cache.queryKey)
+              ?.pages.flatMap((page) => page.items)
+              .find((item) => item.id === event.session.id)
+            return cached !== undefined && Boolean(cached.starred) !== Boolean(event.session.starred)
+          })
+          if (starredChanged || refreshPending) this.invalidateVisibleListRefresh()
+          for (const { cache, record } of oldRecords) {
+            const currentItems =
+              this.queryClient.getQueryData<InfiniteSessionData>(cache.queryKey)?.pages.flatMap((page) => page.items) ?? []
+            const updated = this.projectRecordUpdate(
+              currentItems,
+              event.session,
+              event.meta,
+              cache.filter,
+              record ??
+                (projectChanged && migrationEntry?.cache.archived === cache.archived ? migrationRecord : undefined)
+            )
+            updateListData(this.queryClient, cache.queryKey, () => updated)
           }
-          this.updateSessionListData((items) =>
-            sortSessionRecords(items.map((item) => (item.id === event.session.id ? { ...item, ...event.meta } : item)))
-          )
-          if (starredChanged || refreshPending) {
-            await this.refreshVisibleSessionList()
-          }
+          if (starredChanged || refreshPending) await this.refreshVisibleSessionList()
         }
         break
       case 'session-deleted': {
         const refreshPending = this.visibleListRefreshPending
         const ids = new Set(event.ids)
         this.invalidateVisibleListRefresh()
-        for (const sessionId of ids) {
-          this.queryClient.setQueryData(QueryKeys.ChatSession(sessionId), null)
-        }
-        this.updateSessionListData((items) => items.filter((item) => !ids.has(item.id)))
-        this.updateArchivedSessionListData((items) => items.filter((item) => !ids.has(item.id)))
-        if (refreshPending) {
-          await this.refreshVisibleSessionList()
-        }
+        for (const sessionId of ids) this.queryClient.setQueryData(QueryKeys.ChatSession(sessionId), null)
+        this.updateAllListData(this.visibleListCaches(), (items) => items.filter((item) => !ids.has(item.id)))
+        this.updateAllListData(this.archivedListCaches(), (items) => items.filter((item) => !ids.has(item.id)))
+        if (refreshPending) await this.refreshVisibleSessionList()
         break
       }
       case 'session-list-reset':
-        if (event.visible) {
-          this.invalidateVisibleListRefresh()
-          this.resetSessionList(event.visible)
-        }
+        this.invalidateVisibleListRefresh()
+        if (event.visible) this.resetSessionList(event.visible)
         if (event.archived) this.resetArchivedSessionList(event.archived)
+        await Promise.all([
+          event.visible ? this.refreshScopedListReset(false) : Promise.resolve(),
+          event.archived ? this.refreshScopedListReset(true) : Promise.resolve(),
+        ])
         break
       case 'session-will-delete':
         break
