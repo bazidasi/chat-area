@@ -15,7 +15,7 @@
   content: counter(line);
   display: inline-block;
   width: var(--shiki-line-number-width, 2em);
-  margin-right: 1rem;
+  margin-inline-end: 1rem;
   text-align: right;
   color: currentColor;
   opacity: 0.35;

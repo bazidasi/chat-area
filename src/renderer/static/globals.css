@@ -912,8 +912,7 @@ ul[data-sidebar='menu-sub'] > li {
 }
 
 .copilot-picker-scroll-area .mantine-ScrollArea-scrollbar {
-  padding-left: var(--mantine-spacing-md);
-  padding-right: var(--mantine-spacing-md);
+  padding-inline: var(--mantine-spacing-md);
 }
 
 .pswp__top-bar {
@@ -924,7 +923,7 @@ html[data-need-room-for-mac-controls="true"] .pswp__counter {
   padding-top: 1rem;
 }
 html[data-need-room-for-windows-controls="true"] .pswp__top-bar {
-  padding-right: 9rem;
+  padding-inline-end: 9rem;
 }
 .pswp {
   pointer-events: auto;
@@ -1124,6 +1123,13 @@ div[data-vaul-drawer] {
   text-transform: uppercase;
 }
 
+[dir='rtl'] .sidebar-section-label {
+  /* Non-zero tracking separates the glyphs of a joined Persian word, so it has
+     to fall back to 0. `text-transform: uppercase` is left alone: a no-op on
+     Persian, and still correct for any Latin run in the label. */
+  letter-spacing: 0;
+}
+
 .sidebar-top-action {
   min-height: 31px;
   padding: 5px 8px;
@@ -1159,12 +1165,20 @@ div[data-vaul-drawer] {
 }
 
 .sidebar-shortcut {
-  margin-left: auto;
-  direction: rtl;
+  /* Pushes the hint to the trailing edge. `margin-inline-start` resolves
+     against this element's own direction, which is why the forced `direction`
+     below is scoped to RTL pages -- applied unconditionally it would always
+     resolve the same way and the hint would sit on the wrong side in LTR. */
+  margin-inline-start: auto;
   color: var(--chatbox-tint-tertiary);
   font-size: 9px;
   font-variant-numeric: tabular-nums;
   opacity: 0.75;
+}
+
+[dir='rtl'] .sidebar-shortcut {
+  /* Key glyphs read in logical order under RTL. */
+  direction: rtl;
 }
 
 .sidebar-content {
