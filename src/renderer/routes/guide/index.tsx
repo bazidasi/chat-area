@@ -3,22 +3,9 @@
  * A conversational onboarding experience for new users
  */
 
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Flex,
-  Menu,
-  ScrollArea,
-  Stack,
-  Text,
-  Textarea,
-  Title,
-  UnstyledButton,
-} from '@mantine/core'
+import { ActionIcon, Box, Button, Flex, Menu, ScrollArea, Stack, Text, Title, UnstyledButton } from '@mantine/core'
 import type { Language } from '@shared/types'
 import {
-  IconArrowUp,
   IconBug,
   IconCheck,
   IconChevronRight,
@@ -26,11 +13,10 @@ import {
   IconLayoutSidebarLeftExpand,
   IconMenu2,
   IconPlayerSkipForward,
-  IconPlayerStopFilled,
   IconRefresh,
   IconUserCheck,
 } from '@tabler/icons-react'
-import { createFileRoute, useBlocker } from '@tanstack/react-router'
+import { createFileRoute, useBlocker, useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import Divider from '@/components/common/Divider'
@@ -38,12 +24,16 @@ import { ScalableIcon } from '@/components/common/ScalableIcon'
 import Disclaimer from '@/components/Disclaimer'
 import ProviderImageIcon from '@/components/icons/ProviderImageIcon'
 import WindowControls from '@/components/layout/WindowControls'
+import { PromptInput } from '@/components/ui/prompt-input'
 import { getShowGuideDevButtonsFlag } from '@/dev/devToolsFlags'
 import useNeedRoomForWinControls from '@/hooks/useNeedRoomForWinControls'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import { languageNameMap, languages } from '@/i18n/locales'
+import { useOnboardingCompleted } from '@/stores/onboardingStore'
+import { needEditSetting } from '@/stores/settingActions'
 import { useSettingsStore } from '@/stores/settingsStore'
 import { useUIStore } from '@/stores/uiStore'
+import { FirstRunAuthCard } from './-components/FirstRunAuthCard'
 import { GuideMessage } from './-components/GuideMessage'
 import { useGuideSession } from './-hooks/useGuideSession'
 
@@ -53,10 +43,18 @@ export const Route = createFileRoute('/guide/')({
 
 function GuidePage() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
   const [inputValue, setInputValue] = useState('')
   const viewportRef = useRef<HTMLDivElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
   const [pendingLanguage, setPendingLanguage] = useState<Language | null>(null)
+
+  // Brand-new users land on the token card instead of the chat-style guide.
+  // Anyone who already has a provider, a license, or finished the flow before
+  // keeps the conversational guide they are used to.
+  const onboardingCompleted = useOnboardingCompleted()
+  const needsSetup = useSettingsStore(needEditSetting)
+  const [firstRunDismissed, setFirstRunDismissed] = useState(false)
+  const showFirstRunCard = !onboardingCompleted && needsSetup && !firstRunDismissed
 
   const {
     messages,
@@ -77,7 +75,7 @@ function GuidePage() {
     canSendMessage,
     hasValidConfig,
     isGuideInProgress,
-  } = useGuideSession()
+  } = useGuideSession({ autoStart: !showFirstRunCard })
 
   const { needRoomForMacWindowControls } = useNeedRoomForWinControls()
   const isSmallScreen = useIsSmallScreen()
@@ -93,6 +91,11 @@ function GuidePage() {
   // Check if any message is currently streaming
   const isStreaming = messages.some((m) => m.isStreaming)
   const canSwitchLanguage = !isStreaming
+
+  const leaveFirstRun = useCallback(() => {
+    setFirstRunDismissed(true)
+    void navigate({ to: '/' })
+  }, [navigate])
 
   const applyLanguageChange = useCallback(
     async (newLanguage: Language) => {
@@ -178,17 +181,6 @@ function GuidePage() {
     sendMessage(trimmed)
   }, [inputValue, isLoading, canSendMessage, sendMessage])
 
-  // Handle keyboard shortcuts
-  const handleKeyDown = useCallback(
-    (e: React.KeyboardEvent) => {
-      if (e.key === 'Enter' && !e.shiftKey) {
-        e.preventDefault()
-        handleSend()
-      }
-    },
-    [handleSend]
-  )
-
   const languageSwitcher = (
     <Menu
       position="bottom-end"
@@ -237,6 +229,30 @@ function GuidePage() {
     </Menu>
   )
 
+  const guideModelSelector = (
+    <Menu position="top-end" shadow="md" transitionProps={{ transition: 'fade-up', duration: 200 }}>
+      <Menu.Target>
+        <UnstyledButton className="flex items-center gap-1 rounded-md px-2 py-1 text-muted-foreground transition-colors hover:bg-accent hover:text-foreground">
+          <ProviderImageIcon provider="chatbox-ai" size={18} />
+          <span className="text-xs">{t('Fibonacci Guide')}</span>
+          <ScalableIcon
+            icon={IconChevronRight}
+            size={14}
+            className="text-chatbox-tint-tertiary rotate-90 flex-shrink-0"
+          />
+        </UnstyledButton>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item
+          leftSection={<ProviderImageIcon provider="chatbox-ai" size={16} />}
+          rightSection={<ScalableIcon icon={IconCheck} size={14} className="text-chatbox-tint-brand" />}
+        >
+          Fibonacci Guide
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  )
+
   return (
     <Stack h="100%" gap={0} className="bg-chatbox-background-primary">
       {/* Header */}
@@ -257,9 +273,11 @@ function GuidePage() {
         )}
 
         <Flex align="center" gap="xxs" flex={1} {...(isSmallScreen ? { justify: 'center', pl: 28, pr: 8 } : {})}>
-          <Title order={4} fz={!isSmallScreen ? 20 : undefined} lineClamp={1}>
-            {t('Getting Started')}
-          </Title>
+          {!showFirstRunCard && (
+            <Title order={4} fz={!isSmallScreen ? 20 : undefined} lineClamp={1}>
+              {t('Getting Started')}
+            </Title>
+          )}
         </Flex>
 
         <Flex align="center" gap="xs" className="controls">
@@ -303,111 +321,59 @@ function GuidePage() {
       </Flex>
       <Divider />
 
-      {/* Messages */}
-      <ScrollArea viewportRef={viewportRef} className="flex-1" type="scroll">
-        <Stack gap={0} pt="md" pb="md" mb={showInputArea ? 0 : 120} maw={800} mx="auto">
-          {messages.map((message, index) => (
-            <GuideMessage
-              key={message.id}
-              message={message}
-              onSelectUserType={selectUserType}
-              onLoginSuccess={markGuideCompleted}
-              onQuestionClick={sendMessage}
-              onClaimStart={onClaimStart}
-              onClaimDetected={onClaimDetected}
-              isLastMessage={index === messages.length - 1}
-            />
-          ))}
+      {showFirstRunCard ? (
+        <Box className="flex flex-1 flex-col overflow-auto">
+          <FirstRunAuthCard onDone={leaveFirstRun} />
+        </Box>
+      ) : (
+        <>
+          {/* Messages */}
+          <ScrollArea viewportRef={viewportRef} className="flex-1" type="scroll">
+            <Stack gap={0} pt="md" pb="md" mb={showInputArea ? 0 : 120} maw={800} mx="auto">
+              {messages.map((message, index) => (
+                <GuideMessage
+                  key={message.id}
+                  message={message}
+                  onSelectUserType={selectUserType}
+                  onLoginSuccess={markGuideCompleted}
+                  onQuestionClick={sendMessage}
+                  onClaimStart={onClaimStart}
+                  onClaimDetected={onClaimDetected}
+                  isLastMessage={index === messages.length - 1}
+                />
+              ))}
 
-          {/* Error display */}
-          {error && (
-            <Box px="md" py="sm">
-              <Text c="chatbox-error" size="sm">
-                {error}
-              </Text>
-            </Box>
-          )}
-        </Stack>
-      </ScrollArea>
+              {/* Error display */}
+              {error && (
+                <Box px="md" py="sm">
+                  <Text c="chatbox-error" size="sm">
+                    {error}
+                  </Text>
+                </Box>
+              )}
+            </Stack>
+          </ScrollArea>
+        </>
+      )}
 
       {showInputArea && (
         <Box px="sm" pb="md" pt="sm" className="flex-shrink-0">
           <Stack gap="xs" maw="56rem" mx="auto">
-            <Stack className="oc-ring oc-ring--large bg-chatbox-background-secondary rounded-lg p-3" gap="xs">
-              {/* Input Row */}
-              <Flex align="flex-end" gap={4}>
-                <Textarea
-                  ref={textareaRef}
-                  unstyled={true}
-                  classNames={{
-                    root: 'flex-1',
-                    wrapper: 'flex-1',
-                    input:
-                      'block w-full outline-none border-none px-2 py-1 resize-none bg-transparent text-chatbox-tint-primary',
-                  }}
-                  size="sm"
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  onKeyDown={handleKeyDown}
-                  placeholder={t('Type your Fibonacci AI-related question here') || ''}
-                  disabled={!canSendMessage || isLoading}
-                  autosize
-                  minRows={2}
-                  maxRows={6}
-                  autoFocus={!isSmallScreen}
-                />
-
-                {/* Send Button */}
-                <ActionIcon
-                  disabled={(!inputValue.trim() || !canSendMessage) && !isLoading}
-                  size={32}
-                  variant="filled"
-                  color={isLoading ? 'dark' : 'chatbox-brand'}
-                  radius="lg"
-                  onClick={isLoading ? stopGeneration : handleSend}
-                  className={`shrink-0 mb-1 ${(!inputValue.trim() || !canSendMessage) && !isLoading ? 'disabled:!opacity-100 !text-white' : ''}`}
-                  style={
-                    (!inputValue.trim() || !canSendMessage) && !isLoading
-                      ? { backgroundColor: 'rgba(222, 226, 230, 1)' }
-                      : undefined
-                  }
-                >
-                  {isLoading ? (
-                    <ScalableIcon icon={IconPlayerStopFilled} size={16} />
-                  ) : (
-                    <ScalableIcon icon={IconArrowUp} size={16} />
-                  )}
-                </ActionIcon>
-              </Flex>
-
-              {/* Bottom toolbar */}
-              <Flex justify="flex-end" align="center">
-                {/* Model Selector */}
-                <Menu position="top-end" shadow="md" transitionProps={{ transition: 'fade-up', duration: 200 }}>
-                  <Menu.Target>
-                    <UnstyledButton className="flex items-center gap-1 px-2 py-1 rounded-lg hover:bg-[var(--chatbox-background-tertiary)] transition-colors">
-                      <ProviderImageIcon provider="chatbox-ai" size={18} />
-                      <Text size="sm" className="text-[var(--chatbox-tint-secondary)]">
-                        Fibonacci Guide
-                      </Text>
-                      <ScalableIcon
-                        icon={IconChevronRight}
-                        size={14}
-                        className="text-chatbox-tint-tertiary rotate-90 flex-shrink-0"
-                      />
-                    </UnstyledButton>
-                  </Menu.Target>
-                  <Menu.Dropdown>
-                    <Menu.Item
-                      leftSection={<ProviderImageIcon provider="chatbox-ai" size={16} />}
-                      rightSection={<ScalableIcon icon={IconCheck} size={14} className="text-chatbox-tint-brand" />}
-                    >
-                      Fibonacci Guide
-                    </Menu.Item>
-                  </Menu.Dropdown>
-                </Menu>
-              </Flex>
-            </Stack>
+            <PromptInput
+              value={inputValue}
+              onChange={setInputValue}
+              onSubmit={() => handleSend()}
+              onStop={stopGeneration}
+              loading={isLoading}
+              disabled={!canSendMessage || isLoading}
+              placeholder={t('Type your Fibonacci AI-related question here') || ''}
+              showAttachAction={false}
+              modelLabel={t('Fibonacci Guide') || ''}
+              sendLabel={t('Send') || ''}
+              stopLabel={t('Stop') || ''}
+              tools={guideModelSelector}
+              className="oc-ring oc-ring--large"
+            />
 
             <Disclaimer />
           </Stack>

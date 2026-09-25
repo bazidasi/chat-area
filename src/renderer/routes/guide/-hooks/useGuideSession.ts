@@ -51,7 +51,17 @@ function createTrackedDelay(ms: number, pendingTimeouts: Set<ReturnType<typeof s
   })
 }
 
-export function useGuideSession(): UseGuideSessionReturn {
+export interface UseGuideSessionOptions {
+  /**
+   * When false the greeting stays parked and no conversation is seeded. The
+   * first-run token card uses this so the user never watches a greeting
+   * type out behind a screen they cannot read yet.
+   */
+  autoStart?: boolean
+}
+
+export function useGuideSession(options: UseGuideSessionOptions = {}): UseGuideSessionReturn {
+  const { autoStart = true } = options
   const { t, i18n } = useTranslation()
 
   const [messages, setMessages] = useState<GuideUIMessage[]>([])
@@ -131,6 +141,7 @@ export function useGuideSession(): UseGuideSessionReturn {
 
   // Show temporary hint before language is fully initialized/switched.
   useEffect(() => {
+    if (!autoStart) return
     if (!isLanguageReady && messages.length === 0 && !greetingInitializedRef.current) {
       const hint = 'Detecting your language...'
       setMessages([
@@ -142,12 +153,12 @@ export function useGuideSession(): UseGuideSessionReturn {
         },
       ])
     }
-  }, [isLanguageReady, messages.length])
+  }, [autoStart, isLanguageReady, messages.length])
 
   // Initialize with greeting message when entering the guide
   // biome-ignore lint/correctness/useExhaustiveDependencies: greetingInitializedRef prevents re-execution
   useEffect(() => {
-    if (!isLanguageReady || greetingInitializedRef.current) {
+    if (!autoStart || !isLanguageReady || greetingInitializedRef.current) {
       return
     }
     greetingInitializedRef.current = true
@@ -312,7 +323,7 @@ Fibonacci Chat Area is an **all-in-one AI chat client** powered by Fibonacci AI,
         cancelled = true
       }
     }
-  }, [isLanguageReady, t, resetKey, onboardingCompleted, isLoggedIn, forceSelectionOnce])
+  }, [autoStart, isLanguageReady, t, resetKey, onboardingCompleted, isLoggedIn, forceSelectionOnce])
 
   /**
    * Append a fixed message to the conversation (instant, no streaming)
