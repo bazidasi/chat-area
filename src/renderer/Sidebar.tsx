@@ -1,53 +1,47 @@
 import { registerPlugin } from '@capacitor/core'
-import NiceModal from '@ebay/nice-modal-react'
-import { Box, Flex, Text } from '@mantine/core'
+import { ActionIcon, Button as MantineButton, Flex, Text } from '@mantine/core'
+import { rendererApplication } from '@/app/renderer-application'
 import { TestId } from '@shared/automation/testids'
 import {
   IconArchive,
+  IconArrowLeft,
+  IconArrowRight,
   IconCirclePlus,
-  IconCode,
-  IconDownload,
-  IconHelpCircle,
-  IconInfoCircle,
-  IconMessageChatbot,
   IconPhotoPlus,
+  IconPlus,
   IconSearch,
   IconSettingsFilled,
+  IconWand,
+  IconX,
 } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-// animate-ui: motion-backed Button (hover/tap scale) for the primary sidebar
-// actions; shares the same variant API as ui/button.
-import { Button } from '@/components/animate-ui/components/buttons/button'
 import {
   Sidebar as SidebarRoot,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
   SidebarRail,
-  SidebarTrigger,
 } from '@/components/ui/sidebar'
 import { AppTooltip as Tooltip } from '@/components/ui/tooltip'
 import { isRTL } from '@/i18n/locales'
 import { animateSidebarEntrance } from '@/lib/animations/neo-animations'
 import { cn } from '@/lib/utils'
-import { ScalableIcon } from './components/common/ScalableIcon'
+import { UserAvatar } from './components/common/Avatar'
 import ThemeSwitchButton from './components/dev/ThemeSwitchButton'
+import ProjectSidebarList from './components/session/ProjectSidebarList'
 import SessionList from './components/session/SessionList'
-import { FORCE_ENABLE_DEV_PAGES } from './dev/devToolsConfig'
 import useNeedRoomForMacWinControls from './hooks/useNeedRoomForWinControls'
 import { useIsSmallScreen, useSidebarWidth } from './hooks/useScreenChange'
-import useVersion from './hooks/useVersion'
+import platform from './platform'
 import { navigateToSettings } from './modals/settings-navigation'
 import { trackingEvent } from './packages/event'
 import icon from './static/icon.png'
+import { projectRegistryStore, useWorkProjects } from './stores/projectRegistryStore'
 import { useLanguage } from './stores/settingsStore'
 import { useUIStore } from './stores/uiStore'
-import { installUpdate, useUpdateStore } from './stores/updateStore'
+import { router } from './router'
 import { CHATBOX_BUILD_PLATFORM, CHATBOX_BUILD_TARGET } from './variables'
 
 interface ChatboxWebViewPlugin {
@@ -61,36 +55,60 @@ function setIosTextInteractionEnabled(enabled: boolean) {
     return
   }
 
-  void ChatboxWebView.setTextInteractionEnabled({ enabled }).catch((error: unknown) => {
-    console.warn('Failed to update iOS text interaction:', error)
-  })
+  void ChatboxWebView.setTextInteractionEnabled({ enabled }).catch(() => {})
+}
+
+interface SidebarTopActionProps {
+  icon: React.ReactNode
+  label: string
+  shortcut?: string
+  onClick: () => void
+  testId?: string
+}
+
+function SidebarTopAction({ icon, label, shortcut, onClick, testId }: SidebarTopActionProps) {
+  return (
+    <MantineButton
+      variant="subtle"
+      fullWidth
+      leftSection={icon}
+      rightSection={shortcut ? <Text size="xs" c="chatbox-tertiary">{shortcut}</Text> : undefined}
+      className="justify-between"
+      onClick={onClick}
+      data-testid={testId}
+    >
+      <span className="truncate">{label}</span>
+    </MantineButton>
+  )
 }
 
 export default function Sidebar() {
   const { t } = useTranslation()
-  const versionHook = useVersion()
   const language = useLanguage()
   const navigate = useNavigate()
   const showSidebar = useUIStore((s) => s.showSidebar)
   const setShowSidebar = useUIStore((s) => s.setShowSidebar)
   const setSidebarWidth = useUIStore((s) => s.setSidebarWidth)
   const setOpenSearchDialog = useUIStore((s) => s.setOpenSearchDialog)
+  const agentModeLastSelected = useUIStore((s) => s.agentModeLastSelected)
+  const activeWorkProjectId = useUIStore((s) => s.activeWorkProjectId)
+  const setActiveWorkProjectId = useUIStore((s) => s.setActiveWorkProjectId)
+  const setNewSessionState = useUIStore((s) => s.setNewSessionState)
+  const workProjects = useWorkProjects()
 
   const sessionListViewportRef = useRef<HTMLDivElement>(null)
-
   const sidebarWidth = useSidebarWidth()
-
   const isSmallScreen = useIsSmallScreen()
+  const isWorkMode = agentModeLastSelected === 'on'
+  const activeProjectId =
+    activeWorkProjectId ?? workProjects.slice().sort((a, b) => (b.lastOpenedAt ?? 0) - (a.lastOpenedAt ?? 0))[0]?.id ?? null
 
   const [isResizing, setIsResizing] = useState(false)
   const resizeStartX = useRef<number>(0)
   const resizeStartWidth = useRef<number>(0)
-
   const { needRoomForMacWindowControls } = useNeedRoomForMacWinControls()
-
   const isRtlLayout = isRTL(language)
 
-  // GSAP: soft staggered entrance for the sidebar regions marked with data-neo-anim
   useEffect(() => {
     const root = document.querySelector(`[data-testid="${TestId.sidebar.root}"]`)
     const cleanup = animateSidebarEntrance(root as HTMLElement | null)
@@ -108,13 +126,84 @@ export default function Sidebar() {
     trackingEvent('create_new_conversation', { event_category: 'user' })
   }, [navigate, setShowSidebar, isSmallScreen])
 
+  const handleOpenSearch = useCallback(() => {
+    setOpenSearchDialog(true, true)
+  }, [setOpenSearchDialog])
+
   const handleCreateNewPictureSession = useCallback(() => {
     navigate({ to: '/image-creator' })
     if (isSmallScreen) {
       setShowSidebar(false)
     }
     trackingEvent('open_image_creator', { event_category: 'user' })
-  }, [isSmallScreen, setShowSidebar, navigate])
+  }, [isSmallScreen, navigate, setShowSidebar])
+
+  const handleOpenArchive = useCallback(() => {
+    navigateToSettings('/archive')
+  }, [])
+
+  const handleOpenSkillsSettings = useCallback(() => {
+    navigateToSettings('/skills')
+  }, [])
+
+  const handleAddProject = useCallback(async () => {
+    if (!platform.openDirectoryDialog) return
+    const result = await platform.openDirectoryDialog()
+    if (result.canceled || !result.path) return
+    const project = projectRegistryStore.getState().ensureProjectByPath(result.path)
+    setActiveWorkProjectId(project.id)
+    setNewSessionState((prev) => ({
+      ...prev,
+      projectId: project.id,
+      workingDirectories: [
+        project.rootPath,
+        ...(prev.workingDirectories ?? []).filter((path) => path !== project.rootPath),
+      ],
+    }))
+  }, [setActiveWorkProjectId, setNewSessionState])
+
+  const handleSelectProject = useCallback(
+    (projectId: string) => {
+      setActiveWorkProjectId(projectId)
+      const project = workProjects.find((candidate) => candidate.id === projectId)
+      if (project) {
+        setNewSessionState((prev) => ({
+          ...prev,
+          projectId: project.id,
+          workingDirectories: [
+            project.rootPath,
+            ...(prev.workingDirectories ?? []).filter((path) => path !== project.rootPath),
+          ],
+        }))
+      }
+    },
+    [setActiveWorkProjectId, setNewSessionState, workProjects]
+  )
+
+  useEffect(() => {
+    if (!isWorkMode || workProjects.length > 0) return
+    let cancelled = false
+    void (async () => {
+      const metas = await rendererApplication.sessions.listAllSessionsMeta()
+      const discovered: string[] = []
+      for (const meta of metas) {
+        const session = await rendererApplication.sessions.getSession(meta.id)
+        const rootPath = session?.settings?.workingDirectories?.[0]
+        if (!rootPath) continue
+        const project = projectRegistryStore.getState().ensureProjectByPath(rootPath)
+        discovered.push(project.id)
+        if (!session.projectId) {
+          await rendererApplication.sessions.updateSession(meta.id, { projectId: project.id })
+        }
+      }
+      if (!cancelled && discovered[0]) {
+        setActiveWorkProjectId(discovered[0])
+      }
+    })().catch((error) => console.warn('Failed to discover legacy work projects', error))
+    return () => {
+      cancelled = true
+    }
+  }, [isWorkMode, setActiveWorkProjectId, workProjects.length])
 
   const handleResizeStart = useCallback(
     (e: React.MouseEvent) => {
@@ -143,7 +232,6 @@ export default function Sidebar() {
 
     document.addEventListener('mousemove', handleMouseMove)
     document.addEventListener('mouseup', handleMouseUp)
-
     return () => {
       document.removeEventListener('mousemove', handleMouseMove)
       document.removeEventListener('mouseup', handleMouseUp)
@@ -167,128 +255,102 @@ export default function Sidebar() {
       >
         <SidebarHeader>
           {needRoomForMacWindowControls && <div className="h-6 shrink-0" />}
-          <div data-testid={TestId.sidebar.root} className="flex flex-col gap-1 px-1 pt-1">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton size="lg" onClick={() => navigate({ to: '/about' })}>
-                  <div className="flex aspect-square size-8 items-center justify-center rounded-lg"
-                    style={{
-                      background: 'var(--neo-surface-raised)',
-                      boxShadow: 'var(--neo-shadow-outset-sm)',
-                    }}
-                  >
-                    <img
-                      src={icon}
-                      alt="Fibonacci Chat Area"
-                      className="size-4"
-                      style={{ filter: 'drop-shadow(0 1px 2px hsl(0 0% 0% / 0.35))' }}
-                    />
-                  </div>
-                  <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-medium">Fibonacci Chat Area</span>
-                    <span className="truncate text-xs text-sidebar-foreground/60">
-                      {/\d/.test(versionHook.version) ? `v${versionHook.version}` : t('AI Chat')}
-                    </span>
-                  </div>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
-            <Flex align="center" justify="flex-end" gap={2} data-neo-anim>
-              {FORCE_ENABLE_DEV_PAGES && <ThemeSwitchButton size="xs" />}
-              <Tooltip label={t('Search')} openDelay={1000} withArrow>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7 text-chatbox-tint-tertiary hover:text-chatbox-tint-primary"
-                  aria-label={t('Search') || undefined}
-                  onClick={() => setOpenSearchDialog(true, true)}
-                >
-                  <IconSearch size={16} />
-                </Button>
-              </Tooltip>
-              <Tooltip label={t('Clear Conversation List')} openDelay={1000} withArrow>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="size-7 text-chatbox-tint-tertiary hover:text-chatbox-tint-primary"
-                  aria-label={t('Clear Conversation List') || undefined}
-                  onClick={() => NiceModal.show('clear-session-list')}
-                >
-                  <IconArchive size={16} />
-                </Button>
-              </Tooltip>
-              <Tooltip label={t('Collapse')} openDelay={1000} withArrow>
-                <SidebarTrigger
-                  data-testid={TestId.sidebar.collapse}
-                  aria-label={t('Collapse') || undefined}
-                  className="size-7 text-chatbox-tint-tertiary hover:text-chatbox-tint-primary"
+          <div data-testid={TestId.sidebar.root} className="flex flex-col gap-2 px-1 pt-1">
+            <div className="flex items-center gap-2">
+              <div
+                className="flex aspect-square size-8 items-center justify-center rounded-lg"
+                style={{
+                  background: 'var(--neo-surface-raised)',
+                  boxShadow: 'var(--neo-shadow-outset-sm)',
+                }}
+              >
+                <img
+                  src={icon}
+                  alt="Fibonacci Chat Area"
+                  className="size-4"
+                  style={{ filter: 'drop-shadow(0 1px 2px hsl(0 0% 0% / 0.35))' }}
                 />
-              </Tooltip>
-            </Flex>
+              </div>
+              <ActionIcon variant="subtle" size="sm" aria-label={t('Back') || undefined} onClick={() => router.history.back()}>
+                <IconArrowLeft size={16} />
+              </ActionIcon>
+              <ActionIcon variant="subtle" size="sm" aria-label={t('Forward') || undefined} onClick={() => router.history.forward()}>
+                <IconArrowRight size={16} />
+              </ActionIcon>
+              <ActionIcon
+                variant="subtle"
+                size="sm"
+                aria-label={t('Close sidebar') || undefined}
+                onClick={() => setShowSidebar(false)}
+              >
+                <IconX size={16} />
+              </ActionIcon>
+            </div>
+
+            <div className="flex flex-col gap-1" dir="ltr">
+              <SidebarTopAction
+                icon={<IconPlus size={16} />}
+                label={t('New task')}
+                shortcut="Ctrl+N"
+                onClick={handleCreateNewSession}
+                testId={TestId.sidebar.newChat}
+              />
+              <SidebarTopAction
+                icon={<IconSearch size={16} />}
+                label={t('Search')}
+                shortcut="Ctrl+K"
+                onClick={handleOpenSearch}
+              />
+              <SidebarTopAction
+                icon={<IconPhotoPlus size={16} />}
+                label={t('Create Image')}
+                onClick={handleCreateNewPictureSession}
+                testId={TestId.sidebar.newImage}
+              />
+              <SidebarTopAction
+                icon={<IconArchive size={16} />}
+                label={t('Archive')}
+                onClick={handleOpenArchive}
+              />
+              <SidebarTopAction
+                icon={<IconWand size={16} />}
+                label={t('Skill settings')}
+                onClick={handleOpenSkillsSettings}
+              />
+            </div>
           </div>
         </SidebarHeader>
 
         <SidebarContent>
-          <SessionList sessionListViewportRef={sessionListViewportRef} />
+          {isWorkMode ? (
+            <ProjectSidebarList
+              projects={workProjects}
+              activeProjectId={activeProjectId}
+              onAddProject={handleAddProject}
+              onSelectProject={handleSelectProject}
+            />
+          ) : (
+            <SessionList sessionListViewportRef={sessionListViewportRef} scope="all" />
+          )}
         </SidebarContent>
 
         <SidebarFooter>
-          <SidebarUpdateBanner />
-          <div className="flex flex-col gap-1.5 px-1" data-neo-anim>
-            <Button
-              data-testid={TestId.sidebar.newChat}
-              onClick={handleCreateNewSession}
-              className="w-full justify-start rounded-xl"
+          <div className="flex items-center gap-2 px-2 pb-3">
+            <UserAvatar size={32} />
+            <Text flex={1} size="sm" lineClamp={1} c="chatbox-secondary">
+              {t('You')}
+            </Text>
+            <ThemeSwitchButton size="sm" />
+            <ActionIcon
+              variant="subtle"
+              size="sm"
+              data-testid={TestId.sidebar.settingsTrigger}
+              aria-label={t('Settings') || undefined}
+              onClick={() => navigateToSettings()}
             >
-              <ScalableIcon icon={IconCirclePlus} className="mr-2" />
-              {t('New Chat')}
-            </Button>
-            <Button
-              variant="secondary"
-              data-testid={TestId.sidebar.newImage}
-              onClick={handleCreateNewPictureSession}
-              className="w-full justify-start rounded-xl"
-            >
-              <ScalableIcon icon={IconPhotoPlus} className="mr-2" />
-              {t('Create Image')}
-            </Button>
+              <IconSettingsFilled size={16} />
+            </ActionIcon>
           </div>
-          <SidebarMenu className="mt-1 pb-1">
-            <SidebarMenuItem>
-              <SidebarMenuButton onClick={() => navigate({ to: '/copilots' })}>
-                <ScalableIcon icon={IconMessageChatbot} />
-                <span>{t('My Copilots')}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            <SidebarMenuItem>
-              <SidebarMenuButton
-                data-testid={TestId.sidebar.settingsTrigger}
-                onClick={() => navigateToSettings()}
-              >
-                <ScalableIcon icon={IconSettingsFilled} />
-                <span>{t('Settings')}</span>
-              </SidebarMenuButton>
-            </SidebarMenuItem>
-            {!versionHook.isExceeded && (
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => navigate({ to: '/guide' })}>
-                  <ScalableIcon icon={IconHelpCircle} />
-                  <span>{t('Help')}</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )}
-            {FORCE_ENABLE_DEV_PAGES && (
-              <SidebarMenuItem>
-                <SidebarMenuButton onClick={() => navigate({ to: '/dev' })}>
-                  <ScalableIcon icon={IconCode} />
-                  <span>Dev Tools</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            )}
-            <SidebarMenuItem>
-              <AboutMenuButton versionHook={versionHook} navigate={navigate} />
-            </SidebarMenuItem>
-          </SidebarMenu>
         </SidebarFooter>
 
         <SidebarRail />
@@ -301,80 +363,9 @@ export default function Sidebar() {
             'sidebar-resizer fixed top-0 bottom-0 z-50 w-1 cursor-col-resize bg-chatbox-border-primary opacity-0 transition-opacity duration-200 hover:opacity-70',
             isRtlLayout ? 'right-0' : 'left-0'
           )}
-          style={isRtlLayout ? { right: sidebarWidth } : { left: sidebarWidth }}
+          style={isRtlLayout ? { right: sidebarWidth - 8 } : { left: sidebarWidth - 8 }}
         />
       )}
     </Fragment>
-  )
-}
-
-/**
- * Desktop: shows update banner when an update is downloaded and ready to install.
- * Not shown on mobile (mobile uses dot indicator on About link).
- */
-function SidebarUpdateBanner() {
-  const isMobile = CHATBOX_BUILD_TARGET === 'mobile_app'
-  if (isMobile) return null
-  return <SidebarUpdateBannerInner />
-}
-
-function SidebarUpdateBannerInner() {
-  const { t } = useTranslation()
-  const updateStatus = useUpdateStore((s) => s.status)
-  const updateVersion = useUpdateStore((s) => s.version)
-
-  if (updateStatus !== 'downloaded') return null
-
-  return (
-    <Box px="xs" pb={4}>
-      <Flex
-        align="center"
-        gap="xs"
-        px="sm"
-        py={6}
-        className="cursor-pointer rounded-lg bg-chatbox-background-brand-secondary"
-        onClick={installUpdate}
-      >
-        <ScalableIcon icon={IconDownload} size={16} className="text-chatbox-brand flex-shrink-0" />
-        <Text size="sm" c="chatbox-brand" lineClamp={1} flex={1}>
-          {`${t('Update ready to install')}${updateVersion ? ` (v${updateVersion})` : ''}`}
-        </Text>
-      </Flex>
-    </Box>
-  )
-}
-
-/**
- * About link with update dot indicator.
- * Desktop: shows dot when electron-updater detects update (downloaded/available).
- * Mobile: shows dot when remote API says needCheckUpdate.
- */
-function useShowUpdateDot(versionHook: ReturnType<typeof useVersion>) {
-  const updateStatus = useUpdateStore((s) => s.status)
-  const isMobile = CHATBOX_BUILD_TARGET === 'mobile_app'
-  return isMobile ? versionHook.needCheckUpdate : updateStatus === 'downloaded'
-}
-
-function AboutMenuButton({
-  versionHook,
-  navigate,
-}: {
-  versionHook: ReturnType<typeof useVersion>
-  navigate: ReturnType<typeof useNavigate>
-}) {
-  const { t } = useTranslation()
-  const showDot = useShowUpdateDot(versionHook)
-
-  return (
-    <SidebarMenuButton
-      tooltip={`${t('About')} ${/\d/.test(versionHook.version) ? `(${versionHook.version})` : ''}`}
-      onClick={() => navigate({ to: '/about' })}
-    >
-      <ScalableIcon icon={IconInfoCircle} />
-      <span className="flex items-center gap-1.5">
-        {`${t('About')} ${/\d/.test(versionHook.version) ? `(${versionHook.version})` : ''}`}
-      </span>
-      {showDot && <span className="ml-auto size-2 rounded-full bg-[var(--chatbox-brand)]" />}
-    </SidebarMenuButton>
   )
 }

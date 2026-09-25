@@ -363,7 +363,7 @@ function Root() {
           <Box
             className="h-full box-border"
             sx={{
-              padding: { xs: 0, sm: '10px' },
+              padding: { xs: 0, sm: '8px' },
             }}
           >
             <Box

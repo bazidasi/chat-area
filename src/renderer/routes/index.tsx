@@ -291,6 +291,7 @@ function Index() {
         assistantAvatarKey: session.assistantAvatarKey,
         picUrl: session.picUrl,
         backgroundImage: session.backgroundImage,
+        projectId: newSessionState.projectId,
         messages: options?.messages ?? session.messages,
         copilotId: session.copilotId,
         threadName: options?.threadName ?? session.threadName ?? '',
@@ -331,6 +332,7 @@ function Index() {
       }
       if (
         newSessionState.knowledgeBase ||
+        newSessionState.projectId ||
         newSessionState.workingDirectories?.length ||
         newSessionState.agentFullAccess ||
         newSessionState.commandApprovalMode

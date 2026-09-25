@@ -6,6 +6,8 @@ import { useTranslation } from 'react-i18next'
 import { ScalableIcon } from '@/components/common/ScalableIcon'
 import { ToggleGroup, ToggleGroupItem } from '@/components/ui/toggle'
 import platform from '@/platform'
+import { projectRegistryStore, useWorkProjects } from '@/stores/projectRegistryStore'
+import { useUIStore } from '@/stores/uiStore'
 import { setSessionAgentMode, useSessionAgentMode } from '@/stores/session/agent-mode'
 import { getAgentModeUIState } from './agentModeState'
 import { useModelToolCapabilities } from './useModelToolCapabilities'
@@ -31,12 +33,54 @@ interface WorkChatModeToggleProps {
 const WorkChatModeToggle: FC<WorkChatModeToggleProps> = ({ sessionId, model, sessionSettings }) => {
   const { t } = useTranslation()
   const entry: AgentModeEntry = useSessionAgentMode(sessionId)
+  const workProjects = useWorkProjects()
+  const activeWorkProjectId = useUIStore((s) => s.activeWorkProjectId)
+  const setAgentModeLastSelected = useUIStore((s) => s.setAgentModeLastSelected)
+  const setActiveWorkProjectId = useUIStore((s) => s.setActiveWorkProjectId)
+  const setSidebarMode = useUIStore((s) => s.setSidebarMode)
+  const setNewSessionState = useUIStore((s) => s.setNewSessionState)
   const { modelSupportsAgentMode } = useModelToolCapabilities(model, sessionSettings ?? ({} as SessionSettings))
   const uiState = useMemo(() => getAgentModeUIState(entry, modelSupportsAgentMode), [entry, modelSupportsAgentMode])
 
   // Work Mode is desktop-only; mobile and web stay chat-only.
   if (!platform.isDesktopLike) {
     return null
+  }
+
+  const handleModeChange = async (value: string) => {
+    if (value === 'on' && sessionId === 'new') {
+      let projectId = activeWorkProjectId
+      if (!projectId && platform.openDirectoryDialog) {
+        const result = await platform.openDirectoryDialog()
+        if (result.canceled || !result.path) return
+        const project = projectRegistryStore.getState().ensureProjectByPath(result.path)
+        projectId = project.id
+        setActiveWorkProjectId(project.id)
+        setNewSessionState((prev) => ({
+          ...prev,
+          projectId: project.id,
+          workingDirectories: [project.rootPath, ...(prev.workingDirectories ?? []).filter((path) => path !== project.rootPath)],
+        }))
+      }
+      if (projectId) {
+        setSidebarMode('work')
+        const project = workProjects.find((candidate) => candidate.id === projectId)
+        setNewSessionState((prev) => ({
+          ...prev,
+          projectId,
+          ...(project
+            ? {
+                workingDirectories: [
+                  project.rootPath,
+                  ...(prev.workingDirectories ?? []).filter((path) => path !== project.rootPath),
+                ],
+              }
+            : {}),
+        }))
+      }
+    }
+    void setSessionAgentMode(sessionId, value === 'on' ? 'on' : 'off', { source: 'user' })
+    setAgentModeLastSelected(value === 'on' ? 'on' : 'off')
   }
 
   return (
@@ -50,7 +94,7 @@ const WorkChatModeToggle: FC<WorkChatModeToggleProps> = ({ sessionId, model, ses
         onValueChange={(value) => {
           // single groups can clear the value; the mode always stays set
           if (typeof value !== 'string') return
-          void setSessionAgentMode(sessionId, value === 'on' ? 'on' : 'off', { source: 'user' })
+          void handleModeChange(value)
         }}
       >
         <ToggleGroupItem value="off" aria-label={t('Chat Mode') || undefined}>

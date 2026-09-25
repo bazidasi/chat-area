@@ -1,3 +1,4 @@
+import type { SessionListFilter } from '@chatbox/core/ports'
 import { getGenerationControlMessages } from '@chatbox/core/session/generation-state'
 import { areSessionsInSamePinGroup } from '@chatbox/core/utils/session-sort'
 import {
@@ -219,9 +220,9 @@ export function switchCurrentSession(sessionId: string) {
  * Reorder sessions in the list using fractional indexing.
  * Computes a new sortOrder for the moved item based on its new neighbors.
  */
-export async function reorderSessions(oldIndex: number, newIndex: number) {
-  console.debug('sessionActions', 'reorderSessions', oldIndex, newIndex)
-  const sessions = await rendererApplication.sessionQueryBridge.listSessionsMeta()
+export async function reorderSessions(oldIndex: number, newIndex: number, filter?: SessionListFilter) {
+  console.debug('sessionActions', 'reorderSessions', oldIndex, newIndex, filter)
+  const sessions = await rendererApplication.sessionQueryBridge.listSessionsMeta(filter)
   const movedSession = sessions[oldIndex]
   if (!movedSession || oldIndex === newIndex) return
   const reorderedSessions = [...sessions]
@@ -259,7 +260,7 @@ export async function reorderSessions(oldIndex: number, newIndex: number) {
       s.id === movedSession.id ? { ...s, sortOrder: newSortOrder, starred: nextStarred } : s
     )
     return sortSessionRecords(updated)
-  })
+  }, filter)
 }
 
 /**

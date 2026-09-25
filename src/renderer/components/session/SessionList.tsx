@@ -30,12 +30,13 @@ import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import platform from '@/platform'
 import { rendererApplication } from '@/app/renderer-application'
 
-const useSessionList = () => rendererApplication.sessionHooks.useSessionList()
+const useSessionList = (scope: 'all' | string) => rendererApplication.sessionHooks.useSessionList(scope)
 import { reorderSessions } from '@/stores/session/crud'
 import SessionItem from './SessionItem'
 
 export interface Props {
   sessionListViewportRef: MutableRefObject<HTMLDivElement | null>
+  scope?: 'all' | string
 }
 
 type SessionListItem =
@@ -52,7 +53,9 @@ function SessionListLoadingFooter() {
 
 export default function SessionList(props: Props) {
   const { t } = useTranslation()
-  const { sessionMetaList: sortedSessions, fetchNextPage, hasNextPage, isFetchingNextPage } = useSessionList()
+  const { sessionMetaList: sortedSessions, fetchNextPage, hasNextPage, isFetchingNextPage } = useSessionList(
+    props.scope ?? 'all'
+  )
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [isReordering, setIsReordering] = useState(false)
   const isSmallScreen = useIsSmallScreen()
@@ -89,7 +92,11 @@ export default function SessionList(props: Props) {
       if (oldIndex < 0 || newIndex < 0 || !areSessionsInSamePinGroup(activeSession, overSession)) {
         return
       }
-      await reorderSessions(oldIndex, newIndex)
+      await reorderSessions(
+        oldIndex,
+        newIndex,
+        props.scope && props.scope !== 'all' ? { projectId: props.scope } : undefined
+      )
     }
   }
   const onDragCancel = () => {
@@ -137,6 +144,19 @@ export default function SessionList(props: Props) {
         : {},
     [hasNextPage]
   )
+
+  if (props.scope === '__no-project__') {
+    return (
+      <Flex direction="column" align="center" justify="center" gap={4} px="md" py="xl" className="h-full">
+        <Text size="sm" fw={600} c="chatbox-secondary">
+          {t('Select a project')}
+        </Text>
+        <Text size="xs" c="chatbox-tertiary" ta="center">
+          {t('Choose a project folder to see its work history.')}
+        </Text>
+      </Flex>
+    )
+  }
 
   return (
     <DndContext

@@ -65,6 +65,7 @@ export const uiStore = createStore(
           // Working directories bound before the session is persisted; transferred into the
           // created session's settings on first submit (see routes/index.tsx).
           workingDirectories?: string[]
+          projectId?: string
           agentFullAccess?: boolean
           commandApprovalMode?: CommandApprovalMode
         },
@@ -82,6 +83,8 @@ export const uiStore = createStore(
           onSave?: () => void
         } | null,
         widthFull: false, // Stored UI preference
+        sidebarMode: 'chat' as 'chat' | 'work',
+        activeWorkProjectId: null as string | null,
         showCopilotsInNewSession: false,
         sidebarWidth: null as number | null, // Custom sidebar width, null means use default
         agentModeSmartSwitchingDefault: true,
@@ -244,6 +247,14 @@ export const uiStore = createStore(
           set({ showCopilotsInNewSession })
         },
 
+        setSidebarMode: (sidebarMode: 'chat' | 'work') => {
+          set({ sidebarMode })
+        },
+
+        setActiveWorkProjectId: (activeWorkProjectId: string | null) => {
+          set({ activeWorkProjectId })
+        },
+
         setSidebarWidth: (sidebarWidth: number | null) => {
           set({ sidebarWidth })
         },
@@ -274,6 +285,8 @@ export const uiStore = createStore(
       version: 0,
       partialize: (state) => ({
         widthFull: state.widthFull,
+        sidebarMode: state.sidebarMode,
+        activeWorkProjectId: state.activeWorkProjectId,
         showCopilotsInNewSession: state.showCopilotsInNewSession,
         sidebarWidth: state.sidebarWidth,
         agentModeSmartSwitchingDefault: state.agentModeSmartSwitchingDefault,

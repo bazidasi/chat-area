@@ -209,6 +209,7 @@
   --chatbox-background-secondary-hover: var(--surface-raised-base-hover);
   --chatbox-background-tertiary: var(--background-weak);
   --chatbox-background-tertiary-hover: var(--surface-weaker);
+  --chatbox-background-sidebar: var(--chatbox-background-secondary);
   --chatbox-background-disabled: var(--input-disabled);
 
   --chatbox-background-brand-primary: var(--chatbox-brand);
@@ -261,7 +262,7 @@
   --ring: var(--chatbox-tint-brand);
 
   /* shadcn sidebar — OpenCode base + raised surfaces */
-  --sidebar: var(--neo-surface);
+  --sidebar: var(--chatbox-background-sidebar);
   --sidebar-foreground: var(--chatbox-tint-primary);
   --sidebar-primary: var(--neo-surface-raised);
   --sidebar-primary-foreground: var(--chatbox-tint-primary);
@@ -280,6 +281,7 @@
      against these values automatically.
      ========================================================== */
   --background-base: #101010;
+  --chatbox-background-sidebar: var(--chatbox-background-secondary);
   --background-weak: #1e1e1e;
   --background-strong: #121212;
   --background-stronger: #151515;
