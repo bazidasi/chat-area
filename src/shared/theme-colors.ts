@@ -18,20 +18,26 @@ export type InterfaceColorPreset = {
 /**
  * Default interface palette — mirrors the OpenCode palette in
  * src/renderer/static/globals.css (background-base, the raised
- * surface, background-weak / border-weaker-base). Brand stays dark red.
+ * surface, background-weak / border-weaker-base). The accent is hue-free
+ * graphite, inverting with the theme; the only red in the product is the
+ * home page halftone field.
+ *
+ * The red era (light #8b0000 / dark #b71c1c) is deliberately absent here and
+ * kept in HISTORICAL_DEFAULT_INTERFACE_COLOR_PALETTES instead, so users who
+ * never customized still read as "on a shipped default" and get migrated.
  */
 export const DEFAULT_INTERFACE_COLORS: InterfaceColors = {
   light: {
     backgroundPrimary: '#f8f8f8',
     backgroundSecondary: '#ffffff',
     backgroundTertiary: '#f3f3f3',
-    brand: '#8b0000',
+    brand: '#262626',
   },
   dark: {
     backgroundPrimary: '#101010',
     backgroundSecondary: '#1c1c1c',
     backgroundTertiary: '#202020',
-    brand: '#b71c1c',
+    brand: '#ededed',
   },
 }
 

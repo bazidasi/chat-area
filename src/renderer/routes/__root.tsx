@@ -48,6 +48,7 @@ import useNeedRoomForWinControls from '@/hooks/useNeedRoomForWinControls'
 import useScreenChange, { useSidebarWidth } from '@/hooks/useScreenChange'
 import useShortcut from '@/hooks/useShortcut'
 import useVersion from '@/hooks/useVersion'
+import { isRTL } from '@/i18n/locales'
 import '@/modals'
 import { rendererApplication } from '@/app/renderer-application'
 import DbSchemaGuardDialog from '@/components/DbSchemaGuardDialog'
@@ -182,6 +183,12 @@ function Root() {
   const setOpenAboutDialog = useUIStore((s) => s.setOpenAboutDialog)
 
   const setRemoteConfig = useSetAtom(atoms.remoteConfigAtom)
+
+  // `lang` lives on <html> so screen readers pick the right voice for the
+  // whole document; `dir` is applied on the app shell below.
+  useEffect(() => {
+    document.documentElement.setAttribute('lang', language)
+  }, [language])
 
   useEffect(() => {
     if (initialized.current) {
@@ -347,7 +354,7 @@ function Root() {
     <Box
       className="box-border App relative bg-chatbox-background-primary"
       spellCheck={spellCheck}
-      dir={language === 'ar' || language === 'fa' ? 'rtl' : 'ltr'}
+      dir={isRTL(language) ? 'rtl' : 'ltr'}
     >
       <BackgroundImageOverlay />
       {platform.isDesktopLike && (getOS() === 'Windows' || getOS() === 'Linux') && <ExitFullscreenButton />}

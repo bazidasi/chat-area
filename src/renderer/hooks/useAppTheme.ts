@@ -57,6 +57,17 @@ export default function useAppTheme() {
   }, [realTheme])
 
   useLayoutEffect(() => {
+    // Language drives the typography stack via html[data-lang] in globals.css.
+    // It has to live on <html> rather than the app shell so portalled overlays
+    // (Mantine modals, menus, dropdowns, tooltips) resolve the same face —
+    // they mount on document.body, outside the shell. `lang` is set alongside
+    // it for correct font fallback, hyphenation and screen-reader pronunciation.
+    const root = document.documentElement
+    root.setAttribute('lang', language)
+    root.setAttribute('data-lang', language)
+  }, [language])
+
+  useLayoutEffect(() => {
     const rootStyle = document.documentElement.style
     if (!interfaceColorsCustomized) {
       // Follow source CSS defaults so palette edits in globals.css / theme-colors.ts
@@ -137,13 +148,11 @@ export function getThemeDesign(
       },
     },
     typography: {
-      // In Chinese and Japanese the characters are usually larger,
-      // so a smaller fontsize may be appropriate.
-      ...(isRTL(language)
-        ? {
-            fontFamily: 'Cairo, Arial, sans-serif',
-          }
-        : {}),
+      // Resolved by CSS, not here: --chatbox-font-sans already switches to
+      // Vazirmatn for fa and Cairo for ar off html[data-lang]. CssBaseline
+      // paints this onto <body> at runtime, so it would otherwise be the one
+      // consumer still hardcoding a family.
+      fontFamily: 'var(--chatbox-font-sans)',
       fontSize: 14,
     },
     direction: isRTL(language) ? 'rtl' : 'ltr',

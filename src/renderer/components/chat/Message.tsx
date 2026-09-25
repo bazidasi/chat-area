@@ -634,7 +634,7 @@ const _Message: FC<Props> = (props) => {
     <span
       className={cn(
         'cursor-pointer text-xs font-medium text-chatbox-tint-brand',
-        'hover:text-chatbox-tint-brand-hover px-1.5 py-0.5 rounded',
+        'hover:text-chatbox-tint-brand px-1.5 py-0.5 rounded',
         'hover:bg-chatbox-background-brand-secondary transition-colors',
         className
       )}

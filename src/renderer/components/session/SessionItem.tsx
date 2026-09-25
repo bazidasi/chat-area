@@ -348,7 +348,7 @@ function SessionItem(props: Props) {
           )}
         >
           {activity === 'generating' ? (
-            <ScalableIcon icon={IconLoader2} size={15} className="animate-spin text-chatbox-brand" />
+            <ScalableIcon icon={IconLoader2} size={15} className="animate-spin text-chatbox-tint-brand" />
           ) : (
             <Box component="span" w={8} h={8} bg="chatbox-brand" className="rounded-full" />
           )}

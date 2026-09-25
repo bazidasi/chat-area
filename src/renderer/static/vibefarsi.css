@@ -48,9 +48,10 @@
   --vf-backdrop: none;
   --vf-spacing: 0.25rem;
 
-  /* Cairo is bundled locally, keeping the layer available offline. */
-  --vf-font-sans: "Cairo", "Segoe UI", sans-serif;
-  --vf-font-display: "Cairo", "Segoe UI", sans-serif;
+  /* Both faces are bundled locally, keeping the layer available offline.
+     --chatbox-font-sans already resolves to Vazirmatn for fa / Cairo for ar. */
+  --vf-font-sans: var(--chatbox-font-sans, "Vazirmatn", "Cairo", "Segoe UI", sans-serif);
+  --vf-font-display: var(--chatbox-font-sans, "Vazirmatn", "Cairo", "Segoe UI", sans-serif);
 }
 
 .vf-font-sans {

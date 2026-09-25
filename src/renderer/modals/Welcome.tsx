@@ -109,8 +109,10 @@ function GradientOrb() {
       h={72}
       style={{
         borderRadius: '50%',
+        // Driven off the accent token so the orb stays hue-free and inverts
+        // with the theme instead of hardcoding a red ramp.
         background:
-          'radial-gradient(circle at 34% 28%, #f5d5d5 0%, #8b0000 38%, #6b0000 68%, #3d0000 100%)',
+          'radial-gradient(circle at 34% 28%, color-mix(in srgb, var(--chatbox-brand), white 45%) 0%, var(--chatbox-brand) 45%, color-mix(in srgb, var(--chatbox-brand), black 32%) 100%)',
         boxShadow: 'var(--neo-shadow-outset-lg)',
       }}
     />

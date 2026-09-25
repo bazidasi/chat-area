@@ -207,7 +207,6 @@ export function RouteComponent() {
             data={languages.map((language) => ({
               value: language,
               label: languageNameMap[language],
-              // style: language === 'ar' ? { fontFamily: 'Cairo, Arial, sans-serif' } : {},
             }))}
             label={t('Language')}
             styles={{

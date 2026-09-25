@@ -25,6 +25,7 @@ import {
   Sidebar as SidebarRoot,
 } from '@/components/ui/sidebar'
 import { AppTooltip as Tooltip } from '@/components/ui/tooltip'
+import { opticalIconStroke } from '@/components/common/ScalableIcon'
 import { isRTL } from '@/i18n/locales'
 import { animateSidebarEntrance } from '@/lib/animations/neo-animations'
 import { cn } from '@/lib/utils'
@@ -383,7 +384,9 @@ export default function Sidebar() {
               aria-label={t('Settings') || undefined}
               onClick={() => navigateToSettings()}
             >
-              <Settings size={16} />
+              {/* 16px glyph on the same 24px grid as the rail icons, so it
+                  carries the shared optical weight instead of its own default */}
+              <Settings size={16} strokeWidth={opticalIconStroke(16)} />
             </ActionIcon>
           </div>
         </SidebarFooter>

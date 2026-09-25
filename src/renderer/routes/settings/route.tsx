@@ -22,10 +22,11 @@ import {
 } from '@tabler/icons-react'
 import { createFileRoute, Link, Outlet, useCanGoBack, useRouter, useRouterState } from '@tanstack/react-router'
 import clsx from 'clsx'
+import type { ComponentProps } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Toaster } from 'sonner'
 import Divider from '@/components/common/Divider'
-import { ScalableIcon } from '@/components/common/ScalableIcon'
+import { opticalIconStroke, ScalableIcon } from '@/components/common/ScalableIcon'
 import Page from '@/components/layout/Page'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import platform from '@/platform'
@@ -40,28 +41,42 @@ type SettingsItem = {
   to?: string
 }
 
+/** One rendered size for every rail icon, so the stroke resolver below can
+ *  derive a single optical weight for the whole menu. */
+const NAV_ICON_SIZE = 20
+const NAV_ICON_STROKE = opticalIconStroke(NAV_ICON_SIZE)
+
+/**
+ * Rail icon. Renders through ScalableIcon so it honours the Mantine `scale`
+ * (the previous `w-full h-full` sizing bypassed it) and carries the shared
+ * stroke weight instead of the icon library's own default.
+ */
+function NavIcon({ icon }: { icon: ComponentProps<typeof ScalableIcon>['icon'] }) {
+  return <ScalableIcon icon={icon} size={NAV_ICON_SIZE} stroke={NAV_ICON_STROKE} className="shrink-0" />
+}
+
 const ITEMS: SettingsItem[] = [
   {
     key: 'provider',
     label: 'Model Provider',
-    icon: <IconCategory className="w-full h-full" />,
+    icon: <NavIcon icon={IconCategory} />,
   },
   {
     key: 'default-models',
     label: 'Default Models',
-    icon: <IconBox className="w-full h-full" />,
+    icon: <NavIcon icon={IconBox} />,
   },
   {
     key: 'web-search',
     label: 'Web Search',
-    icon: <IconWorldWww className="w-full h-full" />,
+    icon: <NavIcon icon={IconWorldWww} />,
   },
   ...(featureFlags.mcp
     ? [
         {
           key: 'mcp',
           label: 'MCP',
-          icon: <IconCircleDottedLetterM className="w-full h-full" />,
+          icon: <NavIcon icon={IconCircleDottedLetterM} />,
         },
       ]
     : []),
@@ -70,7 +85,7 @@ const ITEMS: SettingsItem[] = [
         {
           key: 'knowledge-base',
           label: 'Knowledge Base',
-          icon: <IconBook className="w-full h-full" />,
+          icon: <NavIcon icon={IconBook} />,
         },
       ]
     : []),
@@ -80,30 +95,30 @@ const ITEMS: SettingsItem[] = [
           key: 'skills',
           label: 'Skills',
           noTranslate: true,
-          icon: <IconWand className="w-full h-full" />,
+          icon: <NavIcon icon={IconWand} />,
         },
         // Agent settings share the skills gate: both surface only where agent mode runs.
         {
           key: 'agent',
           label: 'Agent',
-          icon: <IconRobotFace className="w-full h-full" />,
+          icon: <NavIcon icon={IconRobotFace} />,
         },
       ]
     : []),
   {
     key: 'document-parser',
     label: 'Document Parser',
-    icon: <IconFileText className="w-full h-full" />,
+    icon: <NavIcon icon={IconFileText} />,
   },
   {
     key: 'chat',
     label: 'Chat Settings',
-    icon: <IconMessages className="w-full h-full" />,
+    icon: <NavIcon icon={IconMessages} />,
   },
   {
     key: 'archive',
     label: 'Archived Chats',
-    icon: <IconArchive className="w-full h-full" />,
+    icon: <NavIcon icon={IconArchive} />,
   },
   ...(platform.type === 'mobile'
     ? []
@@ -111,36 +126,36 @@ const ITEMS: SettingsItem[] = [
         {
           key: 'hotkeys',
           label: 'Keyboard Shortcuts',
-          icon: <IconKeyboard className="w-full h-full" />,
+          icon: <NavIcon icon={IconKeyboard} />,
         },
       ]),
   {
     key: 'general',
     label: 'General Settings',
-    icon: <IconAdjustmentsHorizontal className="w-full h-full" />,
+    icon: <NavIcon icon={IconAdjustmentsHorizontal} />,
   },
   {
     key: 'my-copilots',
     label: 'My Copilots',
-    icon: <IconMessageChatbot className="w-full h-full" />,
+    icon: <NavIcon icon={IconMessageChatbot} />,
     to: '/copilots',
   },
   {
     key: 'help',
     label: 'Help',
-    icon: <IconHelpCircle className="w-full h-full" />,
+    icon: <NavIcon icon={IconHelpCircle} />,
     to: '/guide',
   },
   {
     key: 'dev-tools',
     label: 'Dev Tools',
-    icon: <IconCode className="w-full h-full" />,
+    icon: <NavIcon icon={IconCode} />,
     to: '/dev',
   },
   {
     key: 'about',
     label: 'About',
-    icon: <IconInfoCircle className="w-full h-full" />,
+    icon: <NavIcon icon={IconInfoCircle} />,
     to: '/about',
   },
 ]
@@ -196,7 +211,7 @@ export function RouteComponent() {
             mr="sm"
             onClick={() => router.history.back()}
           >
-            <IconChevronLeft />
+            <ScalableIcon icon={IconChevronLeft} size={18} stroke={opticalIconStroke(18)} />
           </ActionIcon>
         ) : undefined
       }
@@ -235,53 +250,64 @@ function SettingsNavItem({
       pr={isSmallScreen ? 'xl' : 'md'}
       py={isSmallScreen ? 'sm' : 4}
       align="center"
-      c={active ? 'chatbox-brand' : 'chatbox-secondary'}
-      bg={active ? 'var(--chatbox-background-brand-secondary)' : 'transparent'}
-      className={clsx(
-        'cursor-pointer select-none rounded-lg',
-        active ? '' : 'hover:!bg-chatbox-background-gray-secondary'
-      )}
     >
-      <Box component="span" flex="0 0 auto" w={20} h={20}>
-        {item.icon}
-      </Box>
+      {item.icon}
       <Text
         flex={1}
         lineClamp={1}
         span
-        className={`!text-inherit ${isSmallScreen ? 'min-h-[32px] leading-[32px]' : ''}`}
+        className={clsx(
+          'neo-settings-nav-item__label !text-inherit',
+          isSmallScreen ? 'min-h-[32px] leading-[32px]' : ''
+        )}
       >
         {label}
       </Text>
       {isSmallScreen && (
-        <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary" />
+        <ScalableIcon
+          icon={IconChevronRight}
+          size={20}
+          stroke={opticalIconStroke(20)}
+          className="!text-chatbox-tint-tertiary"
+        />
       )}
     </Flex>
   )
 
+  const navItemClass = clsx('neo-settings-nav-item', active && 'neo-settings-nav-item--active')
+
+  // The interactive surface sits on the focusable element, so hover, press and
+  // :focus-visible all resolve against the same box. The mobile divider stays
+  // outside it so the row's background never washes over the separator.
   if (item.to) {
     return (
-      <UnstyledButton
-        className="block w-full"
-        onClick={() => navigateToDynamicPath({ to: item.to!, search: {} })}
-        data-testid={getSettingsNavTestId(item.key)}
-      >
-        {row}
+      <Box component="div" className="w-full">
+        <UnstyledButton
+          className={navItemClass}
+          onClick={() => navigateToDynamicPath({ to: item.to!, search: {} })}
+          data-testid={getSettingsNavTestId(item.key)}
+        >
+          {row}
+        </UnstyledButton>
         {isSmallScreen && <Divider />}
-      </UnstyledButton>
+      </Box>
     )
   }
 
   return (
-    <Link
-      disabled={disabled}
-      to={`/settings/${item.key}` as any}
-      className="block w-full no-underline"
-      data-testid={getSettingsNavTestId(item.key)}
-    >
-      {row}
+    <Box component="div" className="w-full">
+      <Link
+        disabled={disabled}
+        to={`/settings/${item.key}` as any}
+        className={navItemClass}
+        data-disabled={disabled ? 'true' : undefined}
+        aria-current={active ? 'page' : undefined}
+        data-testid={getSettingsNavTestId(item.key)}
+      >
+        {row}
+      </Link>
       {isSmallScreen && <Divider />}
-    </Link>
+    </Box>
   )
 }
 
@@ -308,15 +334,18 @@ export function SettingsRoot() {
             isSmallScreen ? 'w-full border-r-0' : 'flex-[1_0_auto]'
           )}
         >
-          {categoryGroups.map((category) => (
+          {categoryGroups.map((category, categoryIndex) => (
             <Stack key={category.key} gap={0}>
               <Text
                 size="xxs"
-                fw={700}
+                fw={600}
                 c="chatbox-tertiary"
                 className={clsx(
-                  'px-2 pb-1 pt-3 uppercase tracking-[0.12em]',
-                  isSmallScreen && 'px-3 pt-4'
+                  // Sentence case reads as a quiet label rather than a shout;
+                  // the first group tucks under the panel edge, later groups
+                  // get enough air to separate from the rows above.
+                  'px-2 pb-1 tracking-[0.02em]',
+                  isSmallScreen ? 'px-3 pt-4' : categoryIndex === 0 ? 'pt-1.5' : 'pt-4'
                 )}
               >
                 {t(category.label)}
@@ -336,30 +365,6 @@ export function SettingsRoot() {
               ))}
             </Stack>
           ))}
-
-          {isSmallScreen && (
-            <Link to={`/about`} className="block w-full no-underline">
-              <Flex
-                component="span"
-                gap="xs"
-                p="md"
-                pr="xl"
-                py="sm"
-                align="center"
-                c="chatbox-secondary"
-                className="cursor-pointer select-none rounded-lg"
-              >
-                <Box component="span" flex="0 0 auto" w={20} h={20}>
-                  <ScalableIcon icon={IconInfoCircle} size={20} />
-                </Box>
-                <Text flex={1} lineClamp={1} span className="!text-inherit min-h-[32px] leading-[32px]">
-                  {t('About')}
-                </Text>
-                <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary" />
-              </Flex>
-              <Divider />
-            </Link>
-          )}
         </Stack>
       )}
       {!(isSmallScreen && routerState.location.pathname === '/settings') && (

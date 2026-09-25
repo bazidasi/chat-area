@@ -219,6 +219,7 @@ html {
 }
 
 .mantine-Button-root[data-variant='outline']:focus-visible {
+  outline: none;
   box-shadow: var(--neo-shadow-focus);
 }
 
@@ -230,18 +231,13 @@ html {
 /* filled/brand: OpenCode elevation, no colored glow on the drop shadow */
 .mantine-Button-root[data-variant='filled'] {
   border: none;
+  /* Mantine hardcodes a white foreground on `filled`; the accent is dark ink
+     in light mode and light ink in dark mode, so the foreground has to follow. */
+  color: var(--chatbox-tint-on-accent);
   box-shadow: var(--neo-shadow-outset-sm);
   background-image: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--chatbox-brand), #e57373 24%),
-    var(--chatbox-brand)
-  );
-}
-
-html[data-theme='dark'] .mantine-Button-root[data-variant='filled'] {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--chatbox-brand), #ef9a9a 24%),
+    color-mix(in srgb, var(--chatbox-brand), white 24%),
     var(--chatbox-brand)
   );
 }
@@ -249,23 +245,23 @@ html[data-theme='dark'] .mantine-Button-root[data-variant='filled'] {
 .mantine-Button-root[data-variant='filled']:hover {
   background-image: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--chatbox-brand), #e57373 10%),
+    color-mix(in srgb, var(--chatbox-brand), white 10%),
     color-mix(in srgb, var(--chatbox-brand), black 6%)
   );
   box-shadow: var(--neo-shadow-outset-lg);
 }
 
-html[data-theme='dark'] .mantine-Button-root[data-variant='filled']:hover {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--chatbox-brand), #ef9a9a 10%),
-    color-mix(in srgb, var(--chatbox-brand), black 6%)
-  );
-}
-
 .mantine-Button-root[data-variant='filled']:active {
   transform: translateY(1px);
   box-shadow: var(--neo-shadow-inset-sm);
+}
+
+/* Every other filled surface has the same problem: Mantine paints white text
+   on the variant background, which vanishes once the accent turns light in
+   dark mode. */
+.mantine-ActionIcon-root[data-variant='filled'],
+.mantine-Indicator-root[data-variant='filled'] {
+  color: var(--chatbox-tint-on-accent);
 }
 
 /* ---------- ActionIcon ---------- */
@@ -420,14 +416,14 @@ textarea.mantine-Input-input {
 .mantine-Switch-input:checked {
   background-image: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--chatbox-brand), #e57373 20%),
+    color-mix(in srgb, var(--chatbox-brand), white 20%),
     var(--chatbox-brand)
   );
   border-color: transparent;
 }
 
 .mantine-Switch-input:checked::before {
-  background: #fff;
+  background: var(--chatbox-tint-on-accent);
   box-shadow: var(--neo-shadow-outset-xs);
 }
 
@@ -446,20 +442,10 @@ textarea.mantine-Input-input {
   background-color: var(--chatbox-brand);
   background-image: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--chatbox-brand), #e57373 20%),
+    color-mix(in srgb, var(--chatbox-brand), white 20%),
     var(--chatbox-brand)
   );
   border-color: transparent;
-}
-
-html[data-theme='dark'] .mantine-Checkbox-input:checked,
-html[data-theme='dark'] .mantine-Checkbox-input:indeterminate,
-html[data-theme='dark'] .mantine-Radio-input:checked {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--chatbox-brand), #ef9a9a 20%),
-    var(--chatbox-brand)
-  );
 }
 
 .mantine-Checkbox-input:hover,
@@ -502,18 +488,10 @@ html[data-theme='dark'] .mantine-Radio-input:checked {
 .mantine-Progress-section {
   background-image: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--chatbox-brand), #e57373 20%),
+    color-mix(in srgb, var(--chatbox-brand), white 20%),
     var(--chatbox-brand)
   );
   border-radius: 9999px;
-}
-
-html[data-theme='dark'] .mantine-Progress-section {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--chatbox-brand), #ef9a9a 20%),
-    var(--chatbox-brand)
-  );
 }
 
 .mantine-Slider-track::before {
@@ -524,15 +502,7 @@ html[data-theme='dark'] .mantine-Progress-section {
 .mantine-Slider-bar {
   background-image: linear-gradient(
     135deg,
-    color-mix(in srgb, var(--chatbox-brand), #e57373 20%),
-    var(--chatbox-brand)
-  );
-}
-
-html[data-theme='dark'] .mantine-Slider-bar {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--chatbox-brand), #ef9a9a 20%),
+    color-mix(in srgb, var(--chatbox-brand), white 20%),
     var(--chatbox-brand)
   );
 }
@@ -588,6 +558,71 @@ html[data-theme='dark'] .mantine-Slider-bar {
   background: var(--sidebar);
 }
 
+/* Settings rail rows. The interactive surface lives on the focusable wrapper
+   (Link / UnstyledButton) so hover, press, focus and background all resolve
+   against one element instead of a nested span. Depth carries the state:
+   a raised row lifts, a pressed row sinks, and the current row keeps a brand
+   rail so "you are here" never depends on a low-contrast fill alone. */
+.neo-settings-nav-item {
+  position: relative;
+  display: block;
+  width: 100%;
+  border-radius: var(--chatbox-radius-md);
+  color: var(--chatbox-tint-secondary);
+  text-decoration: none;
+  transition:
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
+}
+
+.neo-settings-nav-item:hover:not([data-disabled='true']) {
+  background: color-mix(in srgb, var(--chatbox-tint-white) 7%, var(--chatbox-background-secondary));
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+.neo-settings-nav-item:active:not([data-disabled='true']) {
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.neo-settings-nav-item:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-focus);
+}
+
+/* TanStack's `disabled` Link is only there to suppress re-navigation to the
+   current route, so it must not keep the hover/press affordance. */
+.neo-settings-nav-item[data-disabled='true'],
+.neo-settings-nav-item[aria-disabled='true'] {
+  cursor: default;
+}
+
+.neo-settings-nav-item--active,
+.neo-settings-nav-item--active:hover {
+  color: var(--chatbox-tint-primary);
+  background: color-mix(in srgb, var(--chatbox-tint-white) 12%, var(--chatbox-background-secondary));
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+/* The rail is a hairline, not a bar: it marks the current row without adding
+   another block of colour next to the raised fill. */
+.neo-settings-nav-item--active::before {
+  content: '';
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  width: 2px;
+  background: var(--chatbox-brand);
+  border-start-end-radius: 2px;
+  border-end-end-radius: 2px;
+}
+
+/* Active label goes solid primary and picks up weight, so the current row is
+   still unmistakable on narrow layouts where the rows are tall list entries. */
+.neo-settings-nav-item--active .neo-settings-nav-item__label {
+  font-weight: 600;
+}
+
 /* Provider settings workspace: one raised desktop surface with a narrow
    provider rail and a scrollable detail pane. Mobile keeps the list/detail
    route split and never receives this desktop treatment. */
@@ -614,6 +649,10 @@ html[data-theme='dark'] .mantine-Slider-bar {
 .provider-list-item-link {
   display: block;
   border-radius: var(--chatbox-radius-md);
+  transition:
+    box-shadow 160ms ease,
+    background-color 160ms ease,
+    color 160ms ease;
 }
 
 .provider-list-item--selected {
@@ -629,6 +668,11 @@ html[data-theme='dark'] .mantine-Slider-bar {
 
 .provider-list-item--interactive:active {
   box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.provider-list-item-link:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-focus);
 }
 
 .provider-detail-surface .mantine-Button-root[data-variant='light'] {
@@ -667,8 +711,13 @@ html[data-theme='dark'] .mantine-Slider-bar {
 }
 
 /* focus rings in brand tone, soft */
+/* The safety net for anything that has not opted into --neo-shadow-focus.
+   Solid accent, not a translucent mix: a 55% accent hairline disappears
+   against the raised surfaces it has to sit on. outline-offset leaves the
+   same 2px gap the box-shadow ring leaves, and Chromium curves the outline
+   with the element's own border-radius. */
 :focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--chatbox-brand) 55%, transparent);
+  outline: 2px solid var(--neo-ring-accent);
   outline-offset: 2px;
 }
 
@@ -685,7 +734,7 @@ html[data-theme='dark'] .mantine-Slider-bar {
 
 .mantine-Badge-root[data-variant='filled'] {
   background-color: var(--chatbox-brand) !important;
-  color: #fff !important;
+  color: var(--chatbox-tint-on-accent) !important;
   box-shadow: var(--neo-shadow-outset-xs);
 }
 

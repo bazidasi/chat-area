@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next'
 import { useStore } from 'zustand'
 import { JK_PAGE_NAMES } from '@/analytics/jk-events'
 import { rendererApplication } from '@/app/renderer-application'
+import { HalftoneBackground } from '@/components/backgrounds/halftone'
 import MessageList, { type MessageListRef } from '@/components/chat/MessageList'
 import { ChatboxWelcomeCard } from '@/components/common/ChatboxWelcomeCard'
 import { ErrorBoundary } from '@/components/common/ErrorBoundary'
@@ -224,50 +225,61 @@ function RouteComponent() {
   }, [currentSessionWithDefaultModel?.settings?.provider, currentSessionWithDefaultModel?.settings?.modelId])
 
   return currentSession ? (
-    <div className={`flex flex-col h-full ${!isSmallScreen ? 'relative' : ''}`}>
-      <Header session={currentSession} />
+    <div className="relative isolate flex h-full flex-col">
+      {/* Red halftone field — same treatment as the home page. The canvas paints
+          its own opaque copy of the surface, so it needs no transparency behind
+          it; the content just has to be lifted above it. */}
+      <HalftoneBackground className="absolute inset-0 z-0" />
+      <div className="relative z-[1] flex h-full min-h-0 flex-col">
+        <Header session={currentSession} />
 
-      {/* MessageList 设置 key，确保每个 session 对应新的 MessageList 实例 */}
-      <MessageList
-        ref={messageListRef}
-        key={`message-list${currentSessionId}`}
-        currentSession={currentSession}
-        className={!isSmallScreen ? 'pt-[2px]' : undefined}
-      />
+        {/* MessageList 设置 key，确保每个 session 对应新的 MessageList 实例 */}
+        <MessageList
+          ref={messageListRef}
+          key={`message-list${currentSessionId}`}
+          currentSession={currentSession}
+          className={!isSmallScreen ? 'pt-[2px]' : undefined}
+        />
 
-      <Box className="relative">
-        {shouldShowTemplateWelcomeCard && (
-          // absolute — taken out of flow, doesn't affect layout of siblings
-          // bottom: '100%' — positioned right above the parent box's top edge (like a tooltip anchoring upward)
-          <Box className="pointer-events-none absolute left-0 right-0 z-10" style={{ bottom: '100%' }} px="sm" mb="sm">
-            <Box className={widthFull ? 'w-full' : 'max-w-4xl mx-auto'}>
-              <ChatboxWelcomeCard
-                mode={welcomeCardMode}
-                pageName={JK_PAGE_NAMES.CHAT_PAGE}
-                className="pointer-events-auto w-full"
-              />
+        <Box className="relative">
+          {shouldShowTemplateWelcomeCard && (
+            // absolute — taken out of flow, doesn't affect layout of siblings
+            // bottom: '100%' — positioned right above the parent box's top edge (like a tooltip anchoring upward)
+            <Box
+              className="pointer-events-none absolute left-0 right-0 z-10"
+              style={{ bottom: '100%' }}
+              px="sm"
+              mb="sm"
+            >
+              <Box className={widthFull ? 'w-full' : 'max-w-4xl mx-auto'}>
+                <ChatboxWelcomeCard
+                  mode={welcomeCardMode}
+                  pageName={JK_PAGE_NAMES.CHAT_PAGE}
+                  className="pointer-events-auto w-full"
+                />
+              </Box>
             </Box>
-          </Box>
-        )}
+          )}
 
-        {/* <ScrollButtons /> */}
-        <ErrorBoundary name="session-inputbox">
-          <InputBox
-            key={`input-box${currentSession.id}`}
-            sessionId={currentSession.id}
-            sessionType={currentSession.type}
-            model={model}
-            onStartNewThread={onStartNewThread}
-            onRollbackThread={onRollbackThread}
-            onSelectModel={onSelectModel}
-            onClickSessionSettings={onClickSessionSettings}
-            onSubmit={onSubmit}
-            onStopGenerating={onStopGenerating}
-            onViewCompactionSummary={onViewCompactionSummary}
-          />
-        </ErrorBoundary>
-      </Box>
-      <ThreadHistoryDrawer session={currentSession} />
+          {/* <ScrollButtons /> */}
+          <ErrorBoundary name="session-inputbox">
+            <InputBox
+              key={`input-box${currentSession.id}`}
+              sessionId={currentSession.id}
+              sessionType={currentSession.type}
+              model={model}
+              onStartNewThread={onStartNewThread}
+              onRollbackThread={onRollbackThread}
+              onSelectModel={onSelectModel}
+              onClickSessionSettings={onClickSessionSettings}
+              onSubmit={onSubmit}
+              onStopGenerating={onStopGenerating}
+              onViewCompactionSummary={onViewCompactionSummary}
+            />
+          </ErrorBoundary>
+        </Box>
+        <ThreadHistoryDrawer session={currentSession} />
+      </div>
     </div>
   ) : (
     !isFetching && (

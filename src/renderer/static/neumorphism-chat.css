@@ -11,9 +11,9 @@
    purpose: it resets margins, forces Roboto and underlines links.
    The app owns its typography, so re-assert the important bits. */
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu',
-    'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', 'Noto Sans', 'Noto Sans SC',
-    sans-serif;
+  /* Same language-resolved stack as index.css; kept for the standalone
+     chat/web build, which loads this file without the app shell. */
+  font-family: var(--chatbox-font-sans, -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif);
   -webkit-font-smoothing: antialiased;
 }
 
@@ -102,9 +102,11 @@ a:hover {
   box-shadow: var(--neo-shadow-outset-xs);
 }
 
-/* ---------- highlight ring for jump-to-message ---------- */
+/* ---------- highlight ring for jump-to-message ----------
+   Selection state, so it takes the shared accent hairline rather than a
+   one-off translucent arc. */
 [data-highlighted='true'] {
-  box-shadow: var(--neo-shadow-outset-sm), 0 0 0 2px color-mix(in srgb, var(--chatbox-brand) 55%, transparent) !important;
+  box-shadow: var(--neo-shadow-outset-sm), var(--neo-ring-select) !important;
 }
 
 /* ---------- neumorphic-ui components, themed ----------
@@ -154,22 +156,22 @@ html[data-theme='dark'] .splash-screen {
 }
 
 .splash-screen-logo {
-  color: var(--chatbox-brand, #8b0000);
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--chatbox-brand, #8b0000) 35%, transparent));
+  color: var(--chatbox-brand, #262626);
+  filter: drop-shadow(0 10px 24px rgba(0, 0, 0, 0.28));
 }
 
 html[data-theme='dark'] .splash-screen-logo {
-  color: var(--chatbox-brand, #b71c1c);
-  filter: drop-shadow(0 10px 24px color-mix(in srgb, var(--chatbox-brand, #b71c1c) 30%, transparent));
+  color: var(--chatbox-brand, #ededed);
+  filter: drop-shadow(0 10px 24px rgba(255, 255, 255, 0.12));
 }
 
 .splash-screen-logo-bg {
-  color: var(--chatbox-brand, #8b0000);
+  color: var(--chatbox-brand, #262626);
   opacity: 0.22;
 }
 
 html[data-theme='dark'] .splash-screen-logo-bg {
-  color: var(--chatbox-brand, #b71c1c);
+  color: var(--chatbox-brand, #ededed);
   opacity: 0.16;
 }
 
