@@ -419,7 +419,7 @@ export const SettingsModalStates: StoryObj = {
     <Stack gap="lg">
       <SurfaceLabel
         title="SettingsModal"
-        description="Actual full-screen settings modal shell opened through a router search state, showing the production settings route surface."
+        description="Actual settings shell opened through a router search state, showing the centered desktop panel and responsive production settings route surface."
       />
       <SettingsModalRouter />
     </Stack>

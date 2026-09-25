@@ -193,11 +193,11 @@ export function RouteComponent() {
   ] satisfies Array<InterfaceColorPreset & { isCustom: boolean }>
 
   return (
-    <Stack p="md" gap="xl">
+    <Stack p="md" gap="lg">
       <Title order={5}>{t('General Settings')}</Title>
 
       {/* Display Settings */}
-      <Stack gap="lg" maw={720}>
+      <Stack gap="md" maw={720}>
         <Title order={5}>{t('Display Settings')}</Title>
 
         <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">

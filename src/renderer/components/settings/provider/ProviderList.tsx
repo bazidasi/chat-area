@@ -55,69 +55,87 @@ export function ProviderList({ providers, onAddProvider }: ProviderListProps) {
   return (
     <Stack
       data-testid={TestId.settings.providerList}
-      maw={isSmallScreen ? undefined : 256}
+      maw={isSmallScreen ? undefined : 232}
       className={clsx(
-        'border-solid border-0 border-r border-chatbox-border-primary',
-        isSmallScreen ? 'w-full border-r-0' : 'flex-[1_0_auto]'
+        'provider-list-surface border-solid border-0',
+        isSmallScreen
+          ? 'w-full border-r-0'
+          : 'provider-list-surface--desktop flex-[1_0_auto] border-r border-chatbox-border-secondary'
       )}
       gap={0}
     >
+      {!isSmallScreen && (
+        <Text size="xxs" fw={700} c="chatbox-tertiary" className="px-3 pb-1 pt-3 uppercase tracking-[0.12em]">
+          {t('Providers')}
+        </Text>
+      )}
       <ScrollArea flex={1} type={isSmallScreen ? 'never' : 'hover'} scrollHideDelay={100}>
-        <Stack p={isSmallScreen ? 0 : 'xs'} gap={isSmallScreen ? 0 : 'xs'}>
-          {sortedProviders.map((provider) => (
-            <Link
-              key={provider.id}
-              to={provider.id === 'chatbox-ai' ? `/settings/provider/chatbox-ai` : `/settings/provider/$providerId`}
-              params={{ providerId: provider.id }}
-              className={'block no-underline'}
-              data-testid={TestId.settings.providerItem}
-              {...{ [AutomationAdjacentAttr.providerId]: provider.id }}
-            >
-              <Flex
-                component="span"
-                align="center"
-                gap="xs"
-                p="md"
-                pr="xl"
-                py={isSmallScreen ? 'sm' : undefined}
-                c={provider.id === providerId ? 'chatbox-brand' : 'chatbox-secondary'}
-                bg={provider.id === providerId ? 'var(--chatbox-background-brand-secondary)' : 'transparent'}
+        <Stack p={isSmallScreen ? 0 : 'xxs'} gap={isSmallScreen ? 0 : 'xs'}>
+          {sortedProviders.map((provider) => {
+            const selected = provider.id === providerId
+            return (
+              <Link
+                key={provider.id}
+                to={provider.id === 'chatbox-ai' ? `/settings/provider/chatbox-ai` : `/settings/provider/$providerId`}
+                params={{ providerId: provider.id }}
                 className={clsx(
-                  'cursor-pointer select-none rounded-lg',
-                  provider.id === providerId ? '' : 'hover:!bg-chatbox-background-gray-secondary'
+                  'block no-underline',
+                  !isSmallScreen && 'provider-list-item-link'
                 )}
+                data-selected={selected ? 'true' : 'false'}
+                data-testid={TestId.settings.providerItem}
+                {...{ [AutomationAdjacentAttr.providerId]: provider.id }}
               >
-                {provider.isCustom ? (
-                  provider.iconUrl ? (
-                    <Image w={32} h={32} src={provider.iconUrl} alt={provider.name} />
-                  ) : (
-                    <CustomProviderIcon providerId={provider.id} providerName={provider.name} size={32} />
-                  )
-                ) : (
-                  <ProviderIconImage providerId={provider.id} size={32} />
-                )}
-
-                <Text
-                  span
-                  size="sm"
-                  flex={isSmallScreen ? 1 : undefined}
-                  className="!text-inherit whitespace-nowrap overflow-hidden text-ellipsis"
+                <Flex
+                  component="span"
+                  align="center"
+                  gap="xs"
+                  p={isSmallScreen ? 'md' : 'sm'}
+                  pr={isSmallScreen ? 'xl' : 'sm'}
+                  py={isSmallScreen ? 'sm' : 4}
+                  c={selected && isSmallScreen ? 'chatbox-brand' : 'chatbox-secondary'}
+                  className={clsx(
+                    'provider-list-item cursor-pointer select-none rounded-lg',
+                    !isSmallScreen && selected && 'provider-list-item--selected',
+                    !isSmallScreen && !selected && 'provider-list-item--interactive'
+                  )}
                 >
-                  {t(provider.name)}
-                </Text>
+                  {provider.isCustom ? (
+                    provider.iconUrl ? (
+                      <Image w={isSmallScreen ? 32 : 26} h={isSmallScreen ? 32 : 26} src={provider.iconUrl} alt={provider.name} />
+                    ) : (
+                      <CustomProviderIcon
+                        providerId={provider.id}
+                        providerName={provider.name}
+                        size={isSmallScreen ? 32 : 26}
+                      />
+                    )
+                  ) : (
+                    <ProviderIconImage providerId={provider.id} size={isSmallScreen ? 32 : 26} />
+                  )}
 
-                {activatedProviderIds.has(provider.id) && (
-                  <Indicator size={8} color="chatbox-success" className="ml-auto" />
-                )}
+                  <Text
+                    span
+                    size="sm"
+                    flex={isSmallScreen ? 1 : undefined}
+                    className="!text-inherit whitespace-nowrap overflow-hidden text-ellipsis"
+                  >
+                    {t(provider.name)}
+                  </Text>
 
-                {isSmallScreen && (
-                  <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary ml-2" />
-                )}
-              </Flex>
+                  {activatedProviderIds.has(provider.id) && (
+                    <Indicator size={8} color="chatbox-success" className="ml-auto" />
+                  )}
 
-              {isSmallScreen && <Divider />}
-            </Link>
-          ))}
+                  {isSmallScreen && (
+                    <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary ml-2" />
+                  )}
+                </Flex>
+
+                {isSmallScreen && <Divider />}
+              </Link>
+            )
+          })}
         </Stack>
       </ScrollArea>
       <Stack gap="xs" mx="md" my="sm">

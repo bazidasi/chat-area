@@ -1,4 +1,4 @@
-import { ActionIcon, Box, Flex, Stack, Text } from '@mantine/core'
+import { ActionIcon, Box, Flex, Stack, Text, UnstyledButton } from '@mantine/core'
 import { TestId } from '@shared/automation/testids'
 import {
   IconAdjustmentsHorizontal,
@@ -9,8 +9,11 @@ import {
   IconChevronLeft,
   IconChevronRight,
   IconCircleDottedLetterM,
+  IconCode,
   IconFileText,
+  IconHelpCircle,
   IconInfoCircle,
+  IconMessageChatbot,
   IconKeyboard,
   IconMessages,
   IconRobotFace,
@@ -27,8 +30,17 @@ import Page from '@/components/layout/Page'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import platform from '@/platform'
 import { featureFlags } from '@/utils/feature-flags'
+import { navigateToDynamicPath } from '@/router'
 
-const ITEMS = [
+type SettingsItem = {
+  key: string
+  label: string
+  icon: React.ReactNode
+  noTranslate?: boolean
+  to?: string
+}
+
+const ITEMS: SettingsItem[] = [
   {
     key: 'provider',
     label: 'Model Provider',
@@ -107,7 +119,58 @@ const ITEMS = [
     label: 'General Settings',
     icon: <IconAdjustmentsHorizontal className="w-full h-full" />,
   },
+  {
+    key: 'my-copilots',
+    label: 'My Copilots',
+    icon: <IconMessageChatbot className="w-full h-full" />,
+    to: '/copilots',
+  },
+  {
+    key: 'help',
+    label: 'Help',
+    icon: <IconHelpCircle className="w-full h-full" />,
+    to: '/guide',
+  },
+  {
+    key: 'dev-tools',
+    label: 'Dev Tools',
+    icon: <IconCode className="w-full h-full" />,
+    to: '/dev',
+  },
+  {
+    key: 'about',
+    label: 'About',
+    icon: <IconInfoCircle className="w-full h-full" />,
+    to: '/about',
+  },
 ]
+
+const SETTINGS_CATEGORIES = [
+  { key: 'models', label: 'Models' },
+  { key: 'tools', label: 'Tools & Integrations' },
+  { key: 'chat-data', label: 'Chat & Data' },
+  { key: 'application', label: 'Application' },
+  { key: 'more', label: 'More' },
+] as const
+
+const SETTINGS_CATEGORY_BY_KEY: Record<string, (typeof SETTINGS_CATEGORIES)[number]['key']> = {
+  provider: 'models',
+  'default-models': 'models',
+  'web-search': 'tools',
+  mcp: 'tools',
+  'knowledge-base': 'tools',
+  skills: 'tools',
+  agent: 'tools',
+  'document-parser': 'tools',
+  chat: 'chat-data',
+  archive: 'chat-data',
+  hotkeys: 'application',
+  general: 'application',
+  'my-copilots': 'more',
+  help: 'more',
+  'dev-tools': 'more',
+  about: 'more',
+}
 
 export const Route = createFileRoute('/settings')({
   component: RouteComponent,
@@ -144,79 +207,138 @@ export function RouteComponent() {
   )
 }
 
+function getSettingsNavTestId(key: string) {
+  if (key === 'chat') return TestId.settings.navChat
+  if (key === 'general') return TestId.settings.navGeneral
+  if (key === 'default-models') return TestId.settings.navDefaultModels
+  return undefined
+}
+
+function SettingsNavItem({
+  item,
+  active,
+  disabled,
+  isSmallScreen,
+  label,
+}: {
+  item: SettingsItem
+  active: boolean
+  disabled: boolean
+  isSmallScreen: boolean
+  label: string
+}) {
+  const row = (
+    <Flex
+      component="span"
+      gap="xs"
+      p={isSmallScreen ? 'md' : 'sm'}
+      pr={isSmallScreen ? 'xl' : 'md'}
+      py={isSmallScreen ? 'sm' : 4}
+      align="center"
+      c={active ? 'chatbox-brand' : 'chatbox-secondary'}
+      bg={active ? 'var(--chatbox-background-brand-secondary)' : 'transparent'}
+      className={clsx(
+        'cursor-pointer select-none rounded-lg',
+        active ? '' : 'hover:!bg-chatbox-background-gray-secondary'
+      )}
+    >
+      <Box component="span" flex="0 0 auto" w={20} h={20}>
+        {item.icon}
+      </Box>
+      <Text
+        flex={1}
+        lineClamp={1}
+        span
+        className={`!text-inherit ${isSmallScreen ? 'min-h-[32px] leading-[32px]' : ''}`}
+      >
+        {label}
+      </Text>
+      {isSmallScreen && (
+        <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary" />
+      )}
+    </Flex>
+  )
+
+  if (item.to) {
+    return (
+      <UnstyledButton
+        className="block w-full"
+        onClick={() => navigateToDynamicPath({ to: item.to!, search: {} })}
+        data-testid={getSettingsNavTestId(item.key)}
+      >
+        {row}
+        {isSmallScreen && <Divider />}
+      </UnstyledButton>
+    )
+  }
+
+  return (
+    <Link
+      disabled={disabled}
+      to={`/settings/${item.key}` as any}
+      className="block w-full no-underline"
+      data-testid={getSettingsNavTestId(item.key)}
+    >
+      {row}
+      {isSmallScreen && <Divider />}
+    </Link>
+  )
+}
+
 export function SettingsRoot() {
   const { t } = useTranslation()
   const routerState = useRouterState()
   const key = routerState.location.pathname.split('/')[2]
   const isSmallScreen = useIsSmallScreen()
 
+  const categoryGroups = SETTINGS_CATEGORIES.map((category) => ({
+    ...category,
+    items: ITEMS.filter((item) => SETTINGS_CATEGORY_BY_KEY[item.key] === category.key),
+  })).filter((category) => category.items.length > 0)
+
   return (
-    <Flex flex={1} h="100%" miw={isSmallScreen ? undefined : 800}>
+    <Flex flex={1} h="100%" miw={isSmallScreen ? undefined : 0}>
       {(!isSmallScreen || routerState.location.pathname === '/settings') && (
         <Stack
-          p={isSmallScreen ? 0 : 'xs'}
-          gap={isSmallScreen ? 0 : 'xs'}
-          maw={isSmallScreen ? undefined : 256}
+          p={isSmallScreen ? 0 : 'xxs'}
+          gap={isSmallScreen ? 0 : 'sm'}
+          maw={isSmallScreen ? undefined : 240}
           className={clsx(
-            'border-solid border-0 border-r overflow-auto border-chatbox-border-primary neo-settings-nav',
+            'neo-settings-nav border-solid border-0 border-r overflow-auto border-chatbox-border-secondary',
             isSmallScreen ? 'w-full border-r-0' : 'flex-[1_0_auto]'
           )}
         >
-          {ITEMS.map((item) => (
-            <Link
-              disabled={
-                routerState.location.pathname === `/settings/${item.key}` ||
-                routerState.location.pathname.startsWith(`/settings/${item.key}/`)
-              }
-              key={item.key}
-              to={`/settings/${item.key}` as any}
-              className={'block no-underline w-full'}
-              data-testid={
-                item.key === 'chat'
-                  ? TestId.settings.navChat
-                  : item.key === 'general'
-                    ? TestId.settings.navGeneral
-                    : item.key === 'default-models'
-                      ? TestId.settings.navDefaultModels
-                      : undefined
-              }
-            >
-              <Flex
-                component="span"
-                gap="xs"
-                p="md"
-                pr="xl"
-                py={isSmallScreen ? 'sm' : undefined}
-                align="center"
-                c={item.key === key ? 'chatbox-brand' : 'chatbox-secondary'}
-                bg={item.key === key ? 'var(--chatbox-background-brand-secondary)' : 'transparent'}
+          {categoryGroups.map((category) => (
+            <Stack key={category.key} gap={0}>
+              <Text
+                size="xxs"
+                fw={700}
+                c="chatbox-tertiary"
                 className={clsx(
-                  ' cursor-pointer select-none rounded-lg',
-                  item.key === key ? '' : 'hover:!bg-chatbox-background-gray-secondary'
+                  'px-2 pb-1 pt-3 uppercase tracking-[0.12em]',
+                  isSmallScreen && 'px-3 pt-4'
                 )}
               >
-                <Box component="span" flex="0 0 auto" w={20} h={20} mr="xs">
-                  {item.icon}
-                </Box>
-                <Text
-                  flex={1}
-                  lineClamp={1}
-                  span={true}
-                  className={`!text-inherit ${isSmallScreen ? 'min-h-[32px] leading-[32px]' : ''}`}
-                >
-                  {'noTranslate' in item && item.noTranslate ? item.label : t(item.label)}
-                </Text>
-                {isSmallScreen && (
-                  <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary" />
-                )}
-              </Flex>
-
-              {isSmallScreen && <Divider />}
-            </Link>
+                {t(category.label)}
+              </Text>
+              {category.items.map((item) => (
+                <SettingsNavItem
+                  key={item.key}
+                  item={item}
+                  active={item.to ? routerState.location.pathname.startsWith(item.to) : item.key === key}
+                  disabled={
+                    routerState.location.pathname === `/settings/${item.key}` ||
+                    routerState.location.pathname.startsWith(`/settings/${item.key}/`)
+                  }
+                  isSmallScreen={isSmallScreen}
+                  label={'noTranslate' in item && item.noTranslate ? item.label : t(item.label)}
+                />
+              ))}
+            </Stack>
           ))}
 
           {isSmallScreen && (
-            <Link to={`/about`} className={'block no-underline w-full'}>
+            <Link to={`/about`} className="block w-full no-underline">
               <Flex
                 component="span"
                 gap="xs"
@@ -224,24 +346,18 @@ export function SettingsRoot() {
                 pr="xl"
                 py="sm"
                 align="center"
-                c={'chatbox-secondary'}
-                className={clsx(' cursor-pointer select-none rounded-lg')}
+                c="chatbox-secondary"
+                className="cursor-pointer select-none rounded-lg"
               >
-                <Box component="span" flex="0 0 auto" w={20} h={20} mr="xs">
+                <Box component="span" flex="0 0 auto" w={20} h={20}>
                   <ScalableIcon icon={IconInfoCircle} size={20} />
                 </Box>
-                <Text
-                  flex={1}
-                  lineClamp={1}
-                  span={true}
-                  className={`!text-inherit ${isSmallScreen ? 'min-h-[32px] leading-[32px]' : ''}`}
-                >
+                <Text flex={1} lineClamp={1} span className="!text-inherit min-h-[32px] leading-[32px]">
                   {t('About')}
                 </Text>
                 <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary" />
               </Flex>
-
-              {isSmallScreen && <Divider />}
+              <Divider />
             </Link>
           )}
         </Stack>

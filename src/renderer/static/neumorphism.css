@@ -578,7 +578,69 @@ html[data-theme='dark'] .mantine-Slider-bar {
   box-shadow: var(--neo-shadow-inset-sm);
 }
 .neo-settings-content {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
   background: var(--sidebar);
+}
+
+/* Provider settings workspace: one raised desktop surface with a narrow
+   provider rail and a scrollable detail pane. Mobile keeps the list/detail
+   route split and never receives this desktop treatment. */
+.provider-settings-workspace {
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border: 1px solid var(--chatbox-border-primary);
+  border-radius: var(--chatbox-radius-lg);
+  background: var(--chatbox-background-secondary);
+  box-shadow: var(--neo-shadow-outset-sm);
+}
+
+.provider-list-surface--desktop {
+  min-height: 0;
+  background: var(--chatbox-background-secondary);
+}
+
+.provider-detail-surface {
+  min-width: 0;
+  background: var(--chatbox-background-secondary);
+}
+
+.provider-list-item-link {
+  display: block;
+  border-radius: var(--chatbox-radius-md);
+}
+
+.provider-list-item--selected {
+  color: var(--chatbox-tint-primary) !important;
+  background: color-mix(in srgb, var(--chatbox-tint-white) 12%, var(--chatbox-background-secondary)) !important;
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+.provider-list-item--interactive:hover {
+  background: color-mix(in srgb, var(--chatbox-tint-white) 7%, var(--chatbox-background-secondary)) !important;
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+.provider-list-item--interactive:active {
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.provider-detail-surface .mantine-Button-root[data-variant='light'] {
+  color: var(--chatbox-tint-primary);
+  background: color-mix(in srgb, var(--chatbox-tint-white) 9%, var(--chatbox-background-secondary)) !important;
+  box-shadow: var(--neo-shadow-outset-xs);
+}
+
+.provider-detail-surface .mantine-Button-root[data-variant='light']:hover {
+  background: color-mix(in srgb, var(--chatbox-tint-white) 13%, var(--chatbox-background-secondary)) !important;
+  box-shadow: var(--neo-shadow-outset-hover);
+}
+
+.provider-detail-surface .mantine-Button-root[data-variant='light']:active {
+  box-shadow: var(--neo-shadow-inset-sm);
 }
 
 .mantine-Accordion-control:hover {

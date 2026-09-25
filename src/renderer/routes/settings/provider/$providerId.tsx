@@ -481,9 +481,9 @@ function ProviderSettings({ providerId }: { providerId: string }) {
   }
 
   return (
-    <Stack key={baseInfo.id} gap="xxl">
+    <Stack key={baseInfo.id} gap="lg">
       <Flex gap="xs" align="center">
-        <Title order={3} c="chatbox-secondary">
+          <Title order={3} c="chatbox-primary">
           {t(baseInfo.name)}
         </Title>
         {providerWebsite && (
@@ -529,7 +529,7 @@ function ProviderSettings({ providerId }: { providerId: string }) {
         </Flex>
       )}
 
-      <Stack gap="xl">
+      <Stack gap="lg">
         {/* custom provider base info */}
         {baseInfo.isCustom && (
           <>

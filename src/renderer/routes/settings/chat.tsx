@@ -29,7 +29,7 @@ export function RouteComponent() {
   const { setSettings, ...settings } = useSettingsStore((state) => state)
 
   return (
-    <Stack gap="xxl" p="md">
+    <Stack gap="lg" p="md">
       <Title order={5}>{t('Chat Settings')}</Title>
 
       {/* Avatars */}

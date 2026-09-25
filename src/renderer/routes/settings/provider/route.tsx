@@ -1,4 +1,5 @@
 import { Box, Flex } from '@mantine/core'
+import clsx from 'clsx'
 import { SystemProviders } from '@shared/defaults'
 import type { ModelProviderEnum, ProviderInfo, ProviderSettings } from '@shared/types'
 import { createFileRoute, Outlet, useNavigate, useRouterState } from '@tanstack/react-router'
@@ -147,12 +148,16 @@ export function RouteComponent() {
   }
 
   return (
-    <Flex h="100%" w="100%">
+    <Flex h="100%" w="100%" className={clsx(!isSmallScreen && 'provider-settings-workspace')}>
       {(!isSmallScreen || routerState.location.pathname === '/settings/provider') && (
         <ProviderList providers={providers} onAddProvider={handleOpenSpotlight} />
       )}
       {!(isSmallScreen && routerState.location.pathname === '/settings/provider') && (
-        <Box flex="1 1 75%" p="md" className="overflow-auto">
+        <Box
+          flex="1 1 auto"
+          p={isSmallScreen ? 'md' : 'xl'}
+          className={clsx('min-w-0 overflow-auto', !isSmallScreen && 'provider-detail-surface')}
+        >
           <Outlet />
         </Box>
       )}

@@ -17,6 +17,7 @@ import { ScalableIcon } from '@/components/common/ScalableIcon'
 import SettingsKnowledgeBaseRouteComponent from '@/components/knowledge-base/KnowledgeBase'
 import { Modal } from '@/components/layout/Overlay'
 import useNeedRoomForWinControls from '@/hooks/useNeedRoomForWinControls'
+import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import { getSettingsSearchParam, navigateToDynamicPath, router } from '@/router'
 import { RouteComponent as SettingsAgentRouteComponent } from '@/routes/settings/agent'
 import { RouteComponent as SettingsArchiveRouteComponent } from '@/routes/settings/archive'
@@ -184,6 +185,7 @@ export const SettingsModal: FC<SettingsModalProps> = (props) => {
   const { t } = useTranslation()
   const location = useLocation()
   const { needRoomForMacWindowControls } = useNeedRoomForWinControls()
+  const isSmallScreen = useIsSmallScreen()
 
   const settingsPath = getSettingsSearchParam(location.search)
   useEffect(() => {
@@ -204,17 +206,31 @@ export const SettingsModal: FC<SettingsModalProps> = (props) => {
     <Modal
       opened={!!settingsPath}
       onClose={onClose}
-      // size="1200"
-      fullScreen={true}
+      fullScreen={isSmallScreen}
       centered
-      size="100%"
-      // title={<Title order={3}>{t('Settings')}</Title>}
+      size={isSmallScreen ? '100%' : 'min(1200px, calc(100vw - 48px))'}
       withCloseButton={false}
-        classNames={{
-          content: clsx('h-full neo-settings-page'),
-          header: 'hidden',
-          body: clsx('!p-0 flex-1  flex flex-col h-full neo-settings-page'),
-        }}
+      classNames={{
+        content: clsx(
+          'neo-settings-page',
+          isSmallScreen
+            ? 'h-full'
+            : 'h-[min(800px,calc(100dvh-48px))] overflow-hidden rounded-xl'
+        ),
+        header: 'hidden',
+        body: clsx('!p-0 flex min-h-0 flex-1 flex-col h-full neo-settings-page'),
+      }}
+      styles={{
+        content: {
+          position: 'relative',
+          width: isSmallScreen ? '100%' : 'min(1200px, calc(100vw - 48px))',
+          height: isSmallScreen ? '100%' : 'min(800px, calc(100dvh - 48px))',
+          minHeight: 0,
+          overflow: 'hidden',
+          background: 'var(--chatbox-background-sidebar)',
+        },
+        body: { position: 'absolute', inset: 0, height: '100%', minHeight: 0, overflow: 'hidden' },
+      }}
       transitionProps={{ transition: 'fade-up' }}
     >
       <Flex flex="0 0 auto" className="title-bar border-0 border-b border-chatbox-border-primary border-solid">
@@ -245,7 +261,7 @@ export const SettingsModal: FC<SettingsModalProps> = (props) => {
         </Flex>
         <div className={clsx('flex-[1_1_0]')} />
       </Flex>
-      <Box flex={1} w="100%" maw={1200} mx="auto" className="overflow-auto neo-settings-content">
+      <Box flex={1} w="100%" maw={1200} mx="auto" className="h-full min-h-0 neo-settings-content">
         <RouterProvider router={modalRouter} />
       </Box>
       <Toaster richColors position="bottom-center" style={{ zIndex: 2147483647 }} />
