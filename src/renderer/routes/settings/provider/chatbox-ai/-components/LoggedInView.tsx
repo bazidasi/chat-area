@@ -362,14 +362,18 @@ export const LoggedInView = forwardRef<HTMLDivElement, LoggedInViewProps>(
               </Button>
             </Flex>
             <Flex gap="xs" align="center" justify="flex-end">
-              <Text c="chatbox-tertiary" className="text-right">
+              <Text c="chatbox-tertiary" className="text-end">
                 {t('Continue with')}{' '}
                 <UnstyledButton onClick={onSwitchToLicenseKey}>
                   <Flex gap="xxs" align="center">
                     <Text span className="!text-chatbox-tint-brand">
                       {t('license key')}
                     </Text>
-                    <ScalableIcon icon={IconArrowRight} size={16} className="!text-chatbox-tint-brand" />
+                    <ScalableIcon
+                      icon={IconArrowRight}
+                      size={16}
+                      className="!text-chatbox-tint-brand rtl:scale-x-[-1]"
+                    />
                   </Flex>
                 </UnstyledButton>
               </Text>
@@ -520,7 +524,7 @@ export const LoggedInView = forwardRef<HTMLDivElement, LoggedInViewProps>(
                     )
                   }
                   disabled={pendingExternalAction !== null}
-                  className={`ml-auto flex flex-row items-center gap-xxs${activationError === 'not_found' ? ' text-chatbox-tint-error underline decoration-chatbox-tint-error' : ''}`}
+                  className={`ms-auto flex flex-row items-center gap-xxs${activationError === 'not_found' ? ' text-chatbox-tint-error underline decoration-chatbox-tint-error' : ''}`}
                   style={{ opacity: pendingExternalAction === 'manage-license' ? 0.6 : 1 }}
                 >
                   <Text
@@ -533,6 +537,7 @@ export const LoggedInView = forwardRef<HTMLDivElement, LoggedInViewProps>(
                   </Text>
                   <ScalableIcon
                     icon={IconArrowRight}
+                    className="rtl:scale-x-[-1]"
                     color={activationError === 'not_found' ? 'var(--chatbox-tint-error)' : undefined}
                   />
                 </UnstyledButton>
@@ -566,13 +571,13 @@ export const LoggedInView = forwardRef<HTMLDivElement, LoggedInViewProps>(
                       )
                     }
                     disabled={pendingExternalAction !== null}
-                    className="ml-auto flex flex-row items-center gap-xxs"
+                    className="ms-auto flex flex-row items-center gap-xxs"
                     style={{ opacity: pendingExternalAction === 'get-more' ? 0.6 : 1 }}
                   >
                     <Text span fw={600} className="whitespace-nowrap">
                       {pendingExternalAction === 'get-more' ? t('Loading...') : t('get more')}
                     </Text>
-                    <ScalableIcon icon={IconArrowRight} />
+                    <ScalableIcon icon={IconArrowRight} className="rtl:scale-x-[-1]" />
                   </UnstyledButton>
                 </Flex>
               </Alert>

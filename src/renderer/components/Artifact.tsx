@@ -112,7 +112,7 @@ export function ArtifactWithButtons(props: {
         onClick={onPreview}
       >
         <div className="flex items-center justify-between p-4">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center gap-3">
             <div className="w-7 h-7 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -133,7 +133,7 @@ export function ArtifactWithButtons(props: {
           </div>
           <div className="flex items-center justify-center">
             <FullscreenIcon
-              className="mr-1 hover:bg-white hover:rounded  hover:text-gray-500
+              className="me-1 hover:bg-white hover:rounded  hover:text-gray-500
                             p-1 w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400"
               onClick={(e) => {
                 e.preventDefault()
@@ -143,7 +143,7 @@ export function ArtifactWithButtons(props: {
             />
             <ArrowRightIcon
               className="hover:bg-white hover:rounded  hover:text-gray-500
-                            p-1 w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400"
+                            p-1 w-8 h-8 text-gray-400 dark:text-gray-500 group-hover:text-blue-500 dark:group-hover:text-blue-400' rtl:scale-x-[-1]"
               onClick={() => setPreview(true)}
             />
           </div>

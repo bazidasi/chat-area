@@ -76,7 +76,7 @@ const AgentModeRewardClaimSuccess = NiceModal.create(({ tokenLimit, expiresAt }:
         </Paper>
 
         <AdaptiveModal.Actions>
-          <Button onClick={close} rightSection={<IconArrowRight size={16} />}>
+          <Button onClick={close} rightSection={<IconArrowRight size={16} className="rtl:scale-x-[-1]" />}>
             {t('Continue with Work Mode')}
           </Button>
         </AdaptiveModal.Actions>
