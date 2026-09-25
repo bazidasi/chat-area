@@ -183,6 +183,11 @@ module.exports = {
         'data-closed',
         '&:where([data-state="closed"], [data-closed]:not([data-closed="false"]))'
       );
+      // `dir` is set on <html> (see useAppTheme), so an RTL ancestor selector
+      // also matches portalled overlays that mount on document.body. Tailwind
+      // ships no logical slide/gradient utilities, so the few animations whose
+      // direction has to flip are paired with `rtl:` instead.
+      addVariant('rtl', '&:where([dir="rtl"], [dir="rtl"] *)');
     }),
   ],
   corePlugins: {
