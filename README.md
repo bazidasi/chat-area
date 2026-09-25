@@ -10,13 +10,10 @@
 </span>
 </h1>
 <p align="center">
-    <em>Your Ultimate AI Copilot on the Desktop. <br />ChatArea is a desktop client for ChatGPT, Claude and other LLMs, available on Windows, Mac, Linux</em>
+    <em>Your Ultimate AI Copilot on the Desktop. <br />ChatArea is a desktop client for ChatGPT, Claude and other LLMs, available on Windows, Linux</em>
 </p>
 
 <p align="center">
-<a href="https://my.fibonacci.monster" target="_blank">
-<img alt="macOS" src="https://img.shields.io/badge/-macOS-black?style=flat-square&logo=apple&logoColor=white" />
-</a>
 <a href="https://my.fibonacci.monster" target="_blank">
 <img alt="Windows" src="https://img.shields.io/badge/-Windows-blue?style=flat-square&logo=windows&logoColor=white" />
 </a>
@@ -41,13 +38,10 @@
 
 <table style="width: 100%">
   <tr>
-    <td width="25%" align="center">
+    <td width="50%" align="center">
       <b>Windows</b>
     </td>
-    <td width="25%" align="center" colspan="2">
-      <b>MacOS</b>
-    </td>
-    <td width="25%" align="center">
+    <td width="50%" align="center">
       <b>Linux</b>
     </td>
   </tr>
@@ -57,20 +51,6 @@
         <img src='./doc/statics/windows.png' style="height:24px; width: 24px" />
         <br />
         <b>Setup.exe</b>
-      </a>
-    </td>
-    <td align="center" valign="middle">
-      <a href='https://my.fibonacci.monster?c=download-mac-intel'>
-        <img src='./doc/statics/mac.png' style="height:24px; width: 24px" />
-        <br />
-        <b>Intel</b>
-      </a>
-    </td>
-    <td align="center" valign="middle">
-      <a href='https://my.fibonacci.monster?c=download-mac-aarch'>
-        <img src='./doc/statics/mac.png' style="height:24px; width: 24px" />
-        <br />
-        <b style="white-space: nowrap;">Apple Silicon</b>
       </a>
     </td>
     <td align="center" valign="middle">
@@ -98,7 +78,6 @@ For more information: [my.fibonacci.monster](https://my.fibonacci.monster/)
 | Platform | Minimum Version | Architecture |
 |----------|----------------|--------------|
 | Windows | Windows 10 | x64 |
-| macOS | macOS 11 (Big Sur) | Intel/Apple Silicon |
 | Linux | Ubuntu 20.04+ / AppImage supported distros | x64 |
 
 ## Features
@@ -148,7 +127,7 @@ For more information: [my.fibonacci.monster](https://my.fibonacci.monster/)
 
 ### 🌐 Platform Availability
 -   **Cross-Platform Desktop**  
-    :computer: ChatArea is ready for Windows, Mac, and Linux users.
+    :computer: ChatArea is ready for Windows and Linux users.
 
 -   **Web Version**  
     :globe_with_meridians: Use the web application on any device with a browser, anywhere.
@@ -218,7 +197,7 @@ Help make ChatArea accessible to more people by contributing translations:
 Before you begin, ensure you have the following installed:
 
 - **Node.js** (v20.x – v22.x) - [Download here](https://nodejs.org/)
-- **Bun** (v1.2.x or later) - Install via `powershell -c "irm bun.sh/install.ps1 | iex"` (Windows) or `curl -fsSL https://bun.sh/install | bash` (macOS/Linux)
+- **Bun** (v1.2.x or later) - Install via `powershell -c "irm bun.sh/install.ps1 | iex"` (Windows) or `curl -fsSL https://bun.sh/install | bash` (Linux)
 - **Git** - [Download here](https://git-scm.com/)
 
 ### Quick Setup
