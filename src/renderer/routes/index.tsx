@@ -469,7 +469,7 @@ function Index() {
                       </Text>
                       <span className="h-[3px] w-10 rounded-full bg-chatbox-tint-brand" />
                       {!isSmallScreen && (
-                        <Text size="sm" c="chatbox-tertiary" ta="center" mt={4}>
+                        <Text size="sm" c="chatbox-tertiary" ta="center" mt={4} dir="auto">
                           {t('Ask anything — chat, create images, analyze files, and more.')}
                         </Text>
                       )}
@@ -602,12 +602,12 @@ const HomeFeatureCard = ({
     type="button"
     onClick={onClick}
     className={clsx(
-      'chatbox-suggestion-card group/card relative flex w-full cursor-pointer flex-col items-start gap-2 text-left',
+      'chatbox-suggestion-card group/card relative flex w-full cursor-pointer flex-col items-start gap-2 text-start',
       'rounded-2xl bg-chatbox-background-secondary px-4 py-3'
     )}
   >
     <span
-      className="absolute right-3 top-3 rounded-full px-2 py-0.5 text-[11px] font-medium"
+      className="absolute end-3 top-3 rounded-full px-2 py-0.5 text-[11px] font-medium"
       style={{
         background: 'var(--chatbox-background-brand-secondary)',
         color: 'var(--chatbox-tint-brand)',
@@ -621,8 +621,12 @@ const HomeFeatureCard = ({
     >
       <ScalableIcon icon={icon} size={18} className="text-chatbox-tint-brand" />
     </span>
-    <span className="text-sm font-semibold text-chatbox-tint-primary">{title}</span>
-    <span className="text-xs leading-relaxed text-chatbox-tint-tertiary">{description}</span>
+    <span className="text-sm font-semibold text-chatbox-tint-primary" dir="auto">
+      {title}
+    </span>
+    <span className="text-xs leading-relaxed text-chatbox-tint-tertiary" dir="auto">
+      {description}
+    </span>
   </button>
 )
 
@@ -715,10 +719,10 @@ const CopilotPicker = ({ selectedId, onSelect }: { selectedId?: string; onSelect
           className="copilot-picker-scroll-area"
         >
           {scrollPosition.x > 8 && !isSmallScreen && (
-            <div className="absolute top-0 left-0 w-8 h-full bg-gradient-to-r from-chatbox-background-primary to-transparent"></div>
+            <div className="absolute top-0 start-0 w-8 h-full bg-gradient-to-r from-chatbox-background-primary to-transparent rtl:bg-gradient-to-l"></div>
           )}
           {!isSmallScreen && (
-            <div className="absolute top-0 right-0 w-8 h-full bg-gradient-to-l from-chatbox-background-primary to-transparent"></div>
+            <div className="absolute top-0 end-0 w-8 h-full bg-gradient-to-l from-chatbox-background-primary to-transparent rtl:bg-gradient-to-r"></div>
           )}
           <Flex wrap="nowrap" gap="xs">
             <Space w="xs" />

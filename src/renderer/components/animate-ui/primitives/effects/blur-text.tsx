@@ -7,8 +7,10 @@ import { cn } from '@/lib/utils'
  * - each word is an inline-block span with an increasing
  *   animation-delay (delayMs per word); the gaps between words are kept
  *   with &nbsp; so wrapping stays identical to plain text
- * - the document direction lays the spans out, so in RTL the words keep
- *   their natural right-to-left order and are never reversed
+ * - `dir="auto"` derives the base direction from the string's own first strong
+ *   character, so the word spans lay out left-to-right for a Latin heading and
+ *   right-to-left for a Persian or Arabic one, without the caller having to
+ *   know which it got back from `t()`
  * - the accessible name stays on the container; the animated word spans
  *   are aria-hidden, so screen readers read one clean string
  * - motion is short (per-word durationMs) and disabled under
@@ -49,7 +51,7 @@ export const BlurText: FC<BlurTextProps> = ({ text, delayMs = 40, durationMs = 3
   }, [text])
 
   return (
-    <span className={cn('inline', className)} aria-label={text}>
+    <span className={cn('inline', className)} dir="auto" aria-label={text}>
       {items.map((item) =>
         item.word === null ? (
           item.value
