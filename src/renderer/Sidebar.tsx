@@ -1,28 +1,28 @@
 import { registerPlugin } from '@capacitor/core'
-import { ActionIcon, Button as MantineButton, Flex, Text } from '@mantine/core'
-import { rendererApplication } from '@/app/renderer-application'
+import { ActionIcon, Button as MantineButton, Text } from '@mantine/core'
 import { TestId } from '@shared/automation/testids'
-import {
-  IconArchive,
-  IconArrowLeft,
-  IconArrowRight,
-  IconCirclePlus,
-  IconPhotoPlus,
-  IconPlus,
-  IconSearch,
-  IconSettingsFilled,
-  IconWand,
-  IconX,
-} from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
+import {
+  Archive,
+  ArrowLeft,
+  ArrowRight,
+  ImagePlus,
+  PanelLeftClose,
+  PanelRightClose,
+  Plus,
+  Search,
+  Settings,
+  WandSparkles,
+} from 'lucide-react'
 import { Fragment, useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { rendererApplication } from '@/app/renderer-application'
 import {
-  Sidebar as SidebarRoot,
   SidebarContent,
   SidebarFooter,
   SidebarHeader,
   SidebarRail,
+  Sidebar as SidebarRoot,
 } from '@/components/ui/sidebar'
 import { AppTooltip as Tooltip } from '@/components/ui/tooltip'
 import { isRTL } from '@/i18n/locales'
@@ -34,14 +34,14 @@ import ProjectSidebarList from './components/session/ProjectSidebarList'
 import SessionList from './components/session/SessionList'
 import useNeedRoomForMacWinControls from './hooks/useNeedRoomForWinControls'
 import { useIsSmallScreen, useSidebarWidth } from './hooks/useScreenChange'
-import platform from './platform'
 import { navigateToSettings } from './modals/settings-navigation'
 import { trackingEvent } from './packages/event'
+import platform from './platform'
+import { router } from './router'
 import icon from './static/icon.png'
 import { projectRegistryStore, useWorkProjects } from './stores/projectRegistryStore'
 import { useLanguage } from './stores/settingsStore'
 import { useUIStore } from './stores/uiStore'
-import { router } from './router'
 import { CHATBOX_BUILD_PLATFORM, CHATBOX_BUILD_TARGET } from './variables'
 
 interface ChatboxWebViewPlugin {
@@ -64,16 +64,18 @@ interface SidebarTopActionProps {
   shortcut?: string
   onClick: () => void
   testId?: string
+  variant?: 'primary' | 'subtle'
 }
 
-function SidebarTopAction({ icon, label, shortcut, onClick, testId }: SidebarTopActionProps) {
+function SidebarTopAction({ icon, label, shortcut, onClick, testId, variant = 'subtle' }: SidebarTopActionProps) {
   return (
     <MantineButton
       variant="subtle"
       fullWidth
       leftSection={icon}
-      rightSection={shortcut ? <Text size="xs" c="chatbox-tertiary">{shortcut}</Text> : undefined}
-      className="justify-between"
+      rightSection={shortcut ? <Text className="sidebar-shortcut">{shortcut}</Text> : undefined}
+      className={cn('sidebar-top-action', variant === 'primary' && 'sidebar-top-action-primary')}
+      style={{ '--button-justify': 'flex-start' } as React.CSSProperties}
       onClick={onClick}
       data-testid={testId}
     >
@@ -101,13 +103,16 @@ export default function Sidebar() {
   const isSmallScreen = useIsSmallScreen()
   const isWorkMode = agentModeLastSelected === 'on'
   const activeProjectId =
-    activeWorkProjectId ?? workProjects.slice().sort((a, b) => (b.lastOpenedAt ?? 0) - (a.lastOpenedAt ?? 0))[0]?.id ?? null
+    activeWorkProjectId ??
+    workProjects.slice().sort((a, b) => (b.lastOpenedAt ?? 0) - (a.lastOpenedAt ?? 0))[0]?.id ??
+    null
 
   const [isResizing, setIsResizing] = useState(false)
   const resizeStartX = useRef<number>(0)
   const resizeStartWidth = useRef<number>(0)
   const { needRoomForMacWindowControls } = useNeedRoomForMacWinControls()
   const isRtlLayout = isRTL(language)
+  const CloseSidebarIcon = isRtlLayout ? PanelRightClose : PanelLeftClose
 
   useEffect(() => {
     const root = document.querySelector(`[data-testid="${TestId.sidebar.root}"]`)
@@ -115,7 +120,7 @@ export default function Sidebar() {
     return () => {
       cleanup?.()
     }
-  }, [isSmallScreen])
+  }, [])
 
   const handleCreateNewSession = useCallback(() => {
     navigate({ to: `/` })
@@ -252,13 +257,14 @@ export default function Sidebar() {
         variant="inset"
         side={isRtlLayout ? ('right' as const) : ('left' as const)}
         collapsible="offcanvas"
+        className="sidebar-shell"
       >
-        <SidebarHeader>
+        <SidebarHeader className="sidebar-header">
           {needRoomForMacWindowControls && <div className="h-6 shrink-0" />}
-          <div data-testid={TestId.sidebar.root} className="flex flex-col gap-2 px-1 pt-1">
-            <div className="flex items-center gap-2">
+          <div data-testid={TestId.sidebar.root} className="sidebar-shell-content">
+            <div className="sidebar-brand-row" dir="ltr">
               <div
-                className="flex aspect-square size-8 items-center justify-center rounded-lg"
+                className="flex aspect-square size-9 shrink-0 items-center justify-center rounded-xl"
                 style={{
                   background: 'var(--neo-surface-raised)',
                   boxShadow: 'var(--neo-shadow-outset-sm)',
@@ -271,49 +277,72 @@ export default function Sidebar() {
                   style={{ filter: 'drop-shadow(0 1px 2px hsl(0 0% 0% / 0.35))' }}
                 />
               </div>
-              <ActionIcon variant="subtle" size="sm" aria-label={t('Back') || undefined} onClick={() => router.history.back()}>
-                <IconArrowLeft size={16} />
-              </ActionIcon>
-              <ActionIcon variant="subtle" size="sm" aria-label={t('Forward') || undefined} onClick={() => router.history.forward()}>
-                <IconArrowRight size={16} />
-              </ActionIcon>
-              <ActionIcon
-                variant="subtle"
-                size="sm"
-                aria-label={t('Close sidebar') || undefined}
-                onClick={() => setShowSidebar(false)}
-              >
-                <IconX size={16} />
-              </ActionIcon>
+              <div className="min-w-0 flex-1">
+                <Text className="truncate text-sm font-semibold" c="chatbox-primary">
+                  Fibonacci
+                </Text>
+                <Text className="truncate text-[11px]" c="chatbox-tertiary">
+                  {isWorkMode ? t('Work mode') : t('Chat mode')}
+                </Text>
+              </div>
+              <div className="flex items-center gap-0.5">
+                <Tooltip label={t('Back')} openDelay={700} withArrow>
+                  <ActionIcon
+                    variant="subtle"
+                    size="sm"
+                    aria-label={t('Back') || undefined}
+                    onClick={() => router.history.back()}
+                  >
+                    <ArrowLeft size={16} />
+                  </ActionIcon>
+                </Tooltip>
+                <Tooltip label={t('Forward')} openDelay={700} withArrow>
+                  <ActionIcon
+                    variant="subtle"
+                    size="sm"
+                    aria-label={t('Forward') || undefined}
+                    onClick={() => router.history.forward()}
+                  >
+                    <ArrowRight size={16} />
+                  </ActionIcon>
+                </Tooltip>
+                <Tooltip label={t('Close sidebar')} openDelay={700} withArrow>
+                  <ActionIcon
+                    variant="subtle"
+                    size="sm"
+                    aria-label={t('Close sidebar') || undefined}
+                    onClick={() => setShowSidebar(false)}
+                  >
+                    <CloseSidebarIcon size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </div>
             </div>
 
-            <div className="flex flex-col gap-1" dir="ltr">
+            <div className="sidebar-action-list" dir="ltr">
               <SidebarTopAction
-                icon={<IconPlus size={16} />}
-                label={t('New task')}
+                icon={<Plus size={16} />}
+                label={isWorkMode ? t('New task') : t('New chat')}
                 shortcut="Ctrl+N"
                 onClick={handleCreateNewSession}
                 testId={TestId.sidebar.newChat}
+                variant="primary"
               />
               <SidebarTopAction
-                icon={<IconSearch size={16} />}
+                icon={<Search size={16} />}
                 label={t('Search')}
                 shortcut="Ctrl+K"
                 onClick={handleOpenSearch}
               />
               <SidebarTopAction
-                icon={<IconPhotoPlus size={16} />}
+                icon={<ImagePlus size={16} />}
                 label={t('Create Image')}
                 onClick={handleCreateNewPictureSession}
                 testId={TestId.sidebar.newImage}
               />
+              <SidebarTopAction icon={<Archive size={16} />} label={t('Archive')} onClick={handleOpenArchive} />
               <SidebarTopAction
-                icon={<IconArchive size={16} />}
-                label={t('Archive')}
-                onClick={handleOpenArchive}
-              />
-              <SidebarTopAction
-                icon={<IconWand size={16} />}
+                icon={<WandSparkles size={16} />}
                 label={t('Skill settings')}
                 onClick={handleOpenSkillsSettings}
               />
@@ -321,7 +350,7 @@ export default function Sidebar() {
           </div>
         </SidebarHeader>
 
-        <SidebarContent>
+        <SidebarContent className="sidebar-content">
           {isWorkMode ? (
             <ProjectSidebarList
               projects={workProjects}
@@ -330,7 +359,13 @@ export default function Sidebar() {
               onSelectProject={handleSelectProject}
             />
           ) : (
-            <SessionList sessionListViewportRef={sessionListViewportRef} scope="all" />
+            <>
+              <div className="sidebar-list-heading">
+                <Text className="sidebar-section-label">{t('Recent chats')}</Text>
+                <Text className="sidebar-list-hint">{t('Newest first')}</Text>
+              </div>
+              <SessionList sessionListViewportRef={sessionListViewportRef} scope="all" />
+            </>
           )}
         </SidebarContent>
 
@@ -348,7 +383,7 @@ export default function Sidebar() {
               aria-label={t('Settings') || undefined}
               onClick={() => navigateToSettings()}
             >
-              <IconSettingsFilled size={16} />
+              <Settings size={16} />
             </ActionIcon>
           </div>
         </SidebarFooter>

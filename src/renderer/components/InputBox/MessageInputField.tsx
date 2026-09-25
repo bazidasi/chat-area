@@ -1,7 +1,7 @@
-import { Textarea } from '@mantine/core'
 import { TestId } from '@shared/automation/testids'
 import type React from 'react'
-import { forwardRef, memo, useCallback, useEffect, useImperativeHandle, useRef } from 'react'
+import { forwardRef, memo, useEffect, useImperativeHandle, useRef } from 'react'
+import { PromptInput } from '@/components/ui/prompt-input'
 import { useMessageInput } from '@/hooks/useMessageInput'
 import * as dom from '../../hooks/dom'
 
@@ -64,40 +64,29 @@ export const MessageInputField = memo(
         [setMessageInput, clearDraft]
       )
 
-      const onChange = useCallback(
-        (event: React.ChangeEvent<HTMLTextAreaElement>) => {
-          setMessageInput(event.target.value)
-          onUserInput?.()
-        },
-        [setMessageInput, onUserInput]
-      )
+      const maxRows = Math.max(4, Math.floor(viewportHeight / 100))
 
       return (
-        <Textarea
-          unstyled={true}
-          styles={{ input: { fontSize: 14 } }}
-          classNames={{
-            root: 'flex-1',
-            wrapper: 'flex-1',
-            input:
-              'block w-full outline-none border-none px-2 py-1 resize-none bg-transparent text-chatbox-tint-primary leading-6',
-          }}
-          size="sm"
-          id={dom.messageInputID}
-          ref={inputRef}
-          placeholder={placeholder}
-          aria-label={ariaLabel}
-          bg="transparent"
-          autosize={true}
-          minRows={2}
-          maxRows={Math.max(4, Math.floor(viewportHeight / 100))}
+        <PromptInput
+          variant="bare"
           value={messageInput}
-          autoFocus={autoFocus}
+          onChange={setMessageInput}
+          onUserInput={onUserInput}
+          enterToSubmit={false}
           readOnly={isReadOnly}
-          onChange={onChange}
-          onKeyDown={onKeyDown}
-          onPaste={onPaste}
-          data-testid={TestId.chat.messageInput}
+          autoFocus={autoFocus}
+          placeholder={placeholder}
+          minRows={2}
+          maxHeight={maxRows * 24}
+          inputRef={inputRef}
+          className="min-w-0 flex-1"
+          textareaProps={{
+            id: dom.messageInputID,
+            'aria-label': ariaLabel,
+            'data-testid': TestId.chat.messageInput,
+            onKeyDown,
+            onPaste,
+          }}
         />
       )
     }

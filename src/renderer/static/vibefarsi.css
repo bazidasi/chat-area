@@ -1,0 +1,199 @@
+/* VibeFarsi compatibility layer. Tokens are namespaced to keep the existing UI safe. */
+
+:root {
+  /* Graphite theme: color */
+  --vf-background: oklch(0.115 0.002 285);
+  --vf-foreground: oklch(0.975 0 0);
+  --vf-card: oklch(0.14 0.002 285);
+  --vf-card-foreground: oklch(0.975 0 0);
+  --vf-popover: oklch(0.16 0.002 285);
+  --vf-popover-foreground: oklch(0.975 0 0);
+  --vf-primary: oklch(0.975 0 0);
+  --vf-primary-foreground: oklch(0.13 0 0);
+  --vf-secondary: oklch(0.2 0.002 285);
+  --vf-secondary-foreground: oklch(0.975 0 0);
+  --vf-muted: oklch(0.175 0.002 285);
+  --vf-muted-foreground: oklch(0.63 0.004 285);
+  --vf-accent: oklch(0.2 0.002 285);
+  --vf-accent-foreground: oklch(0.975 0 0);
+  --vf-destructive: oklch(0.65 0.2 25);
+  --vf-success: oklch(0.75 0.16 160);
+  --vf-warning: oklch(0.82 0.16 80);
+  --vf-border: oklch(1 0 0 / 8%);
+  --vf-input: oklch(1 0 0 / 11%);
+  --vf-ring: oklch(0.7 0 0);
+  --vf-brand: oklch(0.8 0.165 65);
+  --vf-brand-foreground: oklch(0.22 0.06 60);
+
+  /* Typography and design language */
+  --vf-radius: 0.625rem;
+  --vf-type-display-weight: 700;
+  --vf-shape-control: calc(var(--vf-radius) - 2px);
+  --vf-shape-field: calc(var(--vf-radius) - 2px);
+  --vf-shape-surface: calc(var(--vf-radius) + 12px);
+  --vf-shape-overlay: calc(var(--vf-radius) + 4px);
+  --vf-line: 1px;
+  --vf-line-field: 1px;
+  --vf-line-style: solid;
+  --vf-field: color-mix(in oklch, var(--vf-background) 60%, transparent);
+  --vf-depth-control: 0 0 #0000;
+  --vf-depth-press: 0 0 #0000;
+  --vf-depth-field: 0 0 #0000;
+  --vf-depth-surface: 0 1px 0 0 oklch(1 0 0 / 6%) inset;
+  --vf-depth-overlay: 0 20px 50px -20px oklch(0 0 0 / 80%);
+  --vf-surface-filter: none;
+  --vf-press: scale(0.98);
+  --vf-motion: 200ms;
+  --vf-motion-ease: cubic-bezier(0.2, 0, 0, 1);
+  --vf-backdrop: none;
+  --vf-spacing: 0.25rem;
+
+  /* Cairo is bundled locally, keeping the layer available offline. */
+  --vf-font-sans: "Cairo", "Segoe UI", sans-serif;
+  --vf-font-display: "Cairo", "Segoe UI", sans-serif;
+}
+
+.vf-font-sans {
+    font-family: var(--vf-font-sans);
+  }
+
+  .vf-font-display {
+    font-family: var(--vf-font-display);
+    font-weight: var(--vf-type-display-weight);
+  }
+
+  .vf-bg-background {
+    background-color: var(--vf-background);
+  }
+
+  .vf-bg-card {
+    background-color: var(--vf-card);
+  }
+
+  .vf-bg-popover {
+    background-color: var(--vf-popover);
+  }
+
+  .vf-bg-primary {
+    background-color: var(--vf-primary);
+  }
+
+  .vf-bg-secondary {
+    background-color: var(--vf-secondary);
+  }
+
+  .vf-bg-muted {
+    background-color: var(--vf-muted);
+  }
+
+  .vf-bg-accent {
+    background-color: var(--vf-accent);
+  }
+
+  .vf-bg-destructive {
+    background-color: var(--vf-destructive);
+  }
+
+  .vf-bg-success {
+    background-color: var(--vf-success);
+  }
+
+  .vf-bg-warning {
+    background-color: var(--vf-warning);
+  }
+
+  .vf-bg-brand {
+    background-color: var(--vf-brand);
+  }
+
+  .vf-bg-field {
+    background-color: var(--vf-field);
+  }
+
+  .vf-text-foreground {
+    color: var(--vf-foreground);
+  }
+
+  .vf-text-card-foreground {
+    color: var(--vf-card-foreground);
+  }
+
+  .vf-text-popover-foreground {
+    color: var(--vf-popover-foreground);
+  }
+
+  .vf-text-primary-foreground {
+    color: var(--vf-primary-foreground);
+  }
+
+  .vf-text-secondary-foreground {
+    color: var(--vf-secondary-foreground);
+  }
+
+  .vf-text-muted-foreground {
+    color: var(--vf-muted-foreground);
+  }
+
+  .vf-text-accent-foreground {
+    color: var(--vf-accent-foreground);
+  }
+
+  .vf-text-brand-foreground {
+    color: var(--vf-brand-foreground);
+  }
+
+  .vf-border {
+    border: var(--vf-line) var(--vf-line-style) var(--vf-border);
+  }
+
+  .vf-border-field {
+    border: var(--vf-line-field) var(--vf-line-style) var(--vf-input);
+  }
+
+  .vf-radius-control {
+    border-radius: var(--vf-shape-control);
+  }
+
+  .vf-radius-field {
+    border-radius: var(--vf-shape-field);
+  }
+
+  .vf-radius-surface {
+    border-radius: var(--vf-shape-surface);
+  }
+
+  .vf-radius-overlay {
+    border-radius: var(--vf-shape-overlay);
+  }
+
+  .vf-shadow-control {
+    box-shadow: var(--vf-depth-control);
+  }
+
+  .vf-shadow-field {
+    box-shadow: var(--vf-depth-field);
+  }
+
+  .vf-shadow-surface {
+    box-shadow: var(--vf-depth-surface);
+  }
+
+  .vf-shadow-overlay {
+    box-shadow: var(--vf-depth-overlay);
+  }
+
+  .vf-shadow-focus {
+    box-shadow: 0 0 0 2px var(--vf-ring);
+  }
+
+  .vf-duration-motion {
+    transition-duration: var(--vf-motion);
+  }
+
+  .vf-ease-motion {
+    transition-timing-function: var(--vf-motion-ease);
+  }
+
+  .vf-active-press {
+    transform: var(--vf-press);
+  }

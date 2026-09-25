@@ -21,16 +21,17 @@ import {
 import { CSS } from '@dnd-kit/utilities'
 import { Button, Flex, Text } from '@mantine/core'
 import type { SessionMetaRecord } from '@shared/types'
-import { IconArrowsMoveVertical, IconGripVertical, IconLoader2 } from '@tabler/icons-react'
 import { useRouterState } from '@tanstack/react-router'
+import { ArrowDownUp, GripVertical, LoaderCircle } from 'lucide-react'
 import { type CSSProperties, type MutableRefObject, useCallback, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Virtuoso } from 'react-virtuoso'
+import { rendererApplication } from '@/app/renderer-application'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import platform from '@/platform'
-import { rendererApplication } from '@/app/renderer-application'
 
 const useSessionList = (scope: 'all' | string) => rendererApplication.sessionHooks.useSessionList(scope)
+
 import { reorderSessions } from '@/stores/session/crud'
 import SessionItem from './SessionItem'
 
@@ -46,16 +47,19 @@ type SessionListItem =
 function SessionListLoadingFooter() {
   return (
     <Flex justify="center" py="xs">
-      <IconLoader2 size={16} className="animate-spin" style={{ color: 'var(--mantine-color-dimmed)' }} />
+      <LoaderCircle size={16} className="animate-spin" style={{ color: 'var(--mantine-color-dimmed)' }} />
     </Flex>
   )
 }
 
 export default function SessionList(props: Props) {
   const { t } = useTranslation()
-  const { sessionMetaList: sortedSessions, fetchNextPage, hasNextPage, isFetchingNextPage } = useSessionList(
-    props.scope ?? 'all'
-  )
+  const {
+    sessionMetaList: sortedSessions,
+    fetchNextPage,
+    hasNextPage,
+    isFetchingNextPage,
+  } = useSessionList(props.scope ?? 'all')
   const [activeDragId, setActiveDragId] = useState<string | null>(null)
   const [isReordering, setIsReordering] = useState(false)
   const isSmallScreen = useIsSmallScreen()
@@ -180,7 +184,7 @@ export default function SessionList(props: Props) {
               className="rounded-sm bg-chatbox-background-gray-secondary"
             >
               <Flex align="center" gap={6}>
-                <IconArrowsMoveVertical size={16} className="text-chatbox-tertiary" />
+                <ArrowDownUp size={16} className="text-chatbox-tertiary" />
                 <Text size="sm" fw={500} c="chatbox-secondary">
                   {t('Adjust order')}
                 </Text>
@@ -287,7 +291,7 @@ function SortableItem(props: {
           aria-hidden
           className="pointer-events-none absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center text-chatbox-tertiary"
         >
-          <IconGripVertical size={18} />
+          <GripVertical size={18} />
         </span>
       )}
     </div>

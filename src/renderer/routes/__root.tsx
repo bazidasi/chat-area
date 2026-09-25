@@ -51,11 +51,11 @@ import useVersion from '@/hooks/useVersion'
 import '@/modals'
 import { rendererApplication } from '@/app/renderer-application'
 import DbSchemaGuardDialog from '@/components/DbSchemaGuardDialog'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import SettingsModal from '@/modals/Settings'
 import { navigateToSettings } from '@/modals/settings-navigation'
 import { prefetchModelRegistry } from '@/packages/model-registry'
 import { getOS } from '@/packages/navigator'
-import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import * as remote from '@/packages/remote'
 import PictureDialog from '@/pages/PictureDialog'
 import RemoteDialogWindow from '@/pages/RemoteDialogWindow'
@@ -68,11 +68,11 @@ import * as atoms from '@/stores/atoms'
 
 const useSession = (sessionId: string | null) => rendererApplication.sessionHooks.useSession(sessionId)
 
+import { bootstrapReduceMotion } from '@/lib/reduce-motion-bootstrap'
 import { initOnboardingStore, onboardingStore } from '@/stores/onboardingStore'
 import * as premiumActions from '@/stores/premiumActions'
 import * as settingActions from '@/stores/settingActions'
 import { initSettingsStore, settingsStore, useLanguage, useSettingsStore, useTheme } from '@/stores/settingsStore'
-import { bootstrapReduceMotion } from '@/lib/reduce-motion-bootstrap'
 import { useUIStore } from '@/stores/uiStore'
 import { CHATBOX_BUILD_CHANNEL, CHATBOX_BUILD_PLATFORM } from '@/variables'
 import { blobToDataUrl } from './image-creator/-components/constants'
@@ -358,7 +358,10 @@ function Root() {
         className="h-svh"
       >
         <Sidebar />
-        <SidebarInset className="neo-main-frame relative z-[1] h-svh overflow-hidden">
+        <SidebarInset
+          className="neo-main-frame relative z-[1] h-svh overflow-hidden"
+          style={{ backgroundColor: 'var(--chatbox-background-sidebar)' }}
+        >
           <Box className="title-bar absolute inset-x-0 top-0 hidden sm:block" sx={{ height: '10px' }} />
           <Box
             className="h-full box-border"

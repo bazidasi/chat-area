@@ -1,28 +1,8 @@
 import NiceModal from '@ebay/nice-modal-react'
-import {
-  ActionIcon,
-  Box,
-  Button,
-  Flex,
-  Loader,
-  Menu,
-  ScrollArea,
-  Stack,
-  Text,
-  Textarea,
-  UnstyledButton,
-} from '@mantine/core'
+import { ActionIcon, Box, Button, Flex, Menu, ScrollArea, Stack, Text, UnstyledButton } from '@mantine/core'
 import type { ImageGeneration, ImageGenerationModel } from '@shared/types'
 import { ModelProviderEnum } from '@shared/types'
-import {
-  IconArrowUp,
-  IconAspectRatio,
-  IconChevronRight,
-  IconHistory,
-  IconPhoto,
-  IconPlus,
-  IconSparkles,
-} from '@tabler/icons-react'
+import { IconAspectRatio, IconChevronRight, IconHistory, IconPhoto, IconSparkles } from '@tabler/icons-react'
 import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -30,6 +10,7 @@ import { JK_PAGE_NAMES } from '@/analytics/jk-events'
 import { ChatboxWelcomeCard } from '@/components/common/ChatboxWelcomeCard'
 import { ImageModelSelect } from '@/components/ImageModelSelect'
 import Page from '@/components/layout/Page'
+import { PromptInput, type PromptInputHandle } from '@/components/ui/prompt-input'
 import { type ImageModelGroup, useImageModelGroups } from '@/hooks/useImageModelGroups'
 import { useProviders } from '@/hooks/useProviders'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
@@ -90,7 +71,6 @@ interface InputToolbarProps {
   onRatioSelect: (ratio: string) => void
   onModelSelect: (provider: string, model: string) => void
   onAddReference: () => void
-  onNewCreation: () => void
 }
 
 function InputToolbar({
@@ -104,12 +84,11 @@ function InputToolbar({
   onRatioSelect,
   onModelSelect,
   onAddReference,
-  onNewCreation,
 }: InputToolbarProps) {
   const { t } = useTranslation()
 
   return (
-    <Flex align="center" gap={0} className="shrink-0 w-full" justify="space-between">
+    <Flex align="center" gap={0} className="shrink-0 w-full" justify="flex-start">
       {/* Left Group: Model, Ratio, Reference */}
       <Flex align="center" gap={0}>
         {/* Model Select */}
@@ -182,27 +161,6 @@ function InputToolbar({
           </Text>
         </UnstyledButton>
       </Flex>
-
-      {/* Right Group: New Creation */}
-      <Flex align="center" gap={4}>
-        {/* New Creation Button */}
-        {isSmallScreen ? (
-          <ActionIcon variant="light" size="md" radius="lg" onClick={onNewCreation}>
-            <IconPlus size={18} />
-          </ActionIcon>
-        ) : (
-          <Button
-            variant="light"
-            size="compact-md"
-            radius="lg"
-            fz="sm"
-            leftSection={<IconPlus size={16} />}
-            onClick={onNewCreation}
-          >
-            {t('New Creation')}
-          </Button>
-        )}
-      </Flex>
     </Flex>
   )
 }
@@ -269,7 +227,7 @@ function ImageCreatorPage() {
   const isCurrentlyGenerating = currentGeneratingId !== null
 
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const textareaRef = useRef<HTMLTextAreaElement>(null)
+  const promptInputRef = useRef<PromptInputHandle>(null)
 
   const cleanupTempUploads = useCallback(async () => {
     const keys = Array.from(tempUploadKeysRef.current)
@@ -470,7 +428,7 @@ function ImageCreatorPage() {
     imageGenerationStore.getState().setCurrentRecordId(null)
     setPrompt('')
     setReferenceImages([])
-    textareaRef.current?.focus()
+    promptInputRef.current?.focus()
   }, [cleanupTempUploads])
 
   const handleLoadMoreHistory = useCallback(() => {
@@ -628,60 +586,20 @@ function ImageCreatorPage() {
                 onChange={(e) => handleImageUpload(e.target.files)}
               />
 
-              <Box className="oc-ring oc-ring--large rounded-lg bg-[var(--chatbox-background-secondary)] px-3 py-2">
-                <Stack gap="xs">
-                  {/* Input Row */}
-                  <Flex align="flex-end" gap={4}>
-                    <Textarea
-                      ref={textareaRef}
-                      placeholder={t('Describe the image you want to create...') || ''}
-                      value={prompt}
-                      onChange={(e) => setPrompt(e.target.value)}
-                      minRows={2}
-                      maxRows={6}
-                      autosize
-                      size="sm"
-                      className="flex-1"
-                      styles={{
-                        root: { flex: 1 },
-                        wrapper: { flex: 1 },
-                        input: {
-                          border: 'none',
-                          backgroundColor: 'transparent',
-                          paddingLeft: 8,
-                          paddingRight: 8,
-                          '&:focus': { border: 'none', boxShadow: 'none' },
-                        },
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault()
-                          void handleSubmit()
-                        }
-                      }}
-                    />
-
-                    {/* Send / Stop Button */}
-                    <ActionIcon
-                      size={32}
-                      variant="filled"
-                      color={isCurrentlyGenerating ? 'dark' : 'chatbox-brand'}
-                      radius="lg"
-                      onClick={isCurrentlyGenerating ? cancelGeneration : handleSubmit}
-                      disabled={(!prompt.trim() || !selectedModel) && !isCurrentlyGenerating}
-                      className={`shrink-0 mb-1 ${(!prompt.trim() || !selectedModel) && !isCurrentlyGenerating ? 'disabled:!opacity-100 !text-white' : ''}`}
-                      style={{
-                        cursor: isCurrentlyGenerating ? 'pointer' : undefined,
-                        ...((!prompt.trim() || !selectedModel) && !isCurrentlyGenerating
-                          ? { backgroundColor: 'rgba(222, 226, 230, 1)' }
-                          : {}),
-                      }}
-                    >
-                      {isCurrentlyGenerating ? <Loader size={16} color="white" /> : <IconArrowUp size={16} />}
-                    </ActionIcon>
-                  </Flex>
-
-                  {/* Toolbar Row */}
+              <PromptInput
+                ref={promptInputRef}
+                value={prompt}
+                onChange={setPrompt}
+                onSubmit={() => void handleSubmit()}
+                onStop={cancelGeneration}
+                loading={isCurrentlyGenerating}
+                disabled={!selectedModel || isCurrentlyGenerating}
+                placeholder={t('Describe the image you want to create...') || ''}
+                showAttachAction={false}
+                sendLabel={t('Send') || ''}
+                stopLabel={t('Stop') || ''}
+                className="oc-ring oc-ring--large"
+                toolbar={
                   <InputToolbar
                     isSmallScreen={isSmallScreen}
                     modelGroups={imageModelGroups}
@@ -693,10 +611,9 @@ function ImageCreatorPage() {
                     onRatioSelect={setSelectedRatio}
                     onModelSelect={handleModelSelect}
                     onAddReference={() => fileInputRef.current?.click()}
-                    onNewCreation={handleNewCreation}
                   />
-                </Stack>
-              </Box>
+                }
+              />
 
               <Text className="disclaimer-safe-area" size="xs" c="dimmed" ta="center">
                 {t('AI-generated images may not be accurate. Review output carefully.')}

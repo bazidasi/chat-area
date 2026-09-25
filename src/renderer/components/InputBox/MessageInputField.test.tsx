@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 
-import { MantineProvider } from '@mantine/core'
+import { createRef } from 'react'
 import { describe, expect, test, vi } from 'vitest'
 import { render, screen } from '@/test-utils'
 
@@ -28,28 +28,32 @@ vi.mock('@/hooks/useMessageInput', () => ({
   }),
 }))
 
-import { MessageInputField } from './MessageInputField'
+import { MessageInputField, type MessageInputFieldRef } from './MessageInputField'
 
 describe('MessageInputField', () => {
-  test('exposes a localized accessible name independently from its placeholder', () => {
+  test('preserves the accessible name, DOM id, test id, and read-only state', () => {
+    const ref = createRef<MessageInputFieldRef>()
+
     render(
-      <MantineProvider>
-        <MessageInputField
-          isNewSession={false}
-          viewportHeight={800}
-          isReadOnly={true}
-          placeholder="Waiting for approval"
-          ariaLabel="Type your question here..."
-          autoFocus={false}
-          onValueChange={vi.fn()}
-          onKeyDown={vi.fn()}
-          onPaste={vi.fn()}
-        />
-      </MantineProvider>
+      <MessageInputField
+        ref={ref}
+        isNewSession={false}
+        viewportHeight={800}
+        isReadOnly={true}
+        placeholder="Waiting for approval"
+        ariaLabel="Type your question here..."
+        autoFocus={false}
+        onValueChange={vi.fn()}
+        onKeyDown={vi.fn()}
+        onPaste={vi.fn()}
+      />
     )
 
     const input = screen.getByRole('textbox', { name: 'Type your question here...' })
     expect(input.getAttribute('placeholder')).toBe('Waiting for approval')
     expect(input).toHaveProperty('readOnly', true)
+    expect(input.getAttribute('id')).toBe('message-input')
+    expect(input.getAttribute('data-testid')).toBe('message-input')
+    expect(ref.current?.getElement()).toBe(input)
   })
 })

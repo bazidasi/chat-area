@@ -8,12 +8,12 @@ import clsx from 'clsx'
 import dayjs from 'dayjs'
 import { type MouseEvent, memo, type PointerEvent, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
+import { rendererApplication } from '@/app/renderer-application'
 import { AppTooltip as Tooltip } from '@/components/ui/tooltip'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import { navigateToSettings } from '@/modals/settings-navigation'
 import platform from '@/platform'
 import { router } from '@/router'
-import { rendererApplication } from '@/app/renderer-application'
 import { switchCurrentSession } from '@/stores/session/crud'
 import { useSessionActivity } from '@/stores/sessionActivityStore'
 import * as toastActions from '@/stores/toastActions'
@@ -255,7 +255,7 @@ function SessionItem(props: Props) {
       data-session-id={session.id}
       align="center"
       className={clsx(
-        'cursor-pointer rounded-lg group/session-item',
+        'sidebar-session-item cursor-pointer rounded-md group/session-item',
         'select-none',
         props.isReordering && 'cursor-grab active:cursor-grabbing',
         isSmallScreen
@@ -272,8 +272,8 @@ function SessionItem(props: Props) {
       mr={isSmallScreen ? 'xs' : 0}
       pl="xs"
       pr={props.isReordering ? 44 : 'xs'}
-      py={8}
-      gap={10}
+      py={5}
+      gap={7}
       onClick={onClick}
       onContextMenu={handleContextMenu}
       onPointerDown={handlePointerDown}
@@ -322,6 +322,7 @@ function SessionItem(props: Props) {
           flex={1}
           lineClamp={1}
           c={selected ? 'chatbox-brand' : 'chatbox-primary'}
+          className="text-xs"
           fw={activity === 'completed' ? 600 : undefined}
           onMouseDown={(event) => {
             if (event.detail === 1) {

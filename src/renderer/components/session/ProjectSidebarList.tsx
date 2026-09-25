@@ -1,20 +1,15 @@
-import { ActionIcon, Box, Button, Flex, Text } from '@mantine/core'
+import { ActionIcon, Box, Button, Flex, Popover, Text } from '@mantine/core'
 import type { SessionMetaRecord, WorkProject } from '@shared/types'
-import {
-  IconChevronDown,
-  IconCirclePlus,
-  IconDots,
-  IconFolder,
-  IconGripVertical,
-  IconListDetails,
-} from '@tabler/icons-react'
+import { CirclePlus, Folder, FolderPlus, Search } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { AppTooltip as Tooltip } from '@/components/ui/tooltip'
-import { ScalableIcon } from '../common/ScalableIcon'
 import { rendererApplication } from '@/app/renderer-application'
-import { router } from '@/router'
+import { EmptyState } from '@/components/ui/empty-state'
+import { AppTooltip as Tooltip } from '@/components/ui/tooltip'
+import { Command as VibeFarsiCommand } from '@/components/ui/vf-command'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
+import { cn } from '@/lib/utils'
+import { router } from '@/router'
 import { useUIStore } from '@/stores/uiStore'
 import SessionItem from './SessionItem'
 
@@ -37,6 +32,7 @@ export default function ProjectSidebarList({
   const setShowSidebar = useUIStore((s) => s.setShowSidebar)
   const isSmallScreen = useIsSmallScreen()
   const [expandedProjects, setExpandedProjects] = useState<Set<string>>(() => new Set())
+  const [projectPickerOpen, setProjectPickerOpen] = useState(false)
 
   const sessionsByProject = useMemo(() => {
     const grouped = new Map<string, SessionMetaRecord[]>()
@@ -46,6 +42,17 @@ export default function ProjectSidebarList({
     }
     return grouped
   }, [sessionMetaList])
+
+  const projectItems = useMemo(
+    () =>
+      projects.map((project) => ({
+        id: project.id,
+        label: project.name,
+        icon: Folder,
+        group: t('Projects'),
+      })),
+    [projects, t]
+  )
 
   const startProjectSession = (project: WorkProject) => {
     setNewSessionState((prev) => ({
@@ -63,111 +70,169 @@ export default function ProjectSidebarList({
 
   return (
     <Flex direction="column" className="min-h-0 flex-1 overflow-y-auto">
-      <Flex align="center" justify="space-between" px="md" pt="sm" pb="xs">
-        <Flex align="center" gap={6}>
-          <Text size="sm" fw={600} c="chatbox-secondary">
-            {t('Projects')}
+      <div className="sidebar-list-heading sidebar-projects-heading">
+        <div>
+          <Text className="sidebar-section-label">{t('Projects')}</Text>
+          <Text className="sidebar-list-hint">
+            {projects.length > 0
+              ? t('{{count}} workspace folders', { count: projects.length })
+              : t('Organize work by folder')}
           </Text>
-          <ScalableIcon icon={IconChevronDown} size={14} className="text-chatbox-tint-tertiary" />
-        </Flex>
-        <Flex align="center" gap={2}>
-          <Tooltip label={t('Reorder projects')} openDelay={700} withArrow>
-            <ActionIcon variant="subtle" size="sm" aria-label={t('Reorder projects') || undefined} disabled>
-              <IconGripVertical size={16} />
+        </div>
+        <div className="flex items-center gap-1">
+          {projects.length > 0 && (
+            <Popover
+              opened={projectPickerOpen}
+              onChange={setProjectPickerOpen}
+              position="bottom-start"
+              shadow="md"
+              width={280}
+              withinPortal
+            >
+              <Popover.Target>
+                <Tooltip label={t('Search projects')} openDelay={700} withArrow>
+                  <ActionIcon
+                    variant="subtle"
+                    size="sm"
+                    aria-label={t('Search projects') || undefined}
+                    onClick={() => setProjectPickerOpen((opened) => !opened)}
+                  >
+                    <Search size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </Popover.Target>
+              <Popover.Dropdown p="xs">
+                <VibeFarsiCommand
+                  items={projectItems}
+                  placeholder={t('Search projects') || ''}
+                  emptyText={t('No projects found') || ''}
+                  onSelect={(item) => {
+                    setProjectPickerOpen(false)
+                    onSelectProject(item.id)
+                  }}
+                />
+              </Popover.Dropdown>
+            </Popover>
+          )}
+          <Tooltip label={t('Add project')} openDelay={700} withArrow>
+            <ActionIcon variant="subtle" size="sm" aria-label={t('Add project') || undefined} onClick={onAddProject}>
+              <FolderPlus size={17} />
             </ActionIcon>
           </Tooltip>
-          <Tooltip label={t('Add project')} openDelay={700} withArrow>
-            <ActionIcon
-              variant="subtle"
-              size="sm"
-              aria-label={t('Add project') || undefined}
+        </div>
+      </div>
+
+      {projects.length === 0 ? (
+        <EmptyState
+          className="sidebar-empty-state border-0 p-6"
+          icon={FolderPlus}
+          title={t('No projects yet')}
+          description={t('Add a folder to keep work history together.')}
+          action={
+            <Button
+              variant="light"
+              color="chatbox-brand"
+              fullWidth
+              leftSection={<FolderPlus size={16} />}
               onClick={onAddProject}
             >
-              <IconFolder size={16} />
-            </ActionIcon>
-          </Tooltip>
-        </Flex>
-      </Flex>
+              {t('Add project')}
+            </Button>
+          }
+        />
+      ) : (
+        projects.map((project) => {
+          const projectSessions = sessionsByProject.get(project.id) ?? []
+          const expanded = expandedProjects.has(project.id) || projectSessions.length <= 4
+          const visibleSessions = expanded ? projectSessions : projectSessions.slice(0, 4)
+          const isActiveProject = project.id === activeProjectId
 
-      {projects.map((project) => {
-        const projectSessions = sessionsByProject.get(project.id) ?? []
-        const expanded = expandedProjects.has(project.id) || projectSessions.length <= 4
-        const visibleSessions = expanded ? projectSessions : projectSessions.slice(0, 4)
-        const isActiveProject = project.id === activeProjectId
-
-        return (
-          <Box key={project.id}>
-            <Flex align="center" gap={6} px="sm" py={6}>
-              <ScalableIcon icon={IconFolder} size={18} className={isActiveProject ? 'text-chatbox-brand' : 'text-chatbox-tint-tertiary'} />
-              <Text flex={1} size="sm" lineClamp={1} c={isActiveProject ? 'chatbox-brand' : 'chatbox-secondary'}>
-                {project.name}
-              </Text>
-              <Tooltip label={t('Project options')} openDelay={700} withArrow>
-                <ActionIcon variant="subtle" size="sm" aria-label={t('Project options') || undefined} disabled>
-                  <IconDots size={16} />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label={t('Project tasks')} openDelay={700} withArrow>
-                <ActionIcon variant="subtle" size="sm" aria-label={t('Project tasks') || undefined} disabled>
-                  <IconListDetails size={16} />
-                </ActionIcon>
-              </Tooltip>
-              <Tooltip label={t('New session in project')} openDelay={700} withArrow>
-                <ActionIcon
-                  variant="subtle"
-                  size="sm"
-                  aria-label={t('New session in project') || undefined}
-                  onClick={() => startProjectSession(project)}
-                >
-                  <IconCirclePlus size={16} />
-                </ActionIcon>
-              </Tooltip>
-            </Flex>
-
-            {projectSessions.length === 0 ? (
-              <Text px="md" pb="sm" size="xs" c="chatbox-tertiary">
-                {t('No tasks yet')}
-              </Text>
-            ) : (
-              <>
-                {visibleSessions.map((session) => (
-                  <SessionItem
-                    key={session.id}
-                    session={session}
-                    selected={router.state.location.pathname === `/session/${session.id}`}
-                  />
-                ))}
-                {projectSessions.length > 4 && (
-                  <Button
-                    variant="subtle"
-                    size="compact-sm"
-                    className="mx-md"
-                    onClick={() =>
-                      setExpandedProjects((prev) => {
-                        const next = new Set(prev)
-                        if (next.has(project.id)) next.delete(project.id)
-                        else next.add(project.id)
-                        return next
-                      })
-                    }
+          return (
+            <Box key={project.id} className={cn('sidebar-project', isActiveProject && 'sidebar-project-active')}>
+              <Flex
+                align="center"
+                gap={8}
+                px="sm"
+                py={7}
+                role="button"
+                tabIndex={0}
+                aria-current={isActiveProject ? 'true' : undefined}
+                className="sidebar-project-row"
+                onClick={() => onSelectProject(project.id)}
+                onKeyDown={(event) => {
+                  if (event.key === 'Enter' || event.key === ' ') {
+                    event.preventDefault()
+                    onSelectProject(project.id)
+                  }
+                }}
+              >
+                <Folder size={16} className={isActiveProject ? 'text-chatbox-brand' : 'text-chatbox-tint-tertiary'} />
+                <div className="min-w-0 flex-1">
+                  <Text
+                    size="sm"
+                    fw={isActiveProject ? 600 : 500}
+                    lineClamp={1}
+                    c={isActiveProject ? 'chatbox-brand' : 'chatbox-secondary'}
                   >
-                    {expanded ? t('Show less') : t('Show more')}
-                  </Button>
-                )}
-              </>
-            )}
-          </Box>
-        )
-      })}
+                    {project.name}
+                  </Text>
+                  <Text size="10px" c="chatbox-tertiary" className="truncate">
+                    {projectSessions.length > 0
+                      ? t('{{count}} tasks', { count: projectSessions.length })
+                      : t('No tasks yet')}
+                  </Text>
+                </div>
+                <Tooltip label={t('New session in project')} openDelay={700} withArrow>
+                  <ActionIcon
+                    variant="subtle"
+                    size="sm"
+                    aria-label={t('New session in project') || undefined}
+                    onClick={(event) => {
+                      event.stopPropagation()
+                      startProjectSession(project)
+                    }}
+                  >
+                    <CirclePlus size={16} />
+                  </ActionIcon>
+                </Tooltip>
+              </Flex>
 
-      <Box px="md" pt="lg" pb="sm">
-        <Text size="sm" fw={600} c="chatbox-secondary">
-          {t('Tasks')}
-        </Text>
-        <Text mt={4} size="xs" c="chatbox-tertiary">
-          {t('No tasks yet')}
-        </Text>
-      </Box>
+              {projectSessions.length === 0 ? (
+                <Text px="md" pb="sm" size="xs" c="chatbox-tertiary">
+                  {t('No tasks yet')}
+                </Text>
+              ) : (
+                <>
+                  {visibleSessions.map((session) => (
+                    <SessionItem
+                      key={session.id}
+                      session={session}
+                      selected={router.state.location.pathname === `/session/${session.id}`}
+                    />
+                  ))}
+                  {projectSessions.length > 4 && (
+                    <Button
+                      variant="subtle"
+                      size="compact-sm"
+                      className="mx-md"
+                      onClick={() =>
+                        setExpandedProjects((prev) => {
+                          const next = new Set(prev)
+                          if (next.has(project.id)) next.delete(project.id)
+                          else next.add(project.id)
+                          return next
+                        })
+                      }
+                    >
+                      {expanded ? t('Show less') : t('Show more')}
+                    </Button>
+                  )}
+                </>
+              )}
+            </Box>
+          )
+        })
+      )}
     </Flex>
   )
 }
