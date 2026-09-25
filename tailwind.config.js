@@ -188,6 +188,10 @@ module.exports = {
       // ships no logical slide/gradient utilities, so the few animations whose
       // direction has to flip are paired with `rtl:` instead.
       addVariant('rtl', '&:where([dir="rtl"], [dir="rtl"] *)');
+      // Inverse of `rtl:`. Gates `tracking-*` on translated text: letter-spacing
+      // breaks Persian letter joining, so tracking stays behind LTR and falls
+      // back to the initial 0 under RTL.
+      addVariant('ltr', '&:where([dir="ltr"], [dir="ltr"] *, :not([dir="rtl"] *))');
     }),
   ],
   corePlugins: {

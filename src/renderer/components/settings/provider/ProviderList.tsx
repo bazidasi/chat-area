@@ -59,13 +59,13 @@ export function ProviderList({ providers, onAddProvider }: ProviderListProps) {
       className={clsx(
         'provider-list-surface border-solid border-0',
         isSmallScreen
-          ? 'w-full border-r-0'
-          : 'provider-list-surface--desktop flex-[1_0_auto] border-r border-chatbox-border-secondary'
+          ? 'w-full border-e-0'
+          : 'provider-list-surface--desktop flex-[1_0_auto] border-e border-chatbox-border-secondary'
       )}
       gap={0}
     >
       {!isSmallScreen && (
-        <Text size="xxs" fw={700} c="chatbox-tertiary" className="px-3 pb-1 pt-3 uppercase tracking-[0.12em]">
+        <Text size="xxs" fw={700} c="chatbox-tertiary" className="px-3 pb-1 pt-3 uppercase ltr:tracking-[0.12em]">
           {t('Providers')}
         </Text>
       )}
@@ -124,7 +124,7 @@ export function ProviderList({ providers, onAddProvider }: ProviderListProps) {
                   </Text>
 
                   {activatedProviderIds.has(provider.id) && (
-                    <Indicator size={8} color="chatbox-success" className="ml-auto" />
+                    <Indicator size={8} color="chatbox-success" className="ms-auto" />
                   )}
 
                   {isSmallScreen && (
@@ -132,7 +132,7 @@ export function ProviderList({ providers, onAddProvider }: ProviderListProps) {
                       icon={IconChevronRight}
                       size={20}
                       stroke={opticalIconStroke(20)}
-                      className="!text-chatbox-tint-tertiary ml-2"
+                      className="!text-chatbox-tint-tertiary ms-2"
                     />
                   )}
                 </Flex>

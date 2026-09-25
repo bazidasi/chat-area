@@ -173,7 +173,7 @@ const MobileProviderPicker: FC<ProviderPickerProps> = (props) => {
     >
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-[400] bg-chatbox-background-mask-overlay" />
-        <Drawer.Content className="fixed bottom-0 left-0 right-0 z-[401] flex max-h-[min(85dvh,720px)] flex-col overflow-hidden rounded-t-lg bg-chatbox-background-primary outline-none">
+        <Drawer.Content className="fixed bottom-0 start-0 end-0 z-[401] flex max-h-[min(85dvh,720px)] flex-col overflow-hidden rounded-t-lg bg-chatbox-background-primary outline-none">
           <Drawer.Handle className="mx-auto mt-2 mb-1 shrink-0" />
 
           <div className="shrink-0 border-0 border-b border-solid border-chatbox-border-primary px-3 pb-2 pt-1">
@@ -208,7 +208,7 @@ const MobileProviderPicker: FC<ProviderPickerProps> = (props) => {
             ) : (
               filtered.map((group) => (
                 <div key={group.group} className="mb-3">
-                  <Text size="xs" c="chatbox-tertiary" px="xs" mb={6} className="uppercase tracking-wide">
+                  <Text size="xs" c="chatbox-tertiary" px="xs" mb={6} className="uppercase ltr:tracking-wide">
                     {group.group}
                   </Text>
                   <div className="flex flex-col gap-0.5">
@@ -216,7 +216,7 @@ const MobileProviderPicker: FC<ProviderPickerProps> = (props) => {
                       <UnstyledButton
                         key={action.id}
                         onClick={action.onSelect}
-                        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-left text-chatbox-tint-primary active:bg-chatbox-background-gray-secondary"
+                        className="flex w-full items-center gap-3 rounded-md px-3 py-2.5 text-start text-chatbox-tint-primary active:bg-chatbox-background-gray-secondary"
                       >
                         <span className="flex shrink-0 items-center justify-center">{action.leftSection}</span>
                         <span className="min-w-0 flex-1">

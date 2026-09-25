@@ -46,9 +46,9 @@ function TieredPricingDetails({
       <table className="w-full border-collapse text-xs">
         <thead>
           <tr className="text-chatbox-tint-tertiary">
-            <th className="pb-1.5 pr-3 text-left font-semibold">{t('Condition')}</th>
-            <th className="pb-1.5 pr-3 text-left font-semibold">{t('Input')}</th>
-            <th className="pb-1.5 text-left font-semibold">{t('Output')}</th>
+            <th className="pb-1.5 pe-3 text-start font-semibold">{t('Condition')}</th>
+            <th className="pb-1.5 pe-3 text-start font-semibold">{t('Input')}</th>
+            <th className="pb-1.5 text-start font-semibold">{t('Output')}</th>
           </tr>
         </thead>
         <tbody>
@@ -62,8 +62,8 @@ function TieredPricingDetails({
             const condition = conditions.length > 0 ? conditions.join(' · ') : t('Otherwise')
             return (
               <tr key={tierKey} className="border-0 border-t border-solid border-chatbox-border-primary">
-                <td className="py-1.5 pr-3 text-chatbox-tint-secondary whitespace-nowrap">{condition}</td>
-                <td className="py-1.5 pr-3 text-chatbox-tint-primary whitespace-nowrap">
+                <td className="py-1.5 pe-3 text-chatbox-tint-secondary whitespace-nowrap">{condition}</td>
+                <td className="py-1.5 pe-3 text-chatbox-tint-primary whitespace-nowrap">
                   {formatPrice(tier.price_input, isCN)}
                 </td>
                 <td className="py-1.5 text-chatbox-tint-primary whitespace-nowrap">
@@ -160,7 +160,7 @@ function PriceMetric({
   return (
     <Stack gap={3} className="min-w-0">
       <Flex align="center" gap={6} wrap="wrap">
-        <Text size="xs" c="chatbox-tertiary" className="uppercase tracking-[0.04em]">
+        <Text size="xs" c="chatbox-tertiary" className="uppercase ltr:tracking-[0.04em]">
           {label}
         </Text>
         {labelRightSection}
@@ -202,7 +202,7 @@ function PricingBlock({
   return (
     <Stack gap={10} className="border-0 border-y border-solid border-chatbox-border-primary py-4">
       <Flex align="center" justify="space-between" gap="xs">
-        <Text size="xs" fw={750} c="chatbox-primary" className="uppercase tracking-[0.08em]">
+        <Text size="xs" fw={750} c="chatbox-primary" className="uppercase ltr:tracking-[0.08em]">
           {t('Pricing')}
         </Text>
       </Flex>
@@ -211,7 +211,7 @@ function PricingBlock({
       )}
       {(pricing.officialInput > 0 || pricing.officialOutput > 0) && (
         <Stack gap={5}>
-          <Text size="xs" c="chatbox-tertiary" className="uppercase tracking-[0.04em]">
+          <Text size="xs" c="chatbox-tertiary" className="uppercase ltr:tracking-[0.04em]">
             {t('Official API price')}
           </Text>
           <div className={clsx('grid gap-y-3', mobile ? 'grid-cols-1' : 'grid-cols-2 gap-x-8')}>

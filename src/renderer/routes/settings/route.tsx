@@ -330,8 +330,8 @@ export function SettingsRoot() {
           gap={isSmallScreen ? 0 : 'sm'}
           maw={isSmallScreen ? undefined : 240}
           className={clsx(
-            'neo-settings-nav border-solid border-0 border-r overflow-auto border-chatbox-border-secondary',
-            isSmallScreen ? 'w-full border-r-0' : 'flex-[1_0_auto]'
+            'neo-settings-nav border-solid border-0 border-e overflow-auto border-chatbox-border-secondary',
+            isSmallScreen ? 'w-full border-e-0' : 'flex-[1_0_auto]'
           )}
         >
           {categoryGroups.map((category, categoryIndex) => (
@@ -344,7 +344,7 @@ export function SettingsRoot() {
                   // Sentence case reads as a quiet label rather than a shout;
                   // the first group tucks under the panel edge, later groups
                   // get enough air to separate from the rows above.
-                  'px-2 pb-1 tracking-[0.02em]',
+                  'px-2 pb-1 ltr:tracking-[0.02em]',
                   isSmallScreen ? 'px-3 pt-4' : categoryIndex === 0 ? 'pt-1.5' : 'pt-4'
                 )}
               >
