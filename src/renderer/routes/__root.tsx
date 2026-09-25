@@ -48,6 +48,7 @@ import useNeedRoomForWinControls from '@/hooks/useNeedRoomForWinControls'
 import useScreenChange, { useSidebarWidth } from '@/hooks/useScreenChange'
 import useShortcut from '@/hooks/useShortcut'
 import useVersion from '@/hooks/useVersion'
+import { isRTL } from '@/i18n/locales'
 import '@/modals'
 import { rendererApplication } from '@/app/renderer-application'
 import DbSchemaGuardDialog from '@/components/DbSchemaGuardDialog'
@@ -114,9 +115,9 @@ function BackgroundImageOverlay() {
   if (!isRootPage && !isSessionPage) return null
   if (!imageUrl) return null
   return (
-    <div className="absolute z-0 top-0 left-0 w-full h-full">
+    <div className="absolute z-0 top-0 start-0 w-full h-full">
       <div
-        className="absolute top-0 left-0 w-full h-full bg-cover bg-center bg-no-repeat"
+        className="absolute top-0 start-0 w-full h-full bg-cover bg-center bg-no-repeat"
         style={{
           backgroundImage: `
           url("${imageUrl.replace(/"/g, '%22')}")
@@ -124,10 +125,10 @@ function BackgroundImageOverlay() {
           opacity: backgroundImageOpacity,
         }}
       />
-      <div className="hidden sm:block absolute top-0 left-0 w-full h-40 bg-gradient-to-b from-chatbox-background-primary from-0 to-transparent to-100%" />
+      <div className="hidden sm:block absolute top-0 start-0 w-full h-40 bg-gradient-to-b from-chatbox-background-primary from-0 to-transparent to-100%" />
       {showSidebar && (
         <div
-          className="hidden sm:block absolute top-0 left-0 h-full bg-gradient-to-r from-chatbox-background-primary from-[25%] to-transparent to-100%"
+          className="hidden sm:block absolute top-0 start-0 h-full bg-gradient-to-r from-chatbox-background-primary from-[25%] to-transparent to-100% rtl:bg-gradient-to-l"
           style={{
             width: `${sidebarWidth * 2}px`,
           }}
@@ -138,7 +139,7 @@ function BackgroundImageOverlay() {
 
       <Flex className="sm:hidden relative h-36 bg-gradient-to-b from-chatbox-background-primary from-0 to-transparent to-100%" />
 
-      <Flex className="sm:hidden absolute bottom-0 left-0 w-full h-36 bg-gradient-to-t from-chatbox-background-primary from-0 to-transparent to-100%" />
+      <Flex className="sm:hidden absolute bottom-0 start-0 w-full h-36 bg-gradient-to-t from-chatbox-background-primary from-0 to-transparent to-100%" />
     </div>
   )
 }
@@ -347,7 +348,7 @@ function Root() {
     <Box
       className="box-border App relative bg-chatbox-background-primary"
       spellCheck={spellCheck}
-      dir={language === 'ar' || language === 'fa' ? 'rtl' : 'ltr'}
+      dir={isRTL(language) ? 'rtl' : 'ltr'}
     >
       <BackgroundImageOverlay />
       {platform.isDesktopLike && (getOS() === 'Windows' || getOS() === 'Linux') && <ExitFullscreenButton />}

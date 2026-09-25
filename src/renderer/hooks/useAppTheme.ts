@@ -62,9 +62,15 @@ export default function useAppTheme() {
     // (Mantine modals, menus, dropdowns, tooltips) resolve the same face —
     // they mount on document.body, outside the shell. `lang` is set alongside
     // it for correct font fallback, hyphenation and screen-reader pronunciation.
+    //
+    // `dir` belongs here for the same reason, and this is the only reason the
+    // app-shell `dir` in __root.tsx is not enough: every Radix Portal (Sheet,
+    // Dialog, Tooltip, Menu, Select, Popover) appends to document.body, so a
+    // `dir` scoped to the shell left all of them rendering LTR in fa/ar.
     const root = document.documentElement
     root.setAttribute('lang', language)
     root.setAttribute('data-lang', language)
+    root.setAttribute('dir', isRTL(language) ? 'rtl' : 'ltr')
   }, [language])
 
   useLayoutEffect(() => {
