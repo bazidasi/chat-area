@@ -26,7 +26,7 @@ export function ProviderRowHeader({
       className={clsx(
         'oc-ring--interactive w-full flex items-center gap-2 border-0 border-b border-solid text-chatbox-tint-primary cursor-pointer transition-colors focus:outline-none focus-visible:outline-none',
         isChatbox
-          ? ['sticky top-0 z-20 h-11 pl-4 pr-2.5 border-chatbox-border-primary', MODEL_SELECTOR_SURFACE_CLASS]
+          ? ['sticky top-0 z-20 h-11 ps-4 pe-2.5 border-chatbox-border-primary', MODEL_SELECTOR_SURFACE_CLASS]
           : [
               'h-10 px-2.5 border-chatbox-border-primary hover:bg-chatbox-background-secondary-hover',
               MODEL_SELECTOR_SURFACE_CLASS,
@@ -46,7 +46,7 @@ export function ProviderRowHeader({
       >
         <ProviderIcon provider={provider.id} size={isChatbox ? 19 : 18} />
       </span>
-      <Text span fw={isChatbox ? 720 : 650} size="sm" lh={1.2} className="min-w-0 flex-1 text-left truncate">
+      <Text span fw={isChatbox ? 720 : 650} size="sm" lh={1.2} className="min-w-0 flex-1 text-start truncate">
         {provider.name}
       </Text>
       <Text span size="xs" c="chatbox-tertiary" className={clsx(isChatbox && 'font-semibold')}>

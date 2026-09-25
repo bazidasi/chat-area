@@ -165,7 +165,7 @@ export function HistoryPanel({
       w={show ? width : 0}
       h="100%"
       className={cn(
-        'border-0 border-l border-solid border-[var(--chatbox-border-primary)] bg-[var(--chatbox-background-primary)] transition-all duration-300 ease-in-out overflow-hidden shrink-0',
+        'border-0 border-s border-solid border-[var(--chatbox-border-primary)] bg-[var(--chatbox-background-primary)] transition-all duration-300 ease-in-out overflow-hidden shrink-0',
         className
       )}
     >

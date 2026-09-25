@@ -56,7 +56,7 @@ function InitPage() {
   const migrationProcess = useAtomValue(migrationProcessAtom)
 
   return (
-    <div className="flex flex-col items-center absolute top-0 left-0 w-full h-full">
+    <div className="flex flex-col items-center absolute top-0 start-0 w-full h-full">
       <p className="font-roboto font-normal opacity-40 mt-4 mb-2">
         {migrationProcess ? `Migrating...(${migrationProcess})` : 'loading...'}
       </p>

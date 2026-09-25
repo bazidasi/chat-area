@@ -76,7 +76,7 @@ export const LicenseKeyView = forwardRef<HTMLDivElement, LicenseKeyViewProps>(({
         </Flex>
 
         <Flex gap="xs" align="center" justify="flex-end">
-          <Flex gap="xxs" align="center" c="chatbox-brand" className="mr-4 hidden md:flex">
+          <Flex gap="xxs" align="center" c="chatbox-brand" className="me-4 hidden md:flex">
             <ScalableIcon icon={IconHelp} />
             <Text
               component="a"
@@ -103,7 +103,7 @@ export const LicenseKeyView = forwardRef<HTMLDivElement, LicenseKeyViewProps>(({
         </Flex>
       </Flex>
       <Flex gap="xs" align="center" justify="flex-start" className="md:hidden">
-        <Flex gap="xxs" align="center" c="chatbox-brand" className="mr-4">
+        <Flex gap="xxs" align="center" c="chatbox-brand" className="me-4">
           <ScalableIcon icon={IconHelp} />
           <Text
             component="a"
@@ -200,7 +200,7 @@ export const LicenseKeyView = forwardRef<HTMLDivElement, LicenseKeyViewProps>(({
                       `/redirect_app/manage_license/${language}?utm_source=app&utm_content=provider_cb_key_activate_error`
                     )}
                     target="_blank"
-                    className={`ml-auto flex flex-row items-center gap-xxs${isLicenseNotFound ? ' text-chatbox-tint-error underline decoration-chatbox-tint-error' : ''}`}
+                    className={`ms-auto flex flex-row items-center gap-xxs${isLicenseNotFound ? ' text-chatbox-tint-error underline decoration-chatbox-tint-error' : ''}`}
                   >
                     <Text
                       span
@@ -247,7 +247,7 @@ export const LicenseKeyView = forwardRef<HTMLDivElement, LicenseKeyViewProps>(({
                         `/redirect_app/manage_license/${language}/${memorizedManualLicenseKey}?utm_source=app&utm_content=provider_cb_key_no_quota`
                       )}
                       target="_blank"
-                      className="ml-auto flex flex-row items-center gap-xxs"
+                      className="ms-auto flex flex-row items-center gap-xxs"
                     >
                       <Text span fw={600} className="whitespace-nowrap">
                         {t('get more')}

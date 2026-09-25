@@ -47,7 +47,7 @@ export default function Header(props: { session: Session }) {
         className={clsx('flex-none title-bar border-0', isSmallScreen ? 'bg-chatbox-background-primary' : '')}
       >
         {(!showSidebar || isSmallScreen) && (
-          <Flex align="center" className={needRoomForMacWindowControls ? 'pl-20' : ''}>
+          <Flex align="center" className={needRoomForMacWindowControls ? 'ps-20' : ''}>
             <ActionIcon
               className="controls"
               variant="subtle"
@@ -90,7 +90,7 @@ export default function Header(props: { session: Session }) {
 
         <Toolbar session={currentSession} />
 
-        <WindowControls className="-mr-3 ml-2" />
+        <WindowControls className="-me-3 ms-2" />
       </Flex>
 
       {isSmallScreen && <Divider />}

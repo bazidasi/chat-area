@@ -180,7 +180,7 @@ const ContextualActionMenu: FC<ActionMenuProps> = ({
                 data-testid={item.testId}
                 onClick={handleItemClick(item.onClick)}
                 disabled={item.disabled}
-                className="flex w-full items-center gap-2 rounded-lg border-0 bg-transparent px-2 py-2 text-left disabled:opacity-50"
+                className="flex w-full items-center gap-2 rounded-lg border-0 bg-transparent px-2 py-2 text-start disabled:opacity-50"
               >
                 {item.icon && <ScalableIcon icon={item.icon} size={15} />}
                 <Text
@@ -245,7 +245,7 @@ const ContextualDoubleCheckMenuItem: FC<{
       type="button"
       data-testid={showConfirm ? (item.confirmTestId ?? item.testId) : item.testId}
       disabled={confirming || item.disabled}
-      className="flex w-full items-center gap-2 rounded-lg border-0 bg-transparent px-2 py-2 text-left disabled:opacity-50"
+      className="flex w-full items-center gap-2 rounded-lg border-0 bg-transparent px-2 py-2 text-start disabled:opacity-50"
       onClick={async (event) => {
         event.stopPropagation()
         if (!showConfirm) {
@@ -314,7 +314,7 @@ const MobileActionMenu: FC<ActionMenuProps> = ({
         <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
         <Drawer.Content
           data-testid={contentTestId}
-          className="flex flex-col h-fit fixed bottom-0 left-0 right-0 outline-none"
+          className="flex flex-col h-fit fixed bottom-0 start-0 end-0 outline-none"
         >
           <div className="bg-chatbox-background-primary rounded-t-lg">
             <Drawer.Handle />
@@ -389,7 +389,7 @@ const MobileDoubleCheckMenuItem: FC<{
         <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
         <Drawer.Content
           data-testid={item.confirmPanelTestId}
-          className="flex flex-col h-fit fixed bottom-0 left-0 right-0 outline-none"
+          className="flex flex-col h-fit fixed bottom-0 start-0 end-0 outline-none"
         >
           <div className="bg-chatbox-background-primary rounded-t-lg">
             <Drawer.Handle />

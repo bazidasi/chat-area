@@ -46,7 +46,7 @@ export function MobileHistoryDrawer({
     <Drawer.Root open={open} onOpenChange={onOpenChange} noBodyStyles>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
-        <Drawer.Content className="flex flex-col rounded-t-xl h-[70vh] fixed bottom-0 left-0 right-0 outline-none bg-[var(--chatbox-background-primary)]">
+        <Drawer.Content className="flex flex-col rounded-t-xl h-[70vh] fixed bottom-0 start-0 end-0 outline-none bg-[var(--chatbox-background-primary)]">
           <Drawer.Handle />
           <Flex
             align="center"
@@ -128,7 +128,7 @@ export function MobileModelDrawer({
     <Drawer.Root open={open} onOpenChange={onOpenChange} noBodyStyles>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
-        <Drawer.Content className="flex flex-col rounded-t-xl max-h-[70vh] fixed bottom-0 left-0 right-0 outline-none bg-[var(--chatbox-background-primary)]">
+        <Drawer.Content className="flex flex-col rounded-t-xl max-h-[70vh] fixed bottom-0 start-0 end-0 outline-none bg-[var(--chatbox-background-primary)]">
           <Drawer.Handle />
           <Flex
             align="center"
@@ -210,7 +210,7 @@ export function MobileRatioDrawer({ open, onOpenChange, options, selectedRatio, 
     <Drawer.Root open={open} onOpenChange={onOpenChange} noBodyStyles>
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
-        <Drawer.Content className="flex flex-col rounded-t-xl fixed bottom-0 left-0 right-0 outline-none bg-[var(--chatbox-background-primary)]">
+        <Drawer.Content className="flex flex-col rounded-t-xl fixed bottom-0 start-0 end-0 outline-none bg-[var(--chatbox-background-primary)]">
           <Drawer.Handle />
           <Flex
             align="center"

@@ -261,7 +261,7 @@ const AgentModeButton: FC<AgentModeButtonProps> = ({
         <span
           data-web-search-warning
           aria-hidden="true"
-          className="absolute right-1 top-0.5 h-1.5 w-1.5 rounded-full bg-[var(--chatbox-tint-error)]"
+          className="absolute end-1 top-0.5 h-1.5 w-1.5 rounded-full bg-[var(--chatbox-tint-error)]"
         />
       )}
     </UnstyledButton>
@@ -282,7 +282,7 @@ const AgentModeButton: FC<AgentModeButtonProps> = ({
         >
           <Drawer.Portal>
             <Drawer.Overlay className="oc-overlay fixed inset-0" />
-            <Drawer.Content className="oc-ring oc-ring--large flex flex-col h-fit max-h-[min(85dvh,720px)] fixed bottom-0 left-0 right-0 outline-none bg-[var(--chatbox-background-primary)] rounded-t-lg">
+            <Drawer.Content className="oc-ring oc-ring--large flex flex-col h-fit max-h-[min(85dvh,720px)] fixed bottom-0 start-0 end-0 outline-none bg-[var(--chatbox-background-primary)] rounded-t-lg">
               <Drawer.Handle />
               <Drawer.Title className="sr-only">{modeLabel}</Drawer.Title>
               <div className="min-h-0 overflow-y-auto overscroll-contain">{panel}</div>
@@ -345,7 +345,7 @@ function CompactAgentModeIcon({ mode, size }: { mode: AgentModeValue; size: numb
       <AgentModeStatusIcon
         mode={mode}
         size={statusSize}
-        className="absolute -bottom-0.5 -right-0.5 bg-[var(--chatbox-background-secondary)]"
+        className="absolute -bottom-0.5 -end-0.5 bg-[var(--chatbox-background-secondary)]"
       />
     </span>
   )

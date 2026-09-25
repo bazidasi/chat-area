@@ -149,7 +149,7 @@ export function LoadingBubble(props: { children: React.ReactNode }) {
     <div className="flex flex-row items-start justify-start overflow-x-auto overflow-y-hidden">
       <div className="flex justify-start items-center gap-1.5 mb-1 px-2 py-2 rounded-lg bg-chatbox-background-secondary">
         <ThinkingOrb state="working" size={20} className="shrink-0" aria-hidden />
-        <span className="mr-2 font-medium text-chatbox-secondary">{children}</span>
+        <span className="me-2 font-medium text-chatbox-secondary">{children}</span>
       </div>
     </div>
   )

@@ -70,7 +70,7 @@ const SearchBox = ({
       onChange={(event) => onSearchChange(event.currentTarget.value)}
       placeholder={t('Search models') as string}
       variant="unstyled"
-      className="flex-1 ml-xs"
+      className="flex-1 ms-xs"
       styles={{
         input: {
           padding: 0,
@@ -180,7 +180,7 @@ export const DesktopModelSelector = forwardRef<HTMLDivElement, DesktopModelSelec
             modelCount={provider.models?.length || 0}
             isCollapsed={isCollapsed}
             onClick={() => toggleProviderCollapse(provider.id)}
-            className="-ml-xs -mr-xs pr-sm"
+            className="-ms-xs -me-xs pe-sm"
           />
           <Collapse in={!isCollapsed}>
             <div className="mb-xs">{options}</div>
@@ -257,7 +257,7 @@ export const DesktopModelSelector = forwardRef<HTMLDivElement, DesktopModelSelec
                       provider={group.provider || { id: providerId, name: providerId }}
                       showChevron={false}
                       showModelCount={false}
-                      className="-ml-xs -mr-xs pr-sm"
+                      className="-ms-xs -me-xs pe-sm"
                     />
                     <div className="mb-xs">
                       {group.models.map((fm) => {
@@ -292,7 +292,7 @@ export const DesktopModelSelector = forwardRef<HTMLDivElement, DesktopModelSelec
                       variant="favorite"
                       showChevron={false}
                       showModelCount={false}
-                      className="-ml-xs -mr-xs pr-sm"
+                      className="-ms-xs -me-xs pe-sm"
                     />
                     <div className="mb-xs">
                       {favoritedModels?.map((fm) => {

@@ -29,7 +29,7 @@ describe('Message layout alignment', () => {
     expect(shouldRightAlignMessage('left', MessageRoleEnum.User)).toBe(false)
   })
 
-  test('right-aligns user messages only in bubble layout', () => {
+  test('end-aligns user messages only in bubble layout', () => {
     expect(shouldRightAlignMessage('bubble', MessageRoleEnum.User)).toBe(true)
     expect(shouldRightAlignMessage('bubble', MessageRoleEnum.Assistant)).toBe(false)
   })

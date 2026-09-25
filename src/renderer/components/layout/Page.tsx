@@ -30,7 +30,7 @@ export const Page: FC<PageProps> = ({ children, title, left, right, className })
       >
         {left ||
           ((!showSidebar || isSmallScreen) && (
-            <Flex align="center" className={needRoomForMacWindowControls ? 'pl-20' : ''}>
+            <Flex align="center" className={needRoomForMacWindowControls ? 'ps-20' : ''}>
               <ActionIcon
                 className="controls"
                 variant="subtle"
@@ -54,7 +54,7 @@ export const Page: FC<PageProps> = ({ children, title, left, right, className })
           )}
         </Flex>
         {right}
-        <WindowControls className="-mr-3 ml-2" />
+        <WindowControls className="-me-3 ms-2" />
         {isSmallScreen && !right && <Box w={28} />}
       </Flex>
 

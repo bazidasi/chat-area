@@ -314,7 +314,7 @@ const SessionSettingsModal = NiceModal.create(
                 >
                   {(props) => (
                     <Button {...props} variant="default" size="compact-sm">
-                      <ScalableIcon icon={IconUpload} size={12} className="mr-xs" />
+                      <ScalableIcon icon={IconUpload} size={12} className="me-xs" />
                       {t('Upload')}
                     </Button>
                   )}

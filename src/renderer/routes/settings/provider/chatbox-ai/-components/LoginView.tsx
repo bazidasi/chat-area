@@ -45,7 +45,7 @@ export const LoginView = forwardRef<HTMLDivElement, LoginViewProps>(
               <Image src={icon} w={48} h={48} />
             </Flex>
             <Flex gap="xs" align="center">
-              <Text c="chatbox-tertiary" className="text-right">
+              <Text c="chatbox-tertiary" className="text-end">
                 {t('Continue with')}{' '}
                 <UnstyledButton onClick={onSwitchToLicenseKey}>
                   <Flex gap="xxs" align="center">

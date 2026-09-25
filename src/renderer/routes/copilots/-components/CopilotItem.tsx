@@ -224,7 +224,7 @@ export function CopilotItem({ copilot, type = 'local', highlightTerm = '' }: Cop
 
           {/* Publish Date */}
           {formattedDate && (
-            <Text size="xs" c="chatbox-tertiary" className="whitespace-nowrap ml-2">
+            <Text size="xs" c="chatbox-tertiary" className="whitespace-nowrap ms-2">
               {type === 'local'
                 ? t('Created on {{date}}', { date: formattedDate })
                 : t('Published on {{date}}', { date: formattedDate })}

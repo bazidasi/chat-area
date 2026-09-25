@@ -144,7 +144,7 @@ export const WorkingDirectoryContent: FC<{
           {availableRecentDirectories.map((dir) => (
             <UnstyledButton
               key={dir}
-              className={`w-full rounded px-3 py-1.5 text-left ${
+              className={`w-full rounded px-3 py-1.5 text-start ${
                 disabled
                   ? 'cursor-default opacity-50'
                   : 'hover:bg-chatbox-background-tertiary'
@@ -181,7 +181,7 @@ export const WorkingDirectoryContent: FC<{
             onAdd()
           }}
         >
-          <PlusIcon size={14} className="mr-1" />
+          <PlusIcon size={14} className="me-1" />
           {t('Add Folder')}
         </Button>
       </Group>

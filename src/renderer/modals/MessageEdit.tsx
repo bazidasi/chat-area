@@ -330,7 +330,7 @@ const MessageEditModal = ({
               <InputBase
                 component="button"
                 type="button"
-                classNames={{ root: 'self-start', input: 'p-xs pr-8 h-auto ' }}
+                classNames={{ root: 'self-start', input: 'p-xs pe-8 h-auto ' }}
                 pointer={!resendOnly}
                 rightSection={resendOnly ? undefined : <Combobox.Chevron />}
                 rightSectionPointerEvents="none"

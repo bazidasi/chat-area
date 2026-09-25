@@ -136,7 +136,7 @@ export default function SearchDialog(props: Props) {
                   )}
                   onSelect={() => onSearchClick('current-session')}
                 >
-                  <ScanSearch className="mr-2 h-4 w-4" />
+                  <ScanSearch className="me-2 h-4 w-4" />
                   <span>
                     {t('Search in Current Conversation')}
                     {searchInput.length > 0 ? ` "${searchInput}"` : ''}
@@ -150,7 +150,7 @@ export default function SearchDialog(props: Props) {
                   )}
                   onSelect={() => onSearchClick('global')}
                 >
-                  <ScanSearch className="mr-2 h-4 w-4" />
+                  <ScanSearch className="me-2 h-4 w-4" />
                   <span>
                     {t('Search All Conversations')}
                     {searchInput.length > 0 ? ` "${searchInput}"` : ''}
@@ -159,28 +159,28 @@ export default function SearchDialog(props: Props) {
               </CommandGroup>
               {/* <CommandGroup heading="对话">
                             <CommandItem>
-                                <ScanSearch className="mr-2 h-4 w-4" />
+                                <ScanSearch className="me-2 h-4 w-4" />
                                 <span>创建新对话</span>
                             </CommandItem>
                             <CommandItem>
-                                <ScanSearch className="mr-2 h-4 w-4" />
+                                <ScanSearch className="me-2 h-4 w-4" />
                                 <span>清空当前对话</span>
                             </CommandItem>
                         </CommandGroup>
                         <CommandSeparator />
                         <CommandGroup heading="Settings">
                             <CommandItem>
-                                <User className="mr-2 h-4 w-4" />
+                                <User className="me-2 h-4 w-4" />
                                 <span>Profile</span>
                                 <CommandShortcut>⌘P</CommandShortcut>
                             </CommandItem>
                             <CommandItem>
-                                <CreditCard className="mr-2 h-4 w-4" />
+                                <CreditCard className="me-2 h-4 w-4" />
                                 <span>Billing</span>
                                 <CommandShortcut>⌘B</CommandShortcut>
                             </CommandItem>
                             <CommandItem>
-                                <Settings className="mr-2 h-4 w-4" />
+                                <Settings className="me-2 h-4 w-4" />
                                 <span>Settings</span>
                                 <CommandShortcut>⌘S</CommandShortcut>
                             </CommandItem>

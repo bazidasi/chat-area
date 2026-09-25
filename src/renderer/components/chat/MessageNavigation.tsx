@@ -43,7 +43,7 @@ export const MessageNavigation: FC<MessageNavigationProps> = ({
   return (
     <div
       className={clsx(
-        'absolute right-0 py-6 pl-2 bottom-0 transition-all',
+        'absolute end-0 py-6 ps-2 bottom-0 transition-all',
         visible ? '-translate-x-3 opacity-100' : 'translate-x-1/2 opacity-0'
       )}
       onMouseEnter={handleMouseEnter}
@@ -87,7 +87,7 @@ const MessageNavigationButton = ({ icon, ...others }: { icon: React.ReactElement
 
 export const ScrollToBottomButton = ({ onClick, style }: { onClick?(): void; style?: CSSProperties }) => {
   return (
-    <Box className="absolute bottom-5 right-2">
+    <Box className="absolute bottom-5 end-2">
       <Button
         w={38}
         h={38}

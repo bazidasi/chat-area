@@ -246,7 +246,7 @@ function RouteComponent() {
             // absolute — taken out of flow, doesn't affect layout of siblings
             // bottom: '100%' — positioned right above the parent box's top edge (like a tooltip anchoring upward)
             <Box
-              className="pointer-events-none absolute left-0 right-0 z-10"
+              className="pointer-events-none absolute start-0 end-0 z-10"
               style={{ bottom: '100%' }}
               px="sm"
               mb="sm"

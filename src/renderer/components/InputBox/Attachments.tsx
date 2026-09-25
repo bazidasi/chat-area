@@ -97,7 +97,7 @@ export function ImageMiniCard(props: { storageKey: string; onDelete: () => void 
       {onDelete && (
         <MiniButton
           className="hidden group-hover/image-mini-card:inline-block
-                    absolute top-0 right-0 m-1 p-1 rounded-full shadow-lg bg-white/90 dark:bg-gray-800/90 text-red-500 hover:bg-white dark:hover:bg-gray-800"
+                    absolute top-0 end-0 m-1 p-1 rounded-full shadow-lg bg-white/90 dark:bg-gray-800/90 text-red-500 hover:bg-white dark:hover:bg-gray-800"
           onClick={(e) => {
             e.stopPropagation()
             onDelete()
@@ -258,14 +258,14 @@ export function FileMiniCard(props: {
 
       {/* Status indicator */}
       {status && (
-        <div className="absolute top-1.5 left-1.5">
+        <div className="absolute top-1.5 start-1.5">
           {status === 'processing' && !statusText && <Loader2 size="16" className="animate-spin text-blue-500" />}
           {status === 'completed' && <CheckCircle size="16" className="text-green-500" />}
           {status === 'error' && <AlertCircle size="16" className="text-red-500" />}
         </div>
       )}
       {status === 'processing' && clampedProgressValue !== undefined && (
-        <div className="absolute bottom-0 left-0 right-0 h-1.5 bg-blue-100 rounded-b-md overflow-hidden">
+        <div className="absolute bottom-0 start-0 end-0 h-1.5 bg-blue-100 rounded-b-md overflow-hidden">
           <div className="h-full bg-blue-500 transition-all" style={{ width: `${clampedProgressValue}%` }} />
         </div>
       )}
@@ -273,7 +273,7 @@ export function FileMiniCard(props: {
       {onDelete && (
         <MiniButton
           className="hidden group-hover/file-mini-card:inline-block
-                    absolute top-0 right-0 m-1 p-1 rounded-full shadow-lg text-red-500"
+                    absolute top-0 end-0 m-1 p-1 rounded-full shadow-lg text-red-500"
           onClick={(e) => {
             e.stopPropagation()
             onDelete()
@@ -515,7 +515,7 @@ export function MessageAttachment(props: {
           effectiveIndexStatus !== 'ready' &&
           effectiveIndexStatus !== 'failed' &&
           progressValue !== undefined && (
-            <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-chatbox-background-tertiary overflow-hidden">
+            <div className="absolute bottom-0 start-0 end-0 h-0.5 bg-chatbox-background-tertiary overflow-hidden">
               <div className="h-full bg-blue-500 transition-all" style={{ width: `${progressValue}%` }} />
             </div>
           )}

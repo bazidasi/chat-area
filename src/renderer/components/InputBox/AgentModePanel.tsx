@@ -960,7 +960,7 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
                   navigateToSettings('/skills')
                 }}
               >
-                <PlusIcon size={14} className="mr-1" />
+                <PlusIcon size={14} className="me-1" />
                 {t('Add Skills')}
               </Button>
             </Group>
@@ -1011,7 +1011,7 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
                   navigateToSettings('/mcp')
                 }}
               >
-                <PlusIcon size={14} className="mr-1" />
+                <PlusIcon size={14} className="me-1" />
                 {t('Add your first MCP server')}
               </Button>
             </Group>
@@ -1058,7 +1058,7 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
                     onClose()
                   }}
                 >
-                  <PlusIcon size={14} className="mr-1" />
+                  <PlusIcon size={14} className="me-1" />
                   {t('Create')}
                 </Button>
               </Link>
@@ -1375,8 +1375,8 @@ const AgentModePanel = forwardRef<AgentModePanelHandle, AgentModePanelProps>(fun
             resolvedSubPanelPosition?.placement === 'overlay'
               ? 'rounded-lg'
               : resolvedSubPanelPosition?.placement === 'left'
-                ? 'right-full rounded-l-lg'
-                : 'left-full rounded-r-lg'
+                ? 'end-full rounded-s-lg'
+                : 'start-full rounded-e-lg'
           }`}
           style={{
             width: resolvedSubPanelPosition?.width ?? SUB_PANEL_WIDTH,

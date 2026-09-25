@@ -250,7 +250,7 @@ const WorkModeStatusRow: FC<WorkModeStatusRowProps> = ({ sessionId, providerId, 
       )}
 
       {showInheritedHint && (
-        <span className="ml-1.5 min-w-0 truncate text-[11px] text-[var(--chatbox-tint-tertiary)]">
+        <span className="ms-1.5 min-w-0 truncate text-[11px] text-[var(--chatbox-tint-tertiary)]">
           {t('Same as last time')}
         </span>
       )}

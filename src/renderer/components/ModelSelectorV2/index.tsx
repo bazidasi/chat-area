@@ -442,7 +442,7 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
             <button
               type="button"
               className={clsx(
-                'oc-ring--interactive w-full h-9 px-2.5 text-left border-0 bg-transparent cursor-pointer text-sm text-chatbox-tint-primary',
+                'oc-ring--interactive w-full h-9 px-2.5 text-start border-0 bg-transparent cursor-pointer text-sm text-chatbox-tint-primary',
                 !selectedProviderId && !selectedModelId ? SELECTED_CLASS : HOVER_CLASS
               )}
               onClick={() => handleSelect('', '')}
@@ -575,7 +575,7 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
             <Drawer.Trigger asChild>{children}</Drawer.Trigger>
             <Drawer.Portal>
               <Drawer.Overlay className="oc-overlay fixed inset-0" />
-              <Drawer.Content className="fixed bottom-0 left-0 right-0 outline-none">
+              <Drawer.Content className="fixed bottom-0 start-0 end-0 outline-none">
                 <Stack
                   gap={0}
                   className={clsx(
@@ -602,7 +602,7 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
           >
             <Drawer.Portal>
               <Drawer.Overlay className="oc-overlay fixed inset-0" />
-              <Drawer.Content className="fixed bottom-0 left-0 right-0 outline-none">
+              <Drawer.Content className="fixed bottom-0 start-0 end-0 outline-none">
                 <Stack
                   gap={0}
                   className={clsx(

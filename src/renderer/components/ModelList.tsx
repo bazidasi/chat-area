@@ -172,7 +172,7 @@ export function ModelList({
               </Stack>
 
               {showActions && (
-                <Flex flex="0 0 auto" gap="xs" align="center" className="ml-auto">
+                <Flex flex="0 0 auto" gap="xs" align="center" className="ms-auto">
                   {onEditModel && (
                     <Button
                       data-testid={TestId.settings.providerModelEdit}

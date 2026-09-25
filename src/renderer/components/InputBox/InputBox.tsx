@@ -1589,7 +1589,7 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                       <UnstyledButton
                         key={skill.name}
                         className={cn(
-                          'flex w-full items-start gap-2 px-2 py-1.5 text-left transition-colors',
+                          'flex w-full items-start gap-2 px-2 py-1.5 text-start transition-colors',
                           index === skillCommandSelectedIndex
                             ? 'bg-chatbox-background-tertiary'
                             : 'hover:bg-chatbox-background-tertiary'
@@ -1967,7 +1967,7 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
                 </Liquid>
 
                 {/* Right Group: Token Count + Model Selector */}
-                <Flex align="center" gap={0} className="min-w-0 ml-auto">
+                <Flex align="center" gap={0} className="min-w-0 ms-auto">
                   <TokenCountMenu
                     currentInputTokens={currentInputTokens}
                     contextTokens={contextTokens}

@@ -624,7 +624,7 @@ const MessageList = forwardRef<MessageListRef, MessageListProps>((props, ref) =>
     <div className={cn('w-full h-full mx-auto', props.className)}>
       <BlockCodeCollapsedStateProvider defaultCollapsed={!!settingsStore.getState().autoCollapseCodeBlock}>
         <div
-          className={cn('overflow-hidden h-full pr-0 relative', showMinimap ? 'pl-[28px]' : 'pl-1 sm:pl-0')}
+          className={cn('overflow-hidden h-full pe-0 relative', showMinimap ? 'ps-[28px]' : 'ps-1 sm:ps-0')}
           ref={messageListRef}
         >
           {/* Virtuoso smooths appended items but snaps same-item height growth; the controller below owns both cases. */}
@@ -712,7 +712,7 @@ const MessageList = forwardRef<MessageListRef, MessageListProps>((props, ref) =>
                 {(transitionStyle) => (
                   <Flex
                     style={transitionStyle}
-                    className="absolute z-10 top-0 left-0 right-0 leading-tight bg-chatbox-background-secondary"
+                    className="absolute z-10 top-0 start-0 end-0 leading-tight bg-chatbox-background-secondary"
                   >
                     {[
                       { text: t('Return to the top'), icon: IconArrowBarToUp, onClick: handleScrollToTop },
@@ -725,9 +725,9 @@ const MessageList = forwardRef<MessageListRef, MessageListProps>((props, ref) =>
                       <Button
                         key={item.text}
                         variant="transparent"
-                        className={cn('w-1/2', idx === 0 ? 'border-r border-r-chatbox-border-primary' : '')}
+                        className={cn('w-1/2', idx === 0 ? 'border-e border-e-chatbox-border-primary' : '')}
                         classNames={{
-                          section: '!mr-xxs',
+                          section: '!me-xxs',
                         }}
                         size="xs"
                         h="auto"
@@ -832,11 +832,11 @@ const ThreadLabel: FC<ThreadLabelProps> = memo(({ thread, sessionId, sessionMode
           onDoubleClick={handleOpenHistoryDrawer}
           // onClick={onClick}
         >
-          <span className="pr-1 opacity-60">#</span>
+          <span className="pe-1 opacity-60">#</span>
           <span className="truncate inline-block align-bottom max-w-[calc(50%-4rem)] md:max-w-[calc(30%-4rem)]">
             {thread.name || t('New Thread')}
           </span>
-          {thread.createdAtLabel && <span className="pl-1 opacity-60 text-xs">{thread.createdAtLabel}</span>}
+          {thread.createdAtLabel && <span className="ps-1 opacity-60 text-xs">{thread.createdAtLabel}</span>}
         </span>
       </ActionMenu>
     </div>

@@ -297,7 +297,7 @@ const ModelSelectContent = forwardRef<
       className="oc-ring oc-ring--subtle oc-ring--interactive rounded-lg cursor-pointer bg-transparent"
       onClick={onClick}
     >
-      <Text span flex={1} className=" text-left">
+      <Text span flex={1} className=" text-start">
         {displayText}
       </Text>
       <ScalableIcon icon={IconSelector} className=" text-inherit" />

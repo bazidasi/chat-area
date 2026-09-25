@@ -317,7 +317,7 @@ export function GenericMessageError(props: {
         </>
       )}
       {!licenseKey && msg.aiProvider !== ModelProviderEnum.ChatboxAI && (
-        <div className="mt-3 pt-3 border-t border-red-200 dark:border-red-800/30 text-right">
+        <div className="mt-3 pt-3 border-t border-red-200 dark:border-red-800/30 text-end">
           <Tooltip
             label={t(
               'If you have never had a license before, you can claim it after logging in on the official website.'

@@ -75,7 +75,7 @@ export function UserTypeCards({ onSelect, disabled }: UserTypeCardsProps) {
               {/* Recommended badge - positioned at top-right corner */}
               {highlighted && (
                 <Box
-                  className="absolute top-0 right-0 px-3 py-1 text-xs font-medium"
+                  className="absolute top-0 end-0 px-3 py-1 text-xs font-medium"
                   style={{
                     background: 'var(--chatbox-background-brand-primary)',
                     // the accent inverts with the theme, so the badge label

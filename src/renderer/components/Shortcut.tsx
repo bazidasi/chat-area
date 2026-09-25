@@ -77,7 +77,7 @@ export function Keys(props: {
   return (
     <span className={`inline-block px-1 ${opacityClass} ${props.className || ''}`}>
       {props.keys.map((key) => (
-        <Kbd key={key} className="mr-3xs">
+        <Kbd key={key} className="me-3xs">
           {formatKey(key)}
         </Kbd>
         // <Key key={index}>{formatKey(key)}</Key>
@@ -217,7 +217,7 @@ export function ShortcutConfig(props: {
                     isConflict={name ? isConflict(name, keys) : false}
                   />
                 ) : (
-                  <ShortcutText shortcut={keys} isConflict={name ? isConflict(name, keys) : false} className="ml-sm" />
+                  <ShortcutText shortcut={keys} isConflict={name ? isConflict(name, keys) : false} className="ms-sm" />
                 )}
               </Table.Td>
             </Table.Tr>

@@ -304,7 +304,7 @@ const PendingHeading: FC<{
           {subtitle}
         </Text>
       )}
-      <Group gap={10} wrap="nowrap" className="ml-auto shrink-0">
+      <Group gap={10} wrap="nowrap" className="ms-auto shrink-0">
         {progress && (
           <Box key={progressKey} className="chatbox-action-progress-pop">
             <PendingProgress current={progress.current} total={progress.total} />
@@ -508,7 +508,7 @@ const PendingActionBarContent: FC<PendingActionBarProps> = ({ session }) => {
 
       <Group justify={workdir ? 'space-between' : 'flex-end'} wrap="nowrap" gap="sm">
         {workdir && (
-          <Text size="xs" c="chatbox-tertiary" truncate="end" className="min-w-0 pl-2" title={workdir}>
+          <Text size="xs" c="chatbox-tertiary" truncate="end" className="min-w-0 ps-2" title={workdir}>
             {workdir}
           </Text>
         )}

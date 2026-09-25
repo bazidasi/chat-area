@@ -120,7 +120,7 @@ function DefaultErrorFallback({ error, retry }: DefaultErrorFallbackProps) {
         </div>
 
         {showDetails && (
-          <div className="mt-4 p-3 rounded-lg text-left"
+          <div className="mt-4 p-3 rounded-lg text-start"
             style={{
               background: 'var(--chatbox-background-tertiary)',
               border: '1px solid var(--chatbox-border-primary)',

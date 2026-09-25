@@ -284,7 +284,7 @@ export function LicenseDetailCard({ licenseDetail, language, utmContent }: Licen
                 )
               }
               disabled={pendingAction !== null}
-              className="ml-auto flex flex-row items-center gap-xxs"
+              className="ms-auto flex flex-row items-center gap-xxs"
               style={{ opacity: pendingAction === 'renew-license' ? 0.6 : 1 }}
             >
               <Text span fw={600} className="whitespace-nowrap">

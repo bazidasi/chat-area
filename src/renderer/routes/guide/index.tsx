@@ -258,7 +258,7 @@ function GuidePage() {
       {/* Header */}
       <Flex h={48} align="center" px="md" className="flex-none title-bar">
         {(!showSidebar || isSmallScreen) && (
-          <Flex align="center" className={needRoomForMacWindowControls ? 'pl-20' : ''}>
+          <Flex align="center" className={needRoomForMacWindowControls ? 'ps-20' : ''}>
             <ActionIcon
               className="controls"
               variant="subtle"
@@ -317,7 +317,7 @@ function GuidePage() {
           )}
         </Flex>
 
-        <WindowControls className="-mr-3 ml-2" />
+        <WindowControls className="-me-3 ms-2" />
       </Flex>
       <Divider />
 

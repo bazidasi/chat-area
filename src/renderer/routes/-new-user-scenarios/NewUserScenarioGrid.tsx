@@ -54,7 +54,7 @@ export function NewUserScenarioGrid({ scenarios, onSelect }: NewUserScenarioGrid
               key={scenario.id}
               onClick={() => onSelect?.(scenario)}
               aria-label={`${title}: ${description}`}
-              className="group min-h-[96px] rounded-lg oc-ring bg-chatbox-background-primary px-sm py-sm text-center transition-colors hover:bg-chatbox-background-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--chatbox-brand)] sm:min-h-[132px] sm:px-md sm:pt-md sm:pb-lg sm:text-left"
+              className="group min-h-[96px] rounded-lg oc-ring bg-chatbox-background-primary px-sm py-sm text-center transition-colors hover:bg-chatbox-background-primary-hover focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--chatbox-brand)] sm:min-h-[132px] sm:px-md sm:pt-md sm:pb-lg sm:text-start"
             >
               <Stack gap="xs" h="100%" className="items-center sm:items-start sm:gap-sm">
                 <Box className="flex h-9 w-9 items-center justify-center rounded-lg bg-chatbox-background-brand-secondary text-chatbox-tint-brand transition-colors group-hover:bg-chatbox-background-brand-secondary-hover sm:h-11 sm:w-11">

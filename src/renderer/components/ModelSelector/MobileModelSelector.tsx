@@ -148,7 +148,7 @@ export const MobileModelSelector = forwardRef<HTMLDivElement, MobileModelSelecto
         <Drawer.Trigger asChild>{children}</Drawer.Trigger>
         <Drawer.Portal>
           <Drawer.Overlay className="fixed inset-0 bg-chatbox-background-mask-overlay" />
-          <Drawer.Content className="flex flex-col rounded-t-[10px] h-fit fixed bottom-0 left-0 right-0 outline-none">
+          <Drawer.Content className="flex flex-col rounded-t-[10px] h-fit fixed bottom-0 start-0 end-0 outline-none">
             <Stack gap={0} className="bg-chatbox-background-primary rounded-t-lg h-[85vh]">
               <div aria-hidden className="mx-auto w-16 h-1 flex-shrink-0 rounded-full bg-chatbox-tint-tertiary my-3" />
               <Drawer.Title className="hidden">{t('Select Model')}</Drawer.Title>
@@ -205,7 +205,7 @@ export const MobileModelSelector = forwardRef<HTMLDivElement, MobileModelSelecto
                           size="md"
                           c="chatbox-secondary"
                           lineClamp={1}
-                          className="flex-grow-0 flex-shrink text-left"
+                          className="flex-grow-0 flex-shrink text-start"
                         >
                           {autoText || t('Auto')}
                         </Text>

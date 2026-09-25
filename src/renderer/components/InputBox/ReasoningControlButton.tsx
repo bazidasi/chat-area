@@ -133,7 +133,7 @@ function CompactReasoningLevelIcon({ level, size }: { level: ReasoningControlLev
       <ReasoningLevelStatusIcon
         level={level}
         size={statusSize}
-        className="absolute -bottom-0.5 -right-0.5 bg-[var(--chatbox-background-secondary)]"
+        className="absolute -bottom-0.5 -end-0.5 bg-[var(--chatbox-background-secondary)]"
       />
     </span>
   )

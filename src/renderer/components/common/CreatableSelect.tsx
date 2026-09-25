@@ -57,7 +57,7 @@ export default function CreatableSelect(props: {
                 onUpdateOptions([option, ...options])
               }}
             >
-              <AddIcon color="primary" fontSize="small" className="mr-0.5" />
+              <AddIcon color="primary" fontSize="small" className="me-0.5" />
               {option}
             </li>
           )

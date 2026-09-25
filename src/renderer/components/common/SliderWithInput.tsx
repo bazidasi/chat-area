@@ -92,7 +92,7 @@ export default function SliderWithInput({
         classNames={{
           input: clsx(
             '!text-center !px-0',
-            suffix || typeof inputRawValue === 'string' || inputRawValue === undefined ? '!pr-4' : ''
+            suffix || typeof inputRawValue === 'string' || inputRawValue === undefined ? '!pe-4' : ''
           ),
         }}
         rightSection={

@@ -289,7 +289,7 @@ function SortableItem(props: {
         <span
           data-session-drag-handle
           aria-hidden
-          className="pointer-events-none absolute right-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center text-chatbox-tertiary"
+          className="pointer-events-none absolute end-3 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center text-chatbox-tertiary"
         >
           <GripVertical size={18} />
         </span>

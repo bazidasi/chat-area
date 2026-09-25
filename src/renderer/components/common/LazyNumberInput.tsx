@@ -100,7 +100,7 @@ export default function LazyNumberInput({
       disabled={disabled}
       className={className}
       classNames={{
-        input: clsx('!px-1', typeof inputRawValue === 'string' || inputRawValue === undefined ? '!pr-4' : '!pr-8'),
+        input: clsx('!px-1', typeof inputRawValue === 'string' || inputRawValue === undefined ? '!pe-4' : '!pe-8'),
       }}
       rightSectionProps={{
         className: '!w-auto',
@@ -111,7 +111,7 @@ export default function LazyNumberInput({
             <CloseButton size="xs" c="chatbox-secondary" onClick={handleClear} />
           )}
           {hideControls ? null : (
-            <Stack gap={0} className="border-0 border-l border-solid border-[var(--input-bd)] pr-px">
+            <Stack gap={0} className="border-0 border-s border-solid border-[var(--input-bd)] pe-px">
               <ActionIcon variant="transparent" size={16} onClick={handleIncrement} c="chatbox-secondary">
                 <IconChevronUp />
               </ActionIcon>

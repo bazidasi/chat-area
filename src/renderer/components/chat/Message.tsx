@@ -876,7 +876,7 @@ const _Message: FC<Props> = (props) => {
                   ) : item.type === 'info' ? (
                     <Flex key={`info-${item.text}`} className="mb-2 ">
                       <Flex
-                        className="bg-chatbox-background-brand-secondary border-0 border-l-2 border-solid border-chatbox-tint-brand rounded-r-md"
+                        className="bg-chatbox-background-brand-secondary border-0 border-s-2 border-solid border-chatbox-tint-brand rounded-e-md"
                         align="center"
                         gap="xxs"
                         px="xs"
@@ -1038,7 +1038,7 @@ const _Message: FC<Props> = (props) => {
             </Button>
           </Stack>
         </Modal>
-        {needCollapse && !isCollapsed && renderCollapseButton('block w-fit ml-auto mb-2')}
+        {needCollapse && !isCollapsed && renderCollapseButton('block w-fit ms-auto mb-2')}
         {msg.generating && (
           <div
             className={cn(

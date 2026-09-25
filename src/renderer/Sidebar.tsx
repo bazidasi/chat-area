@@ -399,7 +399,7 @@ export default function Sidebar() {
           onMouseDown={handleResizeStart}
           className={cn(
             'sidebar-resizer fixed top-0 bottom-0 z-50 w-1 cursor-col-resize bg-chatbox-border-primary opacity-0 transition-opacity duration-200 hover:opacity-70',
-            isRtlLayout ? 'right-0' : 'left-0'
+            isRtlLayout ? 'end-0' : 'start-0'
           )}
           style={isRtlLayout ? { right: sidebarWidth - 8 } : { left: sidebarWidth - 8 }}
         />

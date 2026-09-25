@@ -177,7 +177,7 @@ export function ChatboxProviderRows({
             type="button"
             align="center"
             gap="xs"
-            className="oc-ring--interactive w-full min-h-9 pl-4 pr-2.5 py-2 border-0 border-b border-solid border-chatbox-border-primary bg-chatbox-background-secondary text-chatbox-tint-secondary cursor-pointer focus:outline-none focus-visible:outline-none hover:bg-chatbox-background-secondary-hover active:bg-chatbox-background-secondary-hover"
+            className="oc-ring--interactive w-full min-h-9 ps-4 pe-2.5 py-2 border-0 border-b border-solid border-chatbox-border-primary bg-chatbox-background-secondary text-chatbox-tint-secondary cursor-pointer focus:outline-none focus-visible:outline-none hover:bg-chatbox-background-secondary-hover active:bg-chatbox-background-secondary-hover"
             style={isMobile ? MOBILE_TAP_RESET_STYLE : undefined}
             onClick={() => onToggleGroup(group.id)}
           >
@@ -241,7 +241,7 @@ export function ChatboxProviderRows({
         isMobile ? 'mb-2' : 'mb-1'
       )}
     >
-      <div aria-hidden className="absolute bottom-0 left-0 top-0 w-[3px] bg-chatbox-tint-brand" />
+      <div aria-hidden className="absolute bottom-0 start-0 top-0 w-[3px] bg-chatbox-tint-brand" />
       <ProviderRowHeader
         provider={provider}
         modelCount={modelCount}

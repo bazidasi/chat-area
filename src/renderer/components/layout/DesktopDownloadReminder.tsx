@@ -43,7 +43,7 @@ export default function DesktopDownloadReminder() {
       className={
         isSmallScreen
           ? 'fixed inset-x-3 bottom-[calc(0.75rem+env(safe-area-inset-bottom))] z-[120]'
-          : 'fixed right-4 bottom-4 z-[120] w-[min(360px,calc(100vw-2rem))]'
+          : 'fixed end-4 bottom-4 z-[120] w-[min(360px,calc(100vw-2rem))]'
       }
     >
       <Paper withBorder radius="lg" p="md" shadow="lg" className="backdrop-blur-sm bg-chatbox-background-primary/95">

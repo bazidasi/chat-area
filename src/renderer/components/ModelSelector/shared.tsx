@@ -75,7 +75,7 @@ export const ModelItem = ({
         isSelected && SELECTED_BG_CLASS
       )}
     >
-      <ModelIcon modelId={model.modelId} providerId={providerId} size={16} className="mr-xs flex-shrink-0" />
+      <ModelIcon modelId={model.modelId} providerId={providerId} size={16} className="me-xs flex-shrink-0" />
       <Text
         span
         className="flex-shrink"
@@ -84,7 +84,7 @@ export const ModelItem = ({
         {model.nickname || model.modelId}
       </Text>
       {providerName && (
-        <Text span size="xs" c="chatbox-tertiary" className="ml-xxs flex-shrink-0">
+        <Text span size="xs" c="chatbox-tertiary" className="ms-xxs flex-shrink-0">
           ({providerName})
         </Text>
       )}
@@ -101,21 +101,21 @@ export const ModelItem = ({
 
       {model.capabilities?.includes('reasoning') && (
         <Tooltip label={t('Reasoning')}>
-          <Text span c="chatbox-warning" className="flex items-center ml-xxs" style={{ opacity: 0.7 }}>
+          <Text span c="chatbox-warning" className="flex items-center ms-xxs" style={{ opacity: 0.7 }}>
             <ScalableIcon icon={IconBulb} size={14} />
           </Text>
         </Tooltip>
       )}
       {model.capabilities?.includes('vision') && (
         <Tooltip label={t('Vision')}>
-          <Text span c="chatbox-brand" className="flex items-center ml-xxs" style={{ opacity: 0.7 }}>
+          <Text span c="chatbox-brand" className="flex items-center ms-xxs" style={{ opacity: 0.7 }}>
             <ScalableIcon icon={IconEye} size={14} />
           </Text>
         </Tooltip>
       )}
       {model.capabilities?.includes('tool_use') && (
         <Tooltip label={t('Tool Use')}>
-          <Text span c="chatbox-success" className="flex items-center ml-xxs" style={{ opacity: 0.7 }}>
+          <Text span c="chatbox-success" className="flex items-center ms-xxs" style={{ opacity: 0.7 }}>
             <ScalableIcon icon={IconTool} size={14} />
           </Text>
         </Tooltip>
@@ -125,7 +125,7 @@ export const ModelItem = ({
         <Flex
           component="span"
           className={clsx(
-            'ml-auto -m-xs p-xs',
+            'ms-auto -m-xs p-xs',
             isFavorited
               ? 'text-chatbox-tint-brand'
               : 'opacity-0 pointer-events-none group-hover:opacity-100 group-hover:pointer-events-auto text-chatbox-border-secondary hover:text-chatbox-tint-brand'
@@ -194,7 +194,7 @@ export const ModelItemInDrawer = ({
     >
       <ModelIcon modelId={model.modelId} providerId={providerId} size={20} className="flex-shrink-0" />
 
-      <Text span size="md" className="flex-grow-0 flex-shrink text-left overflow-hidden break-words !text-inherit">
+      <Text span size="md" className="flex-grow-0 flex-shrink text-start overflow-hidden break-words !text-inherit">
         {model.nickname || model.modelId}
       </Text>
       {providerName && (
@@ -239,7 +239,7 @@ export const ModelItemInDrawer = ({
         <Flex
           component="span"
           className={clsx(
-            'ml-auto -m-xs p-xs',
+            'ms-auto -m-xs p-xs',
             isFavorited ? 'text-chatbox-tint-brand' : 'text-chatbox-border-secondary'
           )}
           onClick={(e) => {

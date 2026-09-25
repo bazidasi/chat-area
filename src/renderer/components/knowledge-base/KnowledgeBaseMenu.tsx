@@ -60,7 +60,7 @@ const KnowledgeBaseMenu: FC<Props> = (props) => {
           <Group justify="center" className="w-full">
             <Link to="/settings/knowledge-base" className="w-full">
               <Button size="xs" variant="light" w="100%">
-                <PlusIcon size={14} className="mr-1" />
+                <PlusIcon size={14} className="me-1" />
                 {t('Create')}
               </Button>
             </Link>

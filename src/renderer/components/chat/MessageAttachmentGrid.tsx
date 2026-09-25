@@ -106,7 +106,7 @@ export function MessageAttachmentGrid({ files, links, align = 'start' }: Message
   }
 
   return (
-    <div className={align === 'end' ? 'mt-1 mb-1 max-w-[500px] w-fit ml-auto' : 'mt-1 mb-1 max-w-[500px]'}>
+    <div className={align === 'end' ? 'mt-1 mb-1 max-w-[500px] w-fit ms-auto' : 'mt-1 mb-1 max-w-[500px]'}>
       <div
         className={['grid gap-1.5', align === 'end' && visibleTotalCount === 1 ? 'grid-cols-1' : 'grid-cols-2'].join(
           ' '
@@ -209,7 +209,7 @@ export function MessageAttachmentGrid({ files, links, align = 'start' }: Message
       {shouldCollapse && (
         <button
           type="button"
-          className="flex items-center gap-1 mt-1 ml-auto px-2 py-0.5 text-xs text-chatbox-tertiary hover:text-chatbox-secondary bg-transparent border-0 cursor-pointer transition-colors"
+          className="flex items-center gap-1 mt-1 ms-auto px-2 py-0.5 text-xs text-chatbox-tertiary hover:text-chatbox-secondary bg-transparent border-0 cursor-pointer transition-colors"
           onClick={() => setExpanded(!expanded)}
         >
           {expanded ? (

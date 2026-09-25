@@ -222,7 +222,7 @@ export function NewChatButton({ label }: NewChatButtonProps = {}) {
   return (
     <Flex mt="md" style={guideActionButtonWidthStyle}>
       <Button variant="light" fullWidth h={42} onClick={() => navigate({ to: '/' })}>
-        <ScalableIcon icon={IconCirclePlus} className="mr-2" />
+        <ScalableIcon icon={IconCirclePlus} className="me-2" />
         {label ?? t('New Chat')}
       </Button>
     </Flex>
@@ -380,7 +380,7 @@ export function NewChatTip() {
           {t('For general conversations, please click')}
         </Text>
         <Button variant="light" size="compact-sm" onClick={() => navigate({ to: '/' })}>
-          <ScalableIcon icon={IconCirclePlus} className="mr-1" />
+          <ScalableIcon icon={IconCirclePlus} className="me-1" />
           {t('New Chat')}
         </Button>
         <Text size="sm" c="dimmed">
@@ -397,7 +397,7 @@ export function ViewLicenseButton() {
   return (
     <Flex mt="xs" style={guideActionButtonWidthStyle}>
       <Button variant="light" fullWidth h={42} onClick={() => navigateToSettings('chatbox-ai')}>
-        <ScalableIcon icon={IconId} className="mr-2" />
+        <ScalableIcon icon={IconId} className="me-2" />
         {t('View License Details')}
       </Button>
     </Flex>

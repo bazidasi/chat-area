@@ -86,7 +86,7 @@ async function renderMessageHtml(message: Message): Promise<string> {
   if (attachments.length > 0) {
     content += '<div class="mt-2">\n'
     content += '<p class="font-semibold text-sm mb-1">Attachments:</p>\n'
-    content += '<ul class="list-disc pl-6 text-sm text-slate-600">\n'
+    content += '<ul class="list-disc ps-6 text-sm text-slate-600">\n'
     for (const name of attachments) {
       content += `<li>${escapeHtml(name)}</li>\n`
     }
@@ -128,7 +128,7 @@ function renderHtmlDocument(sessionName: string, content: string, interactiveScr
         ${content}
         <hr />
         <a href="https://chatboxai.app" style="display: flex; align-items: center;" class="text-sky-500" target="_blank">
-            <img src='https://chatboxai.app/icon.png' class="w-12 pr-2">
+            <img src='https://chatboxai.app/icon.png' class="w-12 pe-2">
             <b style='font-size:30px'>Fibonacci AI</b>
         </a>
         <p><a href="https://chatboxai.app" target="_blank">https://chatboxai.app</a></p>

@@ -703,7 +703,7 @@ const BlockCode = memo(
         <Flex
           justify="space-between"
           className={clsx(
-            'code-block-header px-xs pl-sm pt-xs pb-0 bg-chatbox-background-primary select-none',
+            'code-block-header px-xs ps-sm pt-xs pb-0 bg-chatbox-background-primary select-none',
             !needCollapse || !collapsed ? 'sticky top-0 z-10' : ''
           )}
         >
