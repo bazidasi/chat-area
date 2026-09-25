@@ -4,7 +4,6 @@
 </p>
 
 <h1 align="center">
-<img src='./doc/statics/icon.png' width='30'>
 <span>
     ChatArea
     <span style="font-size:8px; font-weight: normal;">by Fibonacci</span>
@@ -30,15 +29,6 @@
 <a href="#features">
 <img alt="Privacy" src="https://img.shields.io/badge/-Local%20First-green?style=flat-square&logo=shield&logoColor=white" />
 </a>
-</p>
-
-<p align="center">
-  <a href="./doc/statics/snapshot_light.png">
-    <img src="./doc/statics/snapshot_light.png" width="400"/>
-  </a>
-  <a href="./doc/statics/snapshot_dark.png">
-    <img src="./doc/statics/snapshot_dark.png" width="400"/>
-  </a>
 </p>
 
 ---
