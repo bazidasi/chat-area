@@ -32,7 +32,8 @@
      value below is the light column of an upstream light-dark() pair,
      so this block can be diffed against upstream. Fibonacci's own
      semantic tokens (--chatbox-*) and the neumorphic layer (--neo-*)
-     are mapped onto them further down. The brand stays dark red.
+     are mapped onto them further down. The accent is hue-free graphite; the
+     only red in the product is the home page halftone field.
      ========================================================== */
   --background-base: #f8f8f8;
   --background-weak: #f3f3f3;
@@ -67,21 +68,21 @@
   --text-weak: #8f8f8f;
   --text-weaker: #c7c7c7;
   --text-invert-strong: #fcfcfc;
-  --text-on-critical-base: #ed4831;
-  --text-on-critical-strong: #601a0f;
+  --text-on-critical-base: #171717;
+  --text-on-critical-strong: #171717;
   --text-on-success-base: #2dba26;
 
   --border-base: rgba(0, 0, 0, 0.162);
   --border-hover: rgba(0, 0, 0, 0.236);
   --border-weak-base: #e5e5e5;
   --border-weak-hover: rgba(0, 0, 0, 0.118);
-  --border-weak-selected: rgba(139, 0, 0, 0.29);
+  --border-weak-selected: rgba(0, 0, 0, 0.29);
   --border-strong-base: rgba(0, 0, 0, 0.151);
   --border-weaker-base: #f0f0f0;
-  --border-critical-base: #fdc3b7;
-  --border-critical-hover: #ffa796;
-  --border-critical-selected: #fc533a;
-  --border-critical-weak: rgba(251, 34, 0, 0.18);
+  --border-critical-base: #8f8f8f;
+  --border-critical-hover: #6f6f6f;
+  --border-critical-selected: #262626;
+  --border-critical-weak: rgba(0, 0, 0, 0.14);
 
   --icon-base: #8f8f8f;
   --icon-hover: #6f6f6f;
@@ -89,8 +90,8 @@
   --icon-weak-base: #dbdbdb;
   --icon-success-active: #078901;
   --icon-warning-active: #95671b;
-  --icon-critical-base: #ed4831;
-  --icon-critical-hover: #ca2d17;
+  --icon-critical-base: #171717;
+  --icon-critical-hover: #6f6f6f;
   --icon-info-base: #e6a8ea;
 
   --surface-success-strong: #12c905;
@@ -99,9 +100,9 @@
   --surface-warning-strong: #fbdd46;
   --surface-warning-base: #fcf3cb;
   --surface-warning-weak: #fdfaec;
-  --surface-critical-strong: #fc533a;
-  --surface-critical-base: #fff2f0;
-  --surface-critical-weak: #fff8f6;
+  --surface-critical-strong: #262626;
+  --surface-critical-base: #f1f1f1;
+  --surface-critical-weak: #f7f7f7;
   --surface-info-strong: #a753ae;
   --surface-info-base: #fdecfe;
   --surface-info-weak: #fef7ff;
@@ -118,7 +119,28 @@
   --chatbox-tint-disabled: var(--text-weaker);
   --chatbox-tint-placeholder: var(--text-weak);
 
-  --chatbox-brand: #8b0000;
+  /* ---- typography ----
+     One stack per language, resolved through --chatbox-font-sans. Every
+     consumer (body, Mantine, MUI CssBaseline, the sidebar) reads that single
+     var rather than hardcoding a family, so switching language needs no
+     component edits. The Persian/Arabic overrides are keyed on html[data-lang]
+     rather than [dir=rtl] because Persian and Arabic need *different* faces —
+     Vazirmatn's ی/ک/گ letterforms are wrong for Arabic. Set on <html> so
+     portalled overlays (Mantine modals, menus, dropdowns) inherit it too. */
+  --chatbox-font-latin: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell',
+    'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  --chatbox-font-arabic: 'Cairo', 'Segoe UI', sans-serif;
+  --chatbox-font-persian: 'Vazirmatn', 'Cairo', 'Segoe UI', sans-serif;
+  --chatbox-font-sans: var(--chatbox-font-latin);
+
+  /* Accent is hue-free graphite. The one red in the product is the home page
+     halftone field below; everything else reads state through weight, elevation
+     and border weight rather than colour. */
+  --chatbox-brand: #262626;
+  /* Text that sits on top of a filled accent surface. The accent is dark ink in
+     light mode and light ink in dark mode, so the polarity has to flip with it
+     or filled buttons lose contrast. */
+  --chatbox-tint-on-accent: #ffffff;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-error: var(--text-on-critical-base);
@@ -126,7 +148,7 @@
   --chatbox-tint-warning: var(--icon-warning-active);
   --chatbox-tint-success: var(--icon-success-active);
 
-  /* home halftone background — the red accent, muted for day mode */
+  /* home halftone background — the only red surface in the app, muted for day mode */
   --halftone-color: #a87a7a;
   --halftone-opacity: 0.4;
 
@@ -191,16 +213,36 @@
   --neo-shadow-outset-hover: var(--shadow-xs-border-hover);
   --neo-shadow-boxed: var(--shadow-md);
   --neo-shadow-boxed-hover: var(--shadow-lg);
-  --neo-shadow-focus: var(--shadow-xs-border-focus);
-  --neo-shadow-boxed-focus: inset 0 0 12px color-mix(in srgb, var(--chatbox-brand) 18%, transparent),
-    inset 0 1px 0 color-mix(in srgb, white 10%, transparent), var(--shadow-md);
-  --neo-shadow-critical-focus: var(--shadow-xs-border-critical-focus);
-  --neo-shadow-select: var(--shadow-xs-border-select);
   --neo-shadow-float: var(--shadow-xs-border-base), var(--shadow-md);
   --neo-shadow-inset-sm: inset 0 1px 2px rgba(0, 0, 0, 0.05), inset 0 2px 4px -1px rgba(0, 0, 0, 0.04);
   --neo-shadow-inset: inset 0 2px 4px rgba(0, 0, 0, 0.06), inset 0 4px 8px -2px rgba(0, 0, 0, 0.05);
-  --neo-shadow-inset-focus: var(--neo-shadow-inset), 0 0 0 2px color-mix(in srgb, var(--chatbox-brand) 45%, transparent);
 
+  /* ---- the accent ring ---------------------------------------------
+     Focus and selection are the same signal in this product, so they get
+     one accent and one geometry: a 2px gap in the page surface, then a 2px
+     arc of the accent. The arc is a box-shadow rather than an outline
+     because a box-shadow follows the element's own border-radius — a pill,
+     the 29px composer well and a card all get a ring that curves with them
+     instead of a straight edge laid over the corner.
+
+     Nothing here needs a dark counterpart: both halves resolve late against
+     --background-weak and --chatbox-brand, which the dark column overrides. */
+  --neo-ring-accent: var(--chatbox-brand);
+  --neo-ring: 0 0 0 2px var(--background-weak), 0 0 0 4px var(--neo-ring-accent);
+  /* Persistent selection: the same accent, hugging the edge with no gap, so
+     it stays quieter than the keyboard-only focus arc. */
+  --neo-ring-select: 0 0 0 1px var(--neo-ring-accent);
+  --neo-elevation-xs: 0 1px 2px -1px rgba(19, 16, 16, 0.04), 0 1px 2px 0 rgba(19, 16, 16, 0.06),
+    0 1px 3px 0 rgba(19, 16, 16, 0.08);
+
+  --neo-shadow-focus: 0 0 0 1px var(--border-base), var(--neo-elevation-xs), var(--neo-ring);
+  --neo-shadow-boxed-focus: var(--neo-shadow-boxed), var(--neo-ring);
+  --neo-shadow-select: 0 0 0 1px var(--neo-ring-accent), var(--neo-elevation-xs);
+  --neo-shadow-inset-focus: var(--neo-shadow-inset), var(--neo-ring);
+  /* An invalid control is called out by weight rather than hue: the accent
+     is graphite, so the ring is the same arc drawn one step thicker. */
+  --neo-shadow-critical-focus: 0 0 0 1px var(--border-critical-selected), var(--neo-elevation-xs),
+    0 0 0 5px var(--border-critical-selected), var(--neo-ring);
 
   /* ---- mapping: Fibonacci surfaces -> OpenCode palette ---- */
   --chatbox-background-primary: var(--background-base);
@@ -314,21 +356,21 @@
   --text-weak: rgba(255, 255, 255, 0.422);
   --text-weaker: rgba(255, 255, 255, 0.284);
   --text-invert-strong: #ededed;
-  --text-on-critical-base: #fc533a;
-  --text-on-critical-strong: #ffe0da;
+  --text-on-critical-base: #ededed;
+  --text-on-critical-strong: #ededed;
   --text-on-success-base: #12c905;
 
   --border-base: rgba(255, 255, 255, 0.195);
   --border-hover: rgba(255, 255, 255, 0.284);
   --border-weak-base: #282828;
   --border-weak-hover: rgba(255, 255, 255, 0.181);
-  --border-weak-selected: rgba(183, 28, 28, 0.4);
+  --border-weak-selected: rgba(255, 255, 255, 0.4);
   --border-strong-base: rgba(255, 255, 255, 0.266);
   --border-weaker-base: #202020;
-  --border-critical-base: #6a1206;
-  --border-critical-hover: #952414;
-  --border-critical-selected: #fc533a;
-  --border-critical-weak: rgba(252, 83, 58, 0.25);
+  --border-critical-base: #6b6b6b;
+  --border-critical-hover: #8f8f8f;
+  --border-critical-selected: #ededed;
+  --border-critical-weak: rgba(255, 255, 255, 0.22);
 
   --icon-base: #7e7e7e;
   --icon-hover: #a0a0a0;
@@ -336,7 +378,7 @@
   --icon-weak-base: #343434;
   --icon-success-hover: #35c02d;
   --icon-warning-base: #fbb73c;
-  --icon-critical-hover: #faa494;
+  --icon-critical-hover: #a0a0a0;
   --icon-info-base: #68446b;
 
   --surface-success-strong: #12c905;
@@ -345,9 +387,9 @@
   --surface-warning-strong: #fcd53a;
   --surface-warning-base: #fdf3cf;
   --surface-warning-weak: #fdfaed;
-  --surface-critical-strong: #fc533a;
-  --surface-critical-base: #1f0603;
-  --surface-critical-weak: #28110c;
+  --surface-critical-strong: #ededed;
+  --surface-critical-base: #242424;
+  --surface-critical-weak: #2a2a2a;
   --surface-info-strong: #edb2f1;
   --surface-info-base: #feecfe;
   --surface-info-weak: #fdf7fe;
@@ -367,8 +409,6 @@
     1px 1px 0 rgba(0, 0, 0, 0.7), var(--shadow-md);
   --neo-shadow-boxed-hover: -1px -1px 0 rgba(255, 255, 255, 0.16),
     1px 1px 0 rgba(0, 0, 0, 0.75), var(--shadow-lg);
-  --neo-shadow-boxed-focus: -1px -1px 0 rgba(255, 255, 255, 0.18),
-    1px 1px 0 rgba(0, 0, 0, 0.75), var(--shadow-md);
   --neo-shadow-outset-xs: -1px -1px 0 rgba(255, 255, 255, 0.09),
     1px 1px 0 rgba(0, 0, 0, 0.65), var(--shadow-xs-border-base);
   --neo-shadow-outset-sm: -1px -1px 0 rgba(255, 255, 255, 0.12),
@@ -383,7 +423,10 @@
   /* ---- overrides: tokens whose OpenCode source differs per theme ---- */
   /* tertiary sits one step above the raised surface on dark */
   --chatbox-background-tertiary: var(--border-weaker-base);
-  --chatbox-brand: #b71c1c;
+  /* the accent inverts with the theme: dark ink on light, light ink on dark,
+     so filled controls keep a readable foreground in both */
+  --chatbox-brand: #ededed;
+  --chatbox-tint-on-accent: #171717;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-error: var(--icon-critical-hover);
@@ -395,7 +438,7 @@
   --chatbox-border-error: var(--text-on-critical-base);
   --chatbox-border-success: var(--icon-success-hover);
 
-  /* home halftone background — very dark red on the dark surface */
+  /* home halftone background — the one red that stays, very dark on dark */
   --halftone-color: #4d0b0b;
   --halftone-opacity: 0.7;
 
@@ -417,6 +460,26 @@
 :root[data-theme="light"] {
   --halftone-color: #a87a7a;
   --halftone-opacity: 0.4;
+}
+
+/* Language-driven typography. data-lang is written to <html> by
+   useAppTheme, which also covers portalled overlays. Mantine's
+   --mantine-font-family* are overridden here because Mantine assigns them
+   directly on every component instead of inheriting from body — without this,
+   Persian text inside any Mantine component would still fall back to the
+   Latin system stack. */
+html[data-lang='ar'] {
+  --chatbox-font-sans: var(--chatbox-font-arabic);
+}
+
+html[data-lang='fa'] {
+  --chatbox-font-sans: var(--chatbox-font-persian);
+}
+
+html[data-lang='ar'],
+html[data-lang='fa'] {
+  --mantine-font-family: var(--chatbox-font-sans);
+  --mantine-font-family-headings: var(--chatbox-font-sans);
 }
 
 :root[data-mantine-color-scheme="light"][data-mantine-color-scheme],
@@ -580,9 +643,7 @@ ul[data-sidebar='menu-sub'] > li {
   }
   30% {
     transform: scale(0.985);
-    box-shadow:
-      0 0 0 3px color-mix(in srgb, var(--chatbox-brand) 20%, transparent),
-      var(--neo-shadow-boxed);
+    box-shadow: var(--neo-shadow-boxed), var(--neo-ring);
   }
   60% {
     transform: scale(1.005);
@@ -1024,7 +1085,9 @@ div[data-vaul-drawer] {
 
 /* Sidebar workspace navigation: one calm hierarchy instead of a stack of equal actions. */
 .sidebar-shell {
-  font-family: Cairo, 'Segoe UI', sans-serif;
+  /* Was hardcoded to Cairo, which forced the Arabic face onto Latin and CJK
+     sidebar text too. Same language-resolved stack as the rest of the app. */
+  font-family: var(--chatbox-font-sans);
 }
 
 .sidebar-header {
@@ -1165,8 +1228,8 @@ div[data-vaul-drawer] {
 
 .sidebar-top-action:focus-visible,
 .sidebar-project-row:focus-visible {
-  outline: 2px solid color-mix(in srgb, var(--chatbox-brand) 70%, transparent);
-  outline-offset: 1px;
+  outline: none;
+  box-shadow: var(--neo-shadow-focus);
 }
 
 .sidebar-project-active {

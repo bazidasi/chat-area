@@ -166,7 +166,7 @@ export default function ProjectSidebarList({
                   }
                 }}
               >
-                <Folder size={16} className={isActiveProject ? 'text-chatbox-brand' : 'text-chatbox-tint-tertiary'} />
+                <Folder size={16} className={isActiveProject ? 'text-chatbox-tint-brand' : 'text-chatbox-tint-tertiary'} />
                 <div className="min-w-0 flex-1">
                   <Text
                     size="sm"

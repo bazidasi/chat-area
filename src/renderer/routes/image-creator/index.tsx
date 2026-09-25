@@ -7,6 +7,7 @@ import { createFileRoute } from '@tanstack/react-router'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { JK_PAGE_NAMES } from '@/analytics/jk-events'
+import { HalftoneBackground } from '@/components/backgrounds/halftone'
 import { ChatboxWelcomeCard } from '@/components/common/ChatboxWelcomeCard'
 import { ImageModelSelect } from '@/components/ImageModelSelect'
 import Page from '@/components/layout/Page'
@@ -514,9 +515,13 @@ function ImageCreatorPage() {
 
   return (
     <Page title={t('Image Creator')} right={headerRight}>
-      <Flex flex={1} h="100%" className="overflow-hidden relative">
+      <Flex flex={1} h="100%" className="relative isolate overflow-hidden">
+        {/* Red halftone field — same treatment as the home and chat pages. The
+            canvas paints its own opaque copy of the surface, so it needs no
+            transparency behind it; the content just has to be lifted above it. */}
+        <HalftoneBackground className="absolute inset-0 z-0" />
         {/* Main Content Area */}
-        <Flex direction="column" flex={1} h="100%" className="overflow-hidden relative">
+        <Flex direction="column" flex={1} h="100%" className="relative z-[1] overflow-hidden">
           {/* Results Area */}
           <ScrollArea flex={1} type="auto" offsetScrollbars={!isSmallScreen}>
             <Box maw={900} mx="auto" py="xl" px="md" className="min-h-full">
@@ -625,6 +630,7 @@ function ImageCreatorPage() {
         {/* Desktop History Panel */}
         {!isSmallScreen && (
           <HistoryPanel
+            className="relative z-[1]"
             show={showHistory}
             width={HISTORY_PANEL_WIDTH}
             historyCache={historyCache}

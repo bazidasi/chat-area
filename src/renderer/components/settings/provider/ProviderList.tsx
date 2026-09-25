@@ -8,7 +8,7 @@ import { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
 import CustomProviderIcon from '@/components/CustomProviderIcon'
 import Divider from '@/components/common/Divider'
-import { ScalableIcon } from '@/components/common/ScalableIcon'
+import { opticalIconStroke, ScalableIcon } from '@/components/common/ScalableIcon'
 import { useProviders } from '@/hooks/useProviders'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import { FEATURED_PROVIDER_IDS, ProviderIconImage } from './providerIcons'
@@ -128,7 +128,12 @@ export function ProviderList({ providers, onAddProvider }: ProviderListProps) {
                   )}
 
                   {isSmallScreen && (
-                    <ScalableIcon icon={IconChevronRight} size={20} className="!text-chatbox-tint-tertiary ml-2" />
+                    <ScalableIcon
+                      icon={IconChevronRight}
+                      size={20}
+                      stroke={opticalIconStroke(20)}
+                      className="!text-chatbox-tint-tertiary ml-2"
+                    />
                   )}
                 </Flex>
 

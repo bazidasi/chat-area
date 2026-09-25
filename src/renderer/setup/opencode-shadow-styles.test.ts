@@ -18,14 +18,12 @@ describe('OpenCode shadow surface system', () => {
       '--neo-shadow-boxed: -1px -1px 0 rgba(255, 255, 255, 0.12),'
     )
     expect(globalStyles).toContain('1px 1px 0 rgba(0, 0, 0, 0.7), var(--shadow-md);')
-    expect(globalStyles).toContain(
-      '--neo-shadow-boxed-focus: -1px -1px 0 rgba(255, 255, 255, 0.18),'
-    )
+    expect(globalStyles).toContain('--neo-shadow-boxed-focus: var(--neo-shadow-boxed), var(--neo-ring);')
     expect(globalStyles).not.toContain(
       '--neo-shadow-boxed-focus: 0 0 0 3px color-mix(in srgb, var(--chatbox-brand)'
     )
     expect(globalStyles).toContain('--neo-shadow-inset-focus: var(--neo-shadow-inset)')
-    expect(globalStyles).toContain('--neo-shadow-critical-focus: var(--shadow-xs-border-critical-focus);')
+    expect(globalStyles).toContain('var(--border-critical-selected), var(--neo-elevation-xs),')
     expect(globalStyles).toMatch(
       /\.chatbox-input-beam\s*\{[^}]*overflow:\s*visible !important;[^}]*\}/s
     )
@@ -59,6 +57,49 @@ describe('OpenCode shadow surface system', () => {
       /\.mantine-Menu-dropdown,[\s\S]*?\.mantine-Select-dropdown\s*\{[^}]*border:\s*none;[^}]*box-shadow:\s*var\(--neo-shadow-float\);/s
     )
     expect(styles).toMatch(/\.mantine-Tooltip-tooltip\s*\{[^}]*border:\s*none;/s)
+  })
+
+  test('draws every focus and selection ring with the one accent ring token', () => {
+    const globalStyles = readRendererSource('static/globals.css')
+    const componentStyles = readRendererSource('static/neumorphism.css')
+    const chatStyles = readRendererSource('static/neumorphism-chat.css')
+
+    // One accent, one geometry: a gap in the page surface then a 2px arc of
+    // the accent. The arc is a box-shadow so it follows border-radius.
+    expect(globalStyles).toContain('--neo-ring-accent: var(--chatbox-brand);')
+    expect(globalStyles).toContain(
+      '--neo-ring: 0 0 0 2px var(--background-weak), 0 0 0 4px var(--neo-ring-accent);'
+    )
+    expect(globalStyles).toContain('--neo-ring-select: 0 0 0 1px var(--neo-ring-accent);')
+
+    // Every state recipe is composed from those, never a private mix.
+    for (const recipe of [
+      '--neo-shadow-focus:',
+      '--neo-shadow-boxed-focus:',
+      '--neo-shadow-select:',
+      '--neo-shadow-inset-focus:',
+      '--neo-shadow-critical-focus:',
+    ]) {
+      const declaration = globalStyles.slice(globalStyles.indexOf(recipe))
+      const value = declaration.slice(0, declaration.indexOf(';'))
+      expect(value).toContain('var(--neo-ring')
+    }
+
+    // The global fallback is solid accent, not a translucent mix.
+    expect(componentStyles).toMatch(/:focus-visible\s*\{[^}]*outline:\s*2px solid var\(--neo-ring-accent\);/s)
+
+    // Selection and jump-to-message share the select ring.
+    expect(chatStyles).toMatch(
+      /\[data-highlighted='true'\]\s*\{[^}]*var\(--neo-shadow-outset-sm\), var\(--neo-ring-select\)/s
+    )
+
+    // No ad-hoc accent ring survives anywhere in the three style layers.
+    for (const styles of [globalStyles, componentStyles, chatStyles]) {
+      expect(styles).not.toMatch(/0 0 0 \d+px color-mix\(in srgb, var\(--chatbox-brand\)/)
+      expect(styles).not.toMatch(
+        /outline:[^;]*color-mix\(in srgb, var\(--chatbox-brand\)\s*\d+%[^;]*;/
+      )
+    }
   })
 
   test('keeps shared React primitives on shadow classes', () => {

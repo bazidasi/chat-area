@@ -312,7 +312,7 @@ const PendingHeading: FC<{
         )}
         <UnstyledButton
           data-testid={TestId.toolCall.actionBarView}
-          className="flex items-center text-chatbox-tertiary hover:text-chatbox-brand"
+          className="flex items-center text-chatbox-tertiary hover:text-chatbox-tint-brand"
           style={{ gap: 2, fontSize: 'var(--mantine-font-size-xs)' }}
           onClick={onView}
         >

@@ -58,7 +58,7 @@ function AgentMessageFixture() {
 
   return (
     <Group align="flex-start" wrap="nowrap" gap="sm">
-      <AssistantAvatar size="lg" bg="var(--chatbox-background-brand-primary)" color="var(--chatbox-tint-white)" />
+      <AssistantAvatar size="lg" bg="var(--chatbox-background-brand-primary)" color="var(--chatbox-tint-on-accent)" />
       <Stack gap="md" style={{ flex: 1, minWidth: 0 }}>
         <Text size="sm" c="var(--chatbox-tint-secondary)" lh={1.65}>
           我已经读取了数据文件，正在完成趋势分析并准备生成可下载的报告。

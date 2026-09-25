@@ -67,7 +67,7 @@ export function UserTypeCards({ onSelect, disabled }: UserTypeCardsProps) {
               `}
               style={{
                 background: highlighted
-                  ? 'linear-gradient(180deg, rgba(183, 28, 28, 0.08) 0%, rgba(183, 28, 28, 0.02) 100%)'
+                  ? 'linear-gradient(180deg, color-mix(in srgb, var(--chatbox-brand) 8%, transparent) 0%, color-mix(in srgb, var(--chatbox-brand) 2%, transparent) 100%)'
                   : 'linear-gradient(180deg, rgba(134, 142, 150, 0.06) 0%, rgba(134, 142, 150, 0.02) 100%)',
                 boxShadow: isSelected ? 'var(--neo-shadow-select)' : 'var(--neo-shadow-outset-sm)',
               }}
@@ -75,9 +75,12 @@ export function UserTypeCards({ onSelect, disabled }: UserTypeCardsProps) {
               {/* Recommended badge - positioned at top-right corner */}
               {highlighted && (
                 <Box
-                  className="absolute top-0 right-0 px-3 py-1 text-xs font-medium text-white"
+                  className="absolute top-0 right-0 px-3 py-1 text-xs font-medium"
                   style={{
                     background: 'var(--chatbox-background-brand-primary)',
+                    // the accent inverts with the theme, so the badge label
+                    // has to invert with it or it vanishes on the dark fill
+                    color: 'var(--chatbox-tint-on-accent)',
                     borderBottomLeftRadius: '0.5rem',
                   }}
                 >
@@ -93,7 +96,9 @@ export function UserTypeCards({ onSelect, disabled }: UserTypeCardsProps) {
                   justify="center"
                   className="w-12 h-12 rounded-full"
                   style={{
-                    background: highlighted ? 'rgba(183, 28, 28, 0.12)' : 'rgba(134, 142, 150, 0.12)',
+                    background: highlighted
+                      ? 'color-mix(in srgb, var(--chatbox-brand) 12%, transparent)'
+                      : 'rgba(134, 142, 150, 0.12)',
                   }}
                 >
                   <img src={icon} alt="" className="w-6 h-6" />

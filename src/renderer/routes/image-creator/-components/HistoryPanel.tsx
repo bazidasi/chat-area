@@ -4,6 +4,7 @@ import { IconChevronRight, IconClock, IconPlus } from '@tabler/icons-react'
 import { useTranslation } from 'react-i18next'
 import { Virtuoso } from 'react-virtuoso'
 import { AppTooltip as Tooltip } from '@/components/ui/tooltip'
+import { cn } from '@/lib/utils'
 import { HistoryItem } from './HistoryItem'
 
 interface HistoryListFooterContext {
@@ -137,6 +138,8 @@ export interface HistoryPanelProps {
   onNewCreation: () => void
   onClose: () => void
   onDelete: (id: string) => void
+  /** Lets the page lift this panel above a sibling background layer. */
+  className?: string
 }
 
 export function HistoryPanel({
@@ -153,6 +156,7 @@ export function HistoryPanel({
   onNewCreation,
   onClose,
   onDelete,
+  className,
 }: HistoryPanelProps) {
   const { t } = useTranslation()
 
@@ -160,7 +164,10 @@ export function HistoryPanel({
     <Box
       w={show ? width : 0}
       h="100%"
-      className="border-0 border-l border-solid border-[var(--chatbox-border-primary)] bg-[var(--chatbox-background-primary)] transition-all duration-300 ease-in-out overflow-hidden shrink-0"
+      className={cn(
+        'border-0 border-l border-solid border-[var(--chatbox-border-primary)] bg-[var(--chatbox-background-primary)] transition-all duration-300 ease-in-out overflow-hidden shrink-0',
+        className
+      )}
     >
       <Flex direction="column" h="100%" w={width}>
         <Flex align="center" justify="space-between" px="xs" py="xs" className="">

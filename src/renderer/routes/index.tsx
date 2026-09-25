@@ -467,7 +467,7 @@ function Index() {
                       <Text fw={800} fz={isSmallScreen ? 24 : 34} ta="center" lh={1.15}>
                         <BlurText text={t('What can I help you with today?')} />
                       </Text>
-                      <span className="h-[3px] w-10 rounded-full bg-chatbox-brand" />
+                      <span className="h-[3px] w-10 rounded-full bg-chatbox-tint-brand" />
                       {!isSmallScreen && (
                         <Text size="sm" c="chatbox-tertiary" ta="center" mt={4}>
                           {t('Ask anything — chat, create images, analyze files, and more.')}

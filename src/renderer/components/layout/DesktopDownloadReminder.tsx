@@ -53,7 +53,7 @@ export default function DesktopDownloadReminder() {
               <ScalableIcon
                 icon={isSmallScreen ? IconDeviceMobile : IconDeviceDesktop}
                 size={20}
-                className="text-chatbox-brand mt-2 shrink-0"
+                className="text-chatbox-tint-brand mt-2 shrink-0"
               />
               {isSmallScreen ? (
                 <Stack gap={2} flex={1}>
