@@ -1,5 +1,9 @@
-import type { SessionRepositoryPort } from '../ports'
+import type { SessionListFilter, SessionRepositoryPort } from '../ports'
 import type { Session, SessionMetaPage, SessionMetaRecord } from '../types'
+
+function matchesFilter(record: SessionMetaRecord, filter?: SessionListFilter): boolean {
+  return filter?.projectId === undefined || record.projectId === filter.projectId
+}
 
 function sortVisible(records: SessionMetaRecord[]): SessionMetaRecord[] {
   return records
@@ -36,12 +40,13 @@ export class InMemorySessionRepository implements SessionRepositoryPort {
     getAll: () => Promise.resolve(sortVisible([...this.records.values()])),
     getAllIncludingHidden: () => Promise.resolve([...this.records.values()].sort((a, b) => b.sortOrder - a.sortOrder)),
     getArchived: () => Promise.resolve(this.archivedRecords()),
-    getArchivedPage: (cursor: number, limit = 2) => Promise.resolve(page(this.archivedRecords(), cursor, limit)),
-    getPage: (cursor: number, limit = 2) =>
-      Promise.resolve(page(sortVisible([...this.records.values()]), cursor, limit)),
-    getTotal: () => Promise.resolve(sortVisible([...this.records.values()]).length),
-    getAllTotal: () => Promise.resolve(this.records.size),
-    getArchivedTotal: () => Promise.resolve(this.archivedRecords().length),
+    getArchivedPage: (cursor: number, limit = 2, filter?: SessionListFilter) =>
+      Promise.resolve(page(this.archivedRecords(filter), cursor, limit)),
+    getPage: (cursor: number, limit = 2, filter?: SessionListFilter) =>
+      Promise.resolve(page(sortVisible(this.filteredRecords(filter)), cursor, limit)),
+    getTotal: (filter?: SessionListFilter) => Promise.resolve(sortVisible(this.filteredRecords(filter)).length),
+    getAllTotal: (filter?: SessionListFilter) => Promise.resolve(this.filteredRecords(filter).length),
+    getArchivedTotal: (filter?: SessionListFilter) => Promise.resolve(this.archivedRecords(filter).length),
     clear: () => {
       this.records.clear()
       return Promise.resolve()
@@ -103,8 +108,12 @@ export class InMemorySessionRepository implements SessionRepositoryPort {
     return Promise.resolve()
   }
 
-  private archivedRecords(): SessionMetaRecord[] {
-    return [...this.records.values()]
+  private filteredRecords(filter?: SessionListFilter): SessionMetaRecord[] {
+    return [...this.records.values()].filter((record) => matchesFilter(record, filter))
+  }
+
+  private archivedRecords(filter?: SessionListFilter): SessionMetaRecord[] {
+    return this.filteredRecords(filter)
       .filter((record) => record.archivedAt !== undefined)
       .sort((left, right) => (right.archivedAt ?? 0) - (left.archivedAt ?? 0))
   }

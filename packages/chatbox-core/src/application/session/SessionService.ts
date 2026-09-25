@@ -1,5 +1,5 @@
-import type { LoggerPort, SessionRepositoryPort } from '../../ports'
 import { releaseSessionGenerationLock } from '../../generation/generation-lock'
+import type { LoggerPort, SessionListFilter, SessionRepositoryPort } from '../../ports'
 import type { Message, Session, SessionMetaPage, SessionMetaRecord, SessionSettings, Updater } from '../../types'
 import {
   applyMessageInsert,
@@ -116,10 +116,10 @@ export class SessionService {
     }
   }
 
-  async listSessionsMetaPage(cursor: number, limit?: number): Promise<SessionMetaPage> {
+  async listSessionsMetaPage(cursor: number, limit?: number, filter?: SessionListFilter): Promise<SessionMetaPage> {
     await this.initialize()
     try {
-      return await this.repository.meta.getPage(cursor, limit)
+      return await this.repository.meta.getPage(cursor, limit, filter)
     } catch (error) {
       await this.log('error', 'Failed to read session list page from repository', {
         cursor,
@@ -130,19 +130,28 @@ export class SessionService {
     }
   }
 
-  async listArchivedSessionsMetaPage(cursor: number, limit?: number): Promise<SessionMetaPage> {
+  async listArchivedSessionsMetaPage(
+    cursor: number,
+    limit?: number,
+    filter?: SessionListFilter
+  ): Promise<SessionMetaPage> {
     await this.initialize()
-    return this.repository.meta.getArchivedPage(cursor, limit)
+    return this.repository.meta.getArchivedPage(cursor, limit, filter)
   }
 
-  async countSessionsMeta(): Promise<number> {
+  async countAllSessionsMeta(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    return this.repository.meta.getTotal()
+    return this.repository.meta.getAllTotal(filter)
   }
 
-  async countArchivedSessionsMeta(): Promise<number> {
+  async countSessionsMeta(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    return this.repository.meta.getArchivedTotal()
+    return this.repository.meta.getTotal(filter)
+  }
+
+  async countArchivedSessionsMeta(filter?: SessionListFilter): Promise<number> {
+    await this.initialize()
+    return this.repository.meta.getArchivedTotal(filter)
   }
 
   async listAllSessionsMeta(): Promise<SessionMetaRecord[]> {
@@ -323,7 +332,9 @@ export class SessionService {
       })
       await runInChunks(uniqueIds, 20, (sessionId) => this.repository.deleteSession(sessionId))
       await this.repository.meta.deleteMany(uniqueIds)
-      uniqueIds.forEach((id) => { void releaseSessionGenerationLock(id) })
+      uniqueIds.forEach((id) => {
+        void releaseSessionGenerationLock(id)
+      })
       await this.events.publish({ type: 'session-deleted', ids: uniqueIds })
     })
     await this.publishListReset({ visible: true, archived: true })

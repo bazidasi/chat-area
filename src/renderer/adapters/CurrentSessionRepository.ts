@@ -1,4 +1,5 @@
 import {
+  type SessionListFilter,
   type SessionMetaRepositoryPort,
   SessionRepositoryError,
   type SessionRepositoryOperation,
@@ -87,24 +88,26 @@ class CurrentSessionMetaRepository implements SessionMetaRepositoryPort {
     return normalizeRepositoryError('list-archived-meta', () => this.getBackend().getArchived())
   }
 
-  getArchivedPage(cursor: number, limit?: number): Promise<SessionMetaPage> {
-    return normalizeRepositoryError('list-archived-meta-page', () => this.getBackend().getArchivedPage(cursor, limit))
+  getArchivedPage(cursor: number, limit?: number, filter?: SessionListFilter): Promise<SessionMetaPage> {
+    return normalizeRepositoryError('list-archived-meta-page', () =>
+      this.getBackend().getArchivedPage(cursor, limit, filter)
+    )
   }
 
-  getPage(cursor: number, limit?: number): Promise<SessionMetaPage> {
-    return normalizeRepositoryError('list-meta-page', () => this.getBackend().getPage(cursor, limit))
+  getPage(cursor: number, limit?: number, filter?: SessionListFilter): Promise<SessionMetaPage> {
+    return normalizeRepositoryError('list-meta-page', () => this.getBackend().getPage(cursor, limit, filter))
   }
 
-  getTotal(): Promise<number> {
-    return normalizeRepositoryError('count-meta', () => this.getBackend().getTotal())
+  getTotal(filter?: SessionListFilter): Promise<number> {
+    return normalizeRepositoryError('count-meta', () => this.getBackend().getTotal(filter))
   }
 
-  getAllTotal(): Promise<number> {
-    return normalizeRepositoryError('count-all-meta', () => this.getBackend().getAllTotal())
+  getAllTotal(filter?: SessionListFilter): Promise<number> {
+    return normalizeRepositoryError('count-all-meta', () => this.getBackend().getAllTotal(filter))
   }
 
-  getArchivedTotal(): Promise<number> {
-    return normalizeRepositoryError('count-archived-meta', () => this.getBackend().getArchivedTotal())
+  getArchivedTotal(filter?: SessionListFilter): Promise<number> {
+    return normalizeRepositoryError('count-archived-meta', () => this.getBackend().getArchivedTotal(filter))
   }
 
   clear(): Promise<void> {

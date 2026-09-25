@@ -1,9 +1,10 @@
 import {
   CapacitorSQLite,
-  SQLiteConnection,
   type capSQLiteSet,
+  SQLiteConnection,
   type SQLiteDBConnection,
 } from '@capacitor-community/sqlite'
+import type { SessionListFilter } from '@chatbox/core/ports'
 import type { SessionMetaPage, SessionMetaRecord } from '@shared/types'
 import { type SessionMetaStorage, sortSessionRecords } from './SessionMetaStorage'
 
@@ -69,6 +70,7 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
         starred INTEGER NOT NULL DEFAULT 0,
         hidden INTEGER NOT NULL DEFAULT 0,
         archived_at INTEGER,
+        project_id TEXT,
         assistant_avatar_key TEXT,
         pic_url TEXT,
         background_image TEXT,
@@ -88,6 +90,10 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
     if (!hasArchivedAt) {
       await this.database.execute('ALTER TABLE session_meta ADD COLUMN archived_at INTEGER')
     }
+    const hasProjectId = columns.values?.some((column) => column.name === 'project_id')
+    if (!hasProjectId) {
+      await this.database.execute('ALTER TABLE session_meta ADD COLUMN project_id TEXT')
+    }
   }
 
   private recordToRow(record: SessionMetaRecord): Record<string, unknown> {
@@ -97,6 +103,7 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
       starred: record.starred ? 1 : 0,
       hidden: record.hidden ? 1 : 0,
       archived_at: record.archivedAt ?? null,
+      project_id: record.projectId || null,
       assistant_avatar_key: record.assistantAvatarKey || null,
       pic_url: record.picUrl || null,
       background_image: record.backgroundImage ? JSON.stringify(record.backgroundImage) : null,
@@ -113,6 +120,7 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
       starred: row.starred === 1 ? true : undefined,
       hidden: row.hidden === 1 ? true : undefined,
       archivedAt: row.archived_at === null || row.archived_at === undefined ? undefined : Number(row.archived_at),
+      projectId: (row.project_id as string) || undefined,
       assistantAvatarKey: (row.assistant_avatar_key as string) || undefined,
       picUrl: (row.pic_url as string) || undefined,
       backgroundImage: parseBackgroundImage(row.background_image as string),
@@ -127,14 +135,15 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
     const row = this.recordToRow(record)
     await this.database.run(
       `INSERT INTO session_meta
-       (id, name, starred, hidden, archived_at, assistant_avatar_key, pic_url, background_image, type, sort_order, created_at)
-       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (id, name, starred, hidden, archived_at, project_id, assistant_avatar_key, pic_url, background_image, type, sort_order, created_at)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         row.id,
         row.name,
         row.starred,
         row.hidden,
         row.archived_at,
+        row.project_id,
         row.assistant_avatar_key,
         row.pic_url,
         row.background_image,
@@ -150,8 +159,8 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
     if (records.length === 0) return
 
     const statement = `INSERT OR REPLACE INTO session_meta
-      (id, name, starred, hidden, archived_at, assistant_avatar_key, pic_url, background_image, type, sort_order, created_at)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+      (id, name, starred, hidden, archived_at, project_id, assistant_avatar_key, pic_url, background_image, type, sort_order, created_at)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
     const set: capSQLiteSet[] = records.map((record) => {
       const row = this.recordToRow(record)
       return {
@@ -162,6 +171,7 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
           row.starred,
           row.hidden,
           row.archived_at,
+          row.project_id,
           row.assistant_avatar_key,
           row.pic_url,
           row.background_image,
@@ -185,7 +195,7 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
 
     await this.database.run(
       `UPDATE session_meta SET
-       name = ?, starred = ?, hidden = ?, archived_at = ?, assistant_avatar_key = ?, pic_url = ?,
+       name = ?, starred = ?, hidden = ?, archived_at = ?, project_id = ?, assistant_avatar_key = ?, pic_url = ?,
        background_image = ?, type = ?, sort_order = ?, created_at = ?
        WHERE id = ?`,
       [
@@ -193,6 +203,7 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
         row.starred,
         row.hidden,
         row.archived_at,
+        row.project_id,
         row.assistant_avatar_key,
         row.pic_url,
         row.background_image,
@@ -249,48 +260,72 @@ export class SQLiteSessionMetaStorage implements SessionMetaStorage {
     return (result.values || []).map((row) => this.rowToRecord(row))
   }
 
-  async getArchivedPage(cursor: number = 0, limit: number = 50): Promise<SessionMetaPage> {
+  async getArchivedPage(cursor: number = 0, limit: number = 50, filter?: SessionListFilter): Promise<SessionMetaPage> {
     await this.initialize()
+    const projectClause = filter?.projectId === undefined ? '' : ' AND project_id = ?'
+    const projectArgs = filter?.projectId === undefined ? [] : [filter.projectId]
     const result = await this.database.query(
-      'SELECT * FROM session_meta WHERE archived_at IS NOT NULL ORDER BY archived_at DESC LIMIT ? OFFSET ?',
-      [limit, cursor]
+      `SELECT * FROM session_meta WHERE archived_at IS NOT NULL${projectClause} ORDER BY archived_at DESC LIMIT ? OFFSET ?`,
+      [...projectArgs, limit, cursor]
     )
     const items = (result.values || []).map((row) => this.rowToRecord(row))
-    const totalResult = await this.database.query(
-      'SELECT COUNT(*) as total FROM session_meta WHERE archived_at IS NOT NULL'
-    )
+    const totalResult = projectArgs.length
+      ? await this.database.query(
+          `SELECT COUNT(*) as total FROM session_meta WHERE archived_at IS NOT NULL${projectClause}`,
+          projectArgs
+        )
+      : await this.database.query('SELECT COUNT(*) as total FROM session_meta WHERE archived_at IS NOT NULL')
     const total = (totalResult.values?.[0]?.total as number) || 0
     const nextCursor = cursor + items.length < total ? cursor + items.length : null
     return { items, nextCursor, total }
   }
 
-  async getPage(cursor: number = 0, limit: number = 50): Promise<SessionMetaPage> {
+  async getPage(cursor: number = 0, limit: number = 50, filter?: SessionListFilter): Promise<SessionMetaPage> {
     await this.initialize()
+    const projectClause = filter?.projectId === undefined ? '' : ' AND project_id = ?'
+    const projectArgs = filter?.projectId === undefined ? [] : [filter.projectId]
     const result = await this.database.query(
-      'SELECT * FROM session_meta WHERE hidden = 0 ORDER BY starred DESC, sort_order DESC LIMIT ? OFFSET ?',
-      [limit, cursor]
+      `SELECT * FROM session_meta WHERE hidden = 0${projectClause} ORDER BY starred DESC, sort_order DESC LIMIT ? OFFSET ?`,
+      [...projectArgs, limit, cursor]
     )
     const items = (result.values || []).map((row) => this.rowToRecord(row))
-    const total = await this.getTotal()
+    const total = await this.getTotal(filter)
     const nextCursor = items.length === limit ? cursor + items.length : null
     return { items, nextCursor, total }
   }
 
-  async getTotal(): Promise<number> {
+  async getTotal(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    const result = await this.database.query('SELECT COUNT(*) as total FROM session_meta WHERE hidden = 0')
+    const projectClause = filter?.projectId === undefined ? '' : ' AND project_id = ?'
+    const result =
+      filter?.projectId === undefined
+        ? await this.database.query('SELECT COUNT(*) as total FROM session_meta WHERE hidden = 0')
+        : await this.database.query(`SELECT COUNT(*) as total FROM session_meta WHERE hidden = 0${projectClause}`, [
+            filter.projectId,
+          ])
     return (result.values?.[0]?.total as number) || 0
   }
 
-  async getAllTotal(): Promise<number> {
+  async getAllTotal(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    const result = await this.database.query('SELECT COUNT(*) as total FROM session_meta')
+    const projectClause = filter?.projectId === undefined ? '' : ' WHERE project_id = ?'
+    const result =
+      filter?.projectId === undefined
+        ? await this.database.query('SELECT COUNT(*) as total FROM session_meta')
+        : await this.database.query(`SELECT COUNT(*) as total FROM session_meta${projectClause}`, [filter.projectId])
     return (result.values?.[0]?.total as number) || 0
   }
 
-  async getArchivedTotal(): Promise<number> {
+  async getArchivedTotal(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    const result = await this.database.query('SELECT COUNT(*) as total FROM session_meta WHERE archived_at IS NOT NULL')
+    const projectClause = filter?.projectId === undefined ? '' : ' AND project_id = ?'
+    const result =
+      filter?.projectId === undefined
+        ? await this.database.query('SELECT COUNT(*) as total FROM session_meta WHERE archived_at IS NOT NULL')
+        : await this.database.query(
+            `SELECT COUNT(*) as total FROM session_meta WHERE archived_at IS NOT NULL${projectClause}`,
+            [filter.projectId]
+          )
     return (result.values?.[0]?.total as number) || 0
   }
 

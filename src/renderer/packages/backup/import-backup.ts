@@ -607,6 +607,7 @@ export async function importBackupArchive(file: File, options: BackupImportOptio
       for (const key of [
         BackupStorageKey.ChatSessionSettings,
         BackupStorageKey.PictureSessionSettings,
+        BackupStorageKey.WorkProjectRegistry,
         ...AGENT_PERSONA_BACKUP_KEYS,
         ...COPILOT_BACKUP_KEYS,
       ]) {

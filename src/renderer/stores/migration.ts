@@ -6,10 +6,12 @@ import {
 import {
   type ImageGeneration,
   type ModelProvider,
+  type WorkProject,
   ModelProviderEnum,
   type Session,
   type SessionMeta,
   type Settings,
+  canonicalizeWorkProjectPath,
 } from '@shared/types'
 import dayjs from 'dayjs'
 import { getDefaultStore } from 'jotai'
@@ -62,7 +64,7 @@ type MigrateStore = {
   setBlob?: (key: string, value: string) => Promise<void>
 }
 
-export const CurrentVersion = 15
+export const CurrentVersion = 16
 
 async function doMigrateStorage(oldStorage: Storage) {
   // 找到老版本的数据，说明是升级，执行数据迁移操作
@@ -207,6 +209,7 @@ export async function migrateOnData(dataStore: MigrateStore, canRelaunch = true)
     migrate_12_to_13,
     migrate_13_to_14,
     migrate_14_to_15,
+    migrate_15_to_16,
   ]
 
   for (; configVersion < CurrentVersion; configVersion++) {
@@ -607,5 +610,40 @@ async function migrate_14_to_15(dataStore: MigrateStore) {
   await sessionMetaStorage.createMany(records)
 
   log.info(`migrate_14_to_15, migrated ${records.length} session meta records to DB`)
+  return false
+}
+
+async function migrate_15_to_16(dataStore: MigrateStore) {
+  // Legacy flat-session stores keep project association derivable from the first
+  // working directory. Current repositories use the same rule lazily at runtime.
+  const sessions = await dataStore.getData<Session[]>(StorageKey.ChatSessions, [])
+  const projectsByKey = new Map<string, WorkProject>()
+  const now = Date.now()
+  const migratedSessions = sessions.map((session) => {
+    const rootPath = session.settings?.workingDirectories?.[0]
+    const canonical = rootPath ? canonicalizeWorkProjectPath(rootPath) : undefined
+    if (!canonical) return session
+    const existing = projectsByKey.get(canonical)
+    if (existing) {
+      return { ...session, projectId: existing.id }
+    }
+    const project: WorkProject = {
+      id: `project:${canonical}`,
+      name: canonical.split(/[\\/]/).filter(Boolean).pop() || canonical,
+      rootPath: canonical,
+      createdAt: now,
+      lastOpenedAt: now,
+    }
+    projectsByKey.set(canonical, project)
+    return { ...session, projectId: project.id }
+  })
+
+  if (projectsByKey.size > 0) {
+    await dataStore.setData(StorageKey.ChatSessions, migratedSessions)
+    await dataStore.setData('work-project-registry', {
+      version: 1,
+      projects: Array.from(projectsByKey.values()),
+    })
+  }
   return false
 }

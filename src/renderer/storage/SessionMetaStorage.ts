@@ -1,4 +1,4 @@
-import type { SessionMetaRepositoryPort } from '@chatbox/core/ports'
+import type { SessionListFilter, SessionMetaRepositoryPort } from '@chatbox/core/ports'
 import { sortSessionRecords } from '@chatbox/core/utils/session-sort'
 import type { SessionMetaPage, SessionMetaRecord } from '@shared/types'
 import { reportDbOpenSucceeded, toDbOpenError, watchDbOpenBlocked, watchDbVersionChange } from './db-schema-guard'
@@ -18,11 +18,11 @@ export interface SessionMetaStorage extends SessionMetaRepositoryPort {
   getAll(): Promise<SessionMetaRecord[]>
   getAllIncludingHidden(): Promise<SessionMetaRecord[]>
   getArchived(): Promise<SessionMetaRecord[]>
-  getArchivedPage(cursor: number, limit?: number): Promise<SessionMetaPage>
-  getPage(cursor: number, limit?: number): Promise<SessionMetaPage>
-  getTotal(): Promise<number>
-  getAllTotal(): Promise<number>
-  getArchivedTotal(): Promise<number>
+  getArchivedPage(cursor: number, limit?: number, filter?: SessionListFilter): Promise<SessionMetaPage>
+  getPage(cursor: number, limit?: number, filter?: SessionListFilter): Promise<SessionMetaPage>
+  getTotal(filter?: SessionListFilter): Promise<number>
+  getAllTotal(filter?: SessionListFilter): Promise<number>
+  getArchivedTotal(filter?: SessionListFilter): Promise<number>
   clear(): Promise<void>
 }
 
@@ -33,6 +33,10 @@ function sortArchivedSessionRecords(records: SessionMetaRecord[]): SessionMetaRe
   return records
     .filter((record) => record.archivedAt !== undefined)
     .sort((a, b) => (b.archivedAt ?? 0) - (a.archivedAt ?? 0))
+}
+
+function matchesFilter(record: SessionMetaRecord, filter?: SessionListFilter): boolean {
+  return filter?.projectId === undefined || record.projectId === filter.projectId
 }
 
 export class IndexedDBSessionMetaStorage implements SessionMetaStorage {
@@ -196,10 +200,16 @@ export class IndexedDBSessionMetaStorage implements SessionMetaStorage {
     return sortArchivedSessionRecords(records)
   }
 
-  async getArchivedPage(cursor: number = 0, limit: number = DEFAULT_PAGE_SIZE): Promise<SessionMetaPage> {
+  async getArchivedPage(
+    cursor: number = 0,
+    limit: number = DEFAULT_PAGE_SIZE,
+    filter?: SessionListFilter
+  ): Promise<SessionMetaPage> {
     await this.initialize()
     if (!this.hasIndex('archivedAt')) {
-      const all = await this.getArchived()
+      const all = sortArchivedSessionRecords(
+        (await this.getAllRecords()).filter((record) => matchesFilter(record, filter))
+      )
       const items = all.slice(cursor, cursor + limit)
       const nextCursor = cursor + items.length < all.length ? cursor + items.length : null
       return { items, nextCursor, total: all.length }
@@ -211,9 +221,9 @@ export class IndexedDBSessionMetaStorage implements SessionMetaStorage {
         limit,
         indexName: 'archivedAt',
         direction: 'prev',
-        filter: (record) => record.archivedAt !== undefined,
+        filter: (record) => record.archivedAt !== undefined && matchesFilter(record, filter),
       }),
-      this.getArchivedTotal(),
+      this.getArchivedTotal(filter),
     ])
     const nextCursor = cursor + items.length < total ? cursor + items.length : null
     return { items, nextCursor, total }
@@ -236,34 +246,45 @@ export class IndexedDBSessionMetaStorage implements SessionMetaStorage {
     })
   }
 
-  async getPage(cursor: number = 0, limit: number = DEFAULT_PAGE_SIZE): Promise<SessionMetaPage> {
+  async getPage(
+    cursor: number = 0,
+    limit: number = DEFAULT_PAGE_SIZE,
+    filter?: SessionListFilter
+  ): Promise<SessionMetaPage> {
     await this.initialize()
-    const [items, total] = await Promise.all([this.getVisibleRecordsPage(cursor, limit), this.getTotal()])
+    const [items, total] = await Promise.all([this.getVisibleRecordsPage(cursor, limit, filter), this.getTotal(filter)])
     const nextCursor = cursor + items.length < total ? cursor + items.length : null
     return { items, nextCursor, total }
   }
 
-  async getTotal(): Promise<number> {
+  async getTotal(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    return await this.countRecords((record) => !record.hidden)
+    return await this.countRecords((record) => !record.hidden && matchesFilter(record, filter))
   }
 
-  async getAllTotal(): Promise<number> {
+  async getAllTotal(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    return new Promise((resolve, reject) => {
-      const store = this.getStore('readonly')
-      const request = store.count()
-      request.onsuccess = () => resolve(request.result)
-      request.onerror = () => reject(request.error)
-    })
+    if (filter === undefined) {
+      return new Promise((resolve, reject) => {
+        const store = this.getStore('readonly')
+        const request = store.count()
+        request.onsuccess = () => resolve(request.result)
+        request.onerror = () => reject(request.error)
+      })
+    }
+    return await this.countRecords((record) => matchesFilter(record, filter))
   }
 
-  async getArchivedTotal(): Promise<number> {
+  async getArchivedTotal(filter?: SessionListFilter): Promise<number> {
     await this.initialize()
-    return await this.countRecords((record) => record.archivedAt !== undefined)
+    return await this.countRecords((record) => record.archivedAt !== undefined && matchesFilter(record, filter))
   }
 
-  private async getVisibleRecordsPage(cursor: number, limit: number): Promise<SessionMetaRecord[]> {
+  private async getVisibleRecordsPage(
+    cursor: number,
+    limit: number,
+    filter?: SessionListFilter
+  ): Promise<SessionMetaRecord[]> {
     const items: SessionMetaRecord[] = []
     let skipped = 0
 
@@ -274,7 +295,7 @@ export class IndexedDBSessionMetaStorage implements SessionMetaStorage {
       limit,
       indexName: 'sortOrder',
       direction: 'prev',
-      filter: (record) => !record.hidden && record.starred === true,
+      filter: (record) => !record.hidden && record.starred === true && matchesFilter(record, filter),
     })
 
     if (items.length < limit) {
@@ -285,7 +306,7 @@ export class IndexedDBSessionMetaStorage implements SessionMetaStorage {
         limit,
         indexName: 'sortOrder',
         direction: 'prev',
-        filter: (record) => !record.hidden && record.starred !== true,
+        filter: (record) => !record.hidden && record.starred !== true && matchesFilter(record, filter),
       })
     }
 

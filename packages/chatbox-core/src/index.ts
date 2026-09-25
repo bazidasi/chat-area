@@ -209,6 +209,7 @@ export {
   type PlatformCapabilitiesPort,
   type PlatformCapability,
   type SessionDataRepositoryPort,
+  type SessionListFilter,
   type SessionMetaRepositoryPort,
   SessionRepositoryError,
   type SessionRepositoryOperation,

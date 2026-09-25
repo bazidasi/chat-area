@@ -14,6 +14,7 @@ import * as migration from '@/stores/migration'
 import { getMigrationErrorContext } from '@/stores/migration-error'
 import { initOnboardingStore } from '@/stores/onboardingStore'
 import { initLoginLicenseStateReconciliation } from '@/stores/premiumActions'
+import { initProjectRegistryStore } from '@/stores/projectRegistryStore'
 import { initRecentDirectoriesStore } from '@/stores/recentDirectoriesStore'
 import { initSettingsStore } from '@/stores/settingsStore'
 import { initUpdateListeners } from '@/stores/updateStore'
@@ -67,6 +68,7 @@ export async function bootstrapRenderer(application: RendererApplication): Promi
     initLastUsedModelStore(),
     initOnboardingStore(),
     initRecentDirectoriesStore(),
+    initProjectRegistryStore(),
   ])
 
   void i18n.changeLanguage(settings.language)

@@ -20,6 +20,11 @@ describe('projectSessionMeta', () => {
     expect(Object.hasOwn(withExplicitUndefined, 'starred')).toBe(true)
     expect(withExplicitUndefined.starred).toBeUndefined()
   })
+
+  test('projects projectId into metadata records', () => {
+    const result = projectSessionMeta({ id: 'session-1', name: 'Session 1', projectId: 'project-1' })
+    expect(result.projectId).toBe('project-1')
+  })
 })
 
 function message(overrides: Partial<Message>): Message {
@@ -39,7 +44,6 @@ function session(overrides: Partial<Session>): Session {
     ...overrides,
   }
 }
-
 describe('session metadata update helpers', () => {
   test('returns a snapshot without message-owned fields', () => {
     const result = getSessionMetadataSnapshot(

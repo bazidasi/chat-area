@@ -241,7 +241,11 @@ export async function exportBackupArchive(options: BackupExportOptions): Promise
       }
     }
     if (options.exportItems.includes('conversations')) {
-      await collectKeyValueEntries([BackupStorageKey.ChatSessionSettings, BackupStorageKey.PictureSessionSettings])
+      await collectKeyValueEntries([
+        BackupStorageKey.ChatSessionSettings,
+        BackupStorageKey.PictureSessionSettings,
+        BackupStorageKey.WorkProjectRegistry,
+      ])
     }
     if (options.exportItems.includes('setting')) {
       await collectKeyValueEntries(AGENT_PERSONA_BACKUP_KEYS)

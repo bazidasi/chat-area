@@ -1,6 +1,10 @@
-import type { SessionRepositoryPort } from '../../../ports'
+import type { SessionListFilter, SessionRepositoryPort } from '../../../ports'
 import type { Session, SessionMetaPage, SessionMetaRecord } from '../../../types'
 import { sortSessionRecords } from '../../../utils/session-sort'
+
+function matchesFilter(record: SessionMetaRecord, filter?: SessionListFilter): boolean {
+  return filter?.projectId === undefined || record.projectId === filter.projectId
+}
 
 function page(items: SessionMetaRecord[], cursor: number, limit: number): SessionMetaPage {
   const pageItems = items.slice(cursor, cursor + limit)
@@ -27,12 +31,13 @@ export class MemorySessionRepository implements SessionRepositoryPort {
     getAll: () => Promise.resolve(sortSessionRecords([...this.records.values()])),
     getAllIncludingHidden: () => Promise.resolve([...this.records.values()].sort((a, b) => b.sortOrder - a.sortOrder)),
     getArchived: () => Promise.resolve(this.getArchivedRecords()),
-    getArchivedPage: (cursor: number, limit = 2) => Promise.resolve(page(this.getArchivedRecords(), cursor, limit)),
-    getPage: (cursor: number, limit = 2) =>
-      Promise.resolve(page(sortSessionRecords([...this.records.values()]), cursor, limit)),
-    getTotal: () => Promise.resolve(sortSessionRecords([...this.records.values()]).length),
-    getAllTotal: () => Promise.resolve(this.records.size),
-    getArchivedTotal: () => Promise.resolve(this.getArchivedRecords().length),
+    getArchivedPage: (cursor: number, limit = 2, filter?: SessionListFilter) =>
+      Promise.resolve(page(this.getArchivedRecords(filter), cursor, limit)),
+    getPage: (cursor: number, limit = 2, filter?: SessionListFilter) =>
+      Promise.resolve(page(sortSessionRecords(this.filteredRecords(filter)), cursor, limit)),
+    getTotal: (filter?: SessionListFilter) => Promise.resolve(sortSessionRecords(this.filteredRecords(filter)).length),
+    getAllTotal: (filter?: SessionListFilter) => Promise.resolve(this.filteredRecords(filter).length),
+    getArchivedTotal: (filter?: SessionListFilter) => Promise.resolve(this.getArchivedRecords(filter).length),
     clear: () => {
       this.records.clear()
       return Promise.resolve()
@@ -94,8 +99,12 @@ export class MemorySessionRepository implements SessionRepositoryPort {
     return Promise.resolve()
   }
 
-  private getArchivedRecords(): SessionMetaRecord[] {
-    return [...this.records.values()]
+  private filteredRecords(filter?: SessionListFilter): SessionMetaRecord[] {
+    return [...this.records.values()].filter((record) => matchesFilter(record, filter))
+  }
+
+  private getArchivedRecords(filter?: SessionListFilter): SessionMetaRecord[] {
+    return this.filteredRecords(filter)
       .filter((record) => record.archivedAt !== undefined)
       .sort((a, b) => (b.archivedAt ?? 0) - (a.archivedAt ?? 0))
   }

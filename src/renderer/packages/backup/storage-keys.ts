@@ -10,6 +10,7 @@ export const BackupStorageKey = {
   CopilotMemories: 'copilot-memories',
   CopilotMemoryOwners: 'copilot-memory-owners',
   CopilotMemoryTokens: 'copilot-memory-state-tokens',
+  WorkProjectRegistry: 'work-project-registry',
 } as const
 
 /** Storage keys bundled into the agent-persona.json backup entry. */

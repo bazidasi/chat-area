@@ -1,5 +1,9 @@
 import type { Session, SessionMetaPage, SessionMetaRecord } from '../types/session'
 
+export type SessionListFilter = {
+  projectId?: string
+}
+
 export type SessionRepositoryOperation =
   | 'initialize'
   | 'get-session'
@@ -53,11 +57,11 @@ export interface SessionMetaRepositoryPort {
   getAll(): Promise<SessionMetaRecord[]>
   getAllIncludingHidden(): Promise<SessionMetaRecord[]>
   getArchived(): Promise<SessionMetaRecord[]>
-  getArchivedPage(cursor: number, limit?: number): Promise<SessionMetaPage>
-  getPage(cursor: number, limit?: number): Promise<SessionMetaPage>
-  getTotal(): Promise<number>
-  getAllTotal(): Promise<number>
-  getArchivedTotal(): Promise<number>
+  getArchivedPage(cursor: number, limit?: number, filter?: SessionListFilter): Promise<SessionMetaPage>
+  getPage(cursor: number, limit?: number, filter?: SessionListFilter): Promise<SessionMetaPage>
+  getTotal(filter?: SessionListFilter): Promise<number>
+  getAllTotal(filter?: SessionListFilter): Promise<number>
+  getArchivedTotal(filter?: SessionListFilter): Promise<number>
   clear(): Promise<void>
 }
 

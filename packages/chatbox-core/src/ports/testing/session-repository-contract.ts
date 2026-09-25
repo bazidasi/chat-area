@@ -201,6 +201,58 @@ export function createSessionRepositoryContract(
         )
       },
     },
+    {
+      name: 'filters project-scoped pages and totals before pagination',
+      run: async () => {
+        const repository = await prepareRepository(createRepository)
+        const projectVisible = createRecord('project-visible', 300, { projectId: 'project-1' })
+        const otherVisible = createRecord('other-visible', 200, { projectId: 'project-2' })
+        const unassignedVisible = createRecord('unassigned-visible', 100)
+        const projectArchived = createRecord('project-archived', 50, {
+          projectId: 'project-1',
+          hidden: true,
+          archivedAt: 2_000,
+        })
+        const otherArchived = createRecord('other-archived', 25, {
+          projectId: 'project-2',
+          hidden: true,
+          archivedAt: 1_000,
+        })
+        await repository.meta.createMany([
+          projectVisible,
+          otherVisible,
+          unassignedVisible,
+          projectArchived,
+          otherArchived,
+        ])
+
+        assertDeepEqual(
+          await repository.meta.getPage(0, 1, { projectId: 'project-1' }),
+          { items: [projectVisible], nextCursor: null, total: 1 },
+          'Project filter must apply before visible pagination'
+        )
+        assertDeepEqual(
+          await repository.meta.getArchivedPage(0, 1, { projectId: 'project-1' }),
+          { items: [projectArchived], nextCursor: null, total: 1 },
+          'Project filter must apply before archived pagination'
+        )
+        assertEqual(
+          await repository.meta.getTotal({ projectId: 'project-1' }),
+          1,
+          'Visible project count must be filtered'
+        )
+        assertEqual(
+          await repository.meta.getAllTotal({ projectId: 'project-1' }),
+          2,
+          'All project count must include archived records'
+        )
+        assertEqual(
+          await repository.meta.getArchivedTotal({ projectId: 'project-1' }),
+          1,
+          'Archived project count must be filtered'
+        )
+      },
+    },
   ]
 }
 

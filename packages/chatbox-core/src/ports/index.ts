@@ -7,6 +7,7 @@ export type { LoggerPort, LogLevel } from './logger'
 export type { ModelFactoryPort } from './model-factory'
 export {
   type SessionDataRepositoryPort,
+  type SessionListFilter,
   type SessionMetaRepositoryPort,
   SessionRepositoryError,
   type SessionRepositoryOperation,

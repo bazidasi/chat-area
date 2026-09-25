@@ -1,5 +1,5 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest'
 import type { SessionMetaRecord } from '@shared/types'
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 import { SQLiteSessionMetaStorage } from '../SQLiteSessionMetaStorage'
 
 const mockDatabase = vi.hoisted(() => ({
@@ -56,11 +56,11 @@ describe('SQLiteSessionMetaStorage', () => {
       [
         {
           statement: expect.stringContaining('INSERT OR REPLACE INTO session_meta'),
-          values: ['a', 'Test Session', 0, 0, null, null, null, null, 'chat', 100, 100],
+          values: ['a', 'Test Session', 0, 0, null, null, null, null, null, 'chat', 100, 100],
         },
         {
           statement: expect.stringContaining('INSERT OR REPLACE INTO session_meta'),
-          values: ['b', 'Test Session', 1, 0, null, null, null, null, 'chat', 100, 100],
+          values: ['b', 'Test Session', 1, 0, null, null, null, null, null, 'chat', 100, 100],
         },
       ],
       true
@@ -111,6 +111,7 @@ describe('SQLiteSessionMetaStorage', () => {
     await storage.initialize()
 
     expect(mockDatabase.execute).toHaveBeenCalledWith('ALTER TABLE session_meta ADD COLUMN archived_at INTEGER')
+    expect(mockDatabase.execute).toHaveBeenCalledWith('ALTER TABLE session_meta ADD COLUMN project_id TEXT')
   })
 
   it('getArchivedPage queries archived rows with limit and offset', async () => {
