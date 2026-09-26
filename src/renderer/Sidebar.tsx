@@ -263,7 +263,7 @@ export default function Sidebar() {
         <SidebarHeader className="sidebar-header">
           {needRoomForMacWindowControls && <div className="h-6 shrink-0" />}
           <div data-testid={TestId.sidebar.root} className="sidebar-shell-content">
-            <div className="sidebar-brand-row" dir="ltr">
+            <div className="sidebar-brand-row">
               <div
                 className="flex aspect-square size-9 shrink-0 items-center justify-center rounded-xl"
                 style={{
@@ -294,7 +294,7 @@ export default function Sidebar() {
                     aria-label={t('Back') || undefined}
                     onClick={() => router.history.back()}
                   >
-                    <ArrowLeft size={16} />
+                    <ArrowLeft size={16} className="rtl:scale-x-[-1]" />
                   </ActionIcon>
                 </Tooltip>
                 <Tooltip label={t('Forward')} openDelay={700} withArrow>
@@ -304,7 +304,7 @@ export default function Sidebar() {
                     aria-label={t('Forward') || undefined}
                     onClick={() => router.history.forward()}
                   >
-                    <ArrowRight size={16} />
+                    <ArrowRight size={16} className="rtl:scale-x-[-1]" />
                   </ActionIcon>
                 </Tooltip>
                 <Tooltip label={t('Close sidebar')} openDelay={700} withArrow>
@@ -320,7 +320,7 @@ export default function Sidebar() {
               </div>
             </div>
 
-            <div className="sidebar-action-list" dir="ltr">
+            <div className="sidebar-action-list">
               <SidebarTopAction
                 icon={<Plus size={16} />}
                 label={isWorkMode ? t('New task') : t('New chat')}
@@ -399,7 +399,9 @@ export default function Sidebar() {
           onMouseDown={handleResizeStart}
           className={cn(
             'sidebar-resizer fixed top-0 bottom-0 z-50 w-1 cursor-col-resize bg-chatbox-border-primary opacity-0 transition-opacity duration-200 hover:opacity-70',
-            isRtlLayout ? 'end-0' : 'start-0'
+            // Physical, like the panel it tracks: `end-0` would resolve to the
+            // physical left under RTL and point at the wrong edge.
+            isRtlLayout ? 'right-0' : 'left-0'
           )}
           style={isRtlLayout ? { right: sidebarWidth - 8 } : { left: sidebarWidth - 8 }}
         />

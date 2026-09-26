@@ -199,3 +199,7 @@ tmp_*.*
 
 # Local pnpm store accidentally created by pnpm install in worktrees
 .pnpm-store/
+
+# Editor/agent tooling scratch files
+.zcodeignore
+.border-inventory.py
