@@ -4,9 +4,9 @@
 // OpenCode elevation (outset-lg + dark hairline edge) and the brand focus
 // glow both live on .chatbox-input-surface in globals.css.
 export const INPUT_SURFACE_CLASS_NAME =
-  'chatbox-input-surface relative flex flex-col justify-between gap-xs rounded-[29px] bg-chatbox-background-secondary px-3.5 pt-3 pb-2'
+  'chatbox-input-surface relative flex flex-col justify-between gap-xs rounded-[26px] bg-chatbox-background-secondary px-3 pt-2 pb-1.5'
 
 /** Desktop only: keeps the swap between input and pause from jumping. */
-export const INPUT_SURFACE_MIN_HEIGHT_CLASS_NAME = 'min-h-[104px]'
+export const INPUT_SURFACE_MIN_HEIGHT_CLASS_NAME = 'min-h-[72px]'
 
 export const INPUT_SURFACE_STYLE = {}

@@ -172,6 +172,16 @@ html[data-theme="light"] {
   font-display: swap;
 }
 
+/* DM Serif Display — display face for the wordmark and the home headline.
+   Latin only; RTL text keeps falling through to the language face. */
+@font-face {
+  font-family: "DM Serif Display";
+  src: url("./fonts/DMSerifDisplay-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
 /* Vazirmatn — the Persian face. Selected by language (html[data-lang='fa']),
    not by unicode-range, so its own Latin glyphs stay in play for the mixed
    Persian/Latin strings the UI is full of (model names, paths, "PowerShell").

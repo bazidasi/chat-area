@@ -39,7 +39,6 @@ import { navigateToSettings } from './modals/settings-navigation'
 import { trackingEvent } from './packages/event'
 import platform from './platform'
 import { router } from './router'
-import icon from './static/icon.png'
 import { projectRegistryStore, useWorkProjects } from './stores/projectRegistryStore'
 import { useLanguage } from './stores/settingsStore'
 import { useUIStore } from './stores/uiStore'
@@ -264,26 +263,9 @@ export default function Sidebar() {
           {needRoomForMacWindowControls && <div className="h-6 shrink-0" />}
           <div data-testid={TestId.sidebar.root} className="sidebar-shell-content">
             <div className="sidebar-brand-row">
-              <div
-                className="flex aspect-square size-9 shrink-0 items-center justify-center rounded-xl"
-                style={{
-                  background: 'var(--neo-surface-raised)',
-                  boxShadow: 'var(--neo-shadow-outset-sm)',
-                }}
-              >
-                <img
-                  src={icon}
-                  alt="Fibonacci Chat Area"
-                  className="size-4"
-                  style={{ filter: 'drop-shadow(0 1px 2px hsl(0 0% 0% / 0.35))' }}
-                />
-              </div>
               <div className="min-w-0 flex-1">
-                <Text className="truncate text-sm font-semibold" c="chatbox-primary">
-                  Fibonacci
-                </Text>
-                <Text className="truncate text-[11px]" c="chatbox-tertiary">
-                  {isWorkMode ? t('Work mode') : t('Chat mode')}
+                <Text className="sidebar-wordmark truncate" c="chatbox-primary">
+                  Chat Area
                 </Text>
               </div>
               <div className="flex items-center gap-0.5">
@@ -320,7 +302,8 @@ export default function Sidebar() {
               </div>
             </div>
 
-            <div className="sidebar-action-list">
+            <div className="sidebar-card">
+              <div className="sidebar-action-list">
               <SidebarTopAction
                 icon={<Plus size={16} />}
                 label={isWorkMode ? t('New task') : t('New chat')}
@@ -347,6 +330,7 @@ export default function Sidebar() {
                 label={t('Skill settings')}
                 onClick={handleOpenSkillsSettings}
               />
+              </div>
             </div>
           </div>
         </SidebarHeader>
@@ -360,18 +344,19 @@ export default function Sidebar() {
               onSelectProject={handleSelectProject}
             />
           ) : (
-            <>
+            <div className="sidebar-card sidebar-history-card">
               <div className="sidebar-list-heading">
                 <Text className="sidebar-section-label">{t('Recent chats')}</Text>
                 <Text className="sidebar-list-hint">{t('Newest first')}</Text>
               </div>
               <SessionList sessionListViewportRef={sessionListViewportRef} scope="all" />
-            </>
+            </div>
           )}
         </SidebarContent>
 
         <SidebarFooter>
-          <div className="flex items-center gap-2 px-2 pb-3">
+          <div className="sidebar-card sidebar-footer-card">
+            <div className="flex items-center gap-2 px-1.5 py-0.5">
             <UserAvatar size={32} />
             <Text flex={1} size="sm" lineClamp={1} c="chatbox-secondary">
               {t('You')}
@@ -388,6 +373,7 @@ export default function Sidebar() {
                   carries the shared optical weight instead of its own default */}
               <Settings size={16} strokeWidth={opticalIconStroke(16)} />
             </ActionIcon>
+            </div>
           </div>
         </SidebarFooter>
 

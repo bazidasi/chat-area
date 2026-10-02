@@ -447,9 +447,12 @@ function Index() {
 
   return (
     <div className="relative isolate h-full">
-      {/* Spans the whole page — including behind the transparent title-bar header —
-          so paddings/header no longer clip the animation. */}
-      <HalftoneBackground className="absolute inset-0 z-0 pointer-events-none" />
+      {/* Fixed to the window rather than the page: the field runs past the page box
+          and under the transparent sidebar panel, which paints above this subtree.
+          The wrapper is the sizing host — the canvas measures its parent. */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <HalftoneBackground />
+      </div>
       <div className="relative z-[1] flex h-full flex-col">
         <Page title="">
           <div className="relative flex flex-col h-full min-h-0 overflow-hidden pb-md">
@@ -464,7 +467,7 @@ function Index() {
                 <Stack align="center" gap="lg" className="w-full pt-14 pb-6" px="md">
                   <Slide direction="up" offset={12}>
                     <Stack align="center" gap={6} pt="md">
-                      <Text fw={800} fz={isSmallScreen ? 24 : 34} ta="center" lh={1.15}>
+                      <Text className="chatbox-home-headline" fw={400} fz={isSmallScreen ? 24 : 34} ta="center" lh={1.15}>
                         <BlurText text={t('What can I help you with today?')} />
                       </Text>
                       <span className="h-[3px] w-10 rounded-full bg-chatbox-tint-brand" />
@@ -523,7 +526,9 @@ function Index() {
                 <WorkChatModeToggle sessionId="new" model={selectedModel} sessionSettings={session.settings} />
               )}
 
-              <Box className="w-full max-w-4xl mx-auto">
+              {/* Composer column: roughly 45% of a wide window, matching the
+                  reference home layout instead of the earlier 60%. */}
+              <Box className="w-full max-w-2xl mx-auto">
                 <InputBox
                   sessionType="chat"
                   sessionId="new"
@@ -538,28 +543,25 @@ function Index() {
               </Box>
 
               {!session.copilotId && !showNewUserScenarios && (
-                <Fade delay={260} className={widthFull ? 'w-full' : 'w-full max-w-4xl mx-auto'}>
+                <Fade delay={260} className={widthFull ? 'w-full' : 'w-full max-w-2xl mx-auto'}>
                   <Stack gap="xs" px="sm" pb={isSmallScreen ? 0 : 'xs'}>
                     {!isSmallScreen && (
-                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                      <div className="flex flex-wrap items-start justify-center gap-2">
                         <Slides delay={320} holdDelay={90}>
                           <HomeFeatureCard
                             icon={IconPhoto}
-                            tag={t('Create Image')}
                             title={t('Image Generator')}
                             description={t('Create high-quality images instantly from text.')}
                             onClick={() => router.navigate({ to: '/image-creator' })}
                           />
                           <HomeFeatureCard
                             icon={IconPresentation}
-                            tag={t('Make Slides')}
                             title={t('AI Presentation')}
                             description={t('Turn ideas into engaging, professional presentations.')}
                             onClick={() => setQuote(t('Create a professional presentation about '))}
                           />
                           <HomeFeatureCard
                             icon={IconCode}
-                            tag={t('Generate Code')}
                             title={t('Dev Assistant')}
                             description={t('Generate clean, production-ready code in seconds.')}
                             onClick={() => setQuote(t('Write production-ready code for '))}
@@ -581,51 +583,40 @@ function Index() {
 const MAX_COPILOTS_TO_SHOW = 10
 
 /**
- * Home feature card (desktop): icon in a brand-tinted square, brand tag
- * pill, title and one-line description — mirrors the reference home layout.
- * Entrance stagger is handled by the parent <Slides> (animate-ui).
+ * Home suggestion chip (desktop): a compact pill at rest that expands into a
+ * card with its description on hover/focus. Entrance stagger is handled by the
+ * parent <Slides> (animate-ui).
  */
 const HomeFeatureCard = ({
   icon,
-  tag,
   title,
   description,
   onClick,
 }: {
   icon: Icon
-  tag: string
   title: string
   description: string
   onClick?: () => void
 }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    className={clsx(
-      'chatbox-suggestion-card group/card relative flex w-full cursor-pointer flex-col items-start gap-2 text-start',
-      'rounded-2xl bg-chatbox-background-secondary px-4 py-3'
-    )}
-  >
-    <span
-      className="absolute end-3 top-3 rounded-full px-2 py-0.5 text-[11px] font-medium"
-      style={{
-        background: 'var(--chatbox-background-brand-secondary)',
-        color: 'var(--chatbox-tint-brand)',
-      }}
-    >
-      {tag}
+  <button type="button" onClick={onClick} className="chatbox-suggestion-chip group/chip">
+    <span className="chatbox-suggestion-chip-head">
+      <span
+        className="chatbox-suggestion-chip-icon"
+        style={{ background: 'var(--chatbox-background-brand-secondary)' }}
+      >
+        <ScalableIcon icon={icon} size={15} className="text-chatbox-tint-brand" />
+      </span>
+      <span className="text-[13px] font-medium text-chatbox-tint-primary" dir="auto">
+        {title}
+      </span>
     </span>
-    <span
-      className="flex h-9 w-9 items-center justify-center rounded-xl"
-      style={{ background: 'var(--chatbox-background-brand-secondary)' }}
-    >
-      <ScalableIcon icon={icon} size={18} className="text-chatbox-tint-brand" />
-    </span>
-    <span className="text-sm font-semibold text-chatbox-tint-primary" dir="auto">
-      {title}
-    </span>
-    <span className="text-xs leading-relaxed text-chatbox-tint-tertiary" dir="auto">
-      {description}
+    {/* Collapsed to a zero-height row and revealed on hover/focus, so the chip
+        grows into a card without a measured height and without reflowing its
+        neighbours sideways. */}
+    <span className="chatbox-suggestion-chip-desc">
+      <span className="text-xs leading-relaxed text-chatbox-tint-tertiary" dir="auto">
+        {description}
+      </span>
     </span>
   </button>
 )

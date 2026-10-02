@@ -1555,7 +1555,7 @@ const InputBox = forwardRef<InputBoxRef, InputBoxProps>(
             strength={pauseTakeover ? 0 : 0.7}
             active={!reducedMotion && !pauseTakeover}
             theme={colorScheme}
-            borderRadius={29}
+            borderRadius={26}
             className="chatbox-input-beam w-full min-w-0"
           >
             <Box

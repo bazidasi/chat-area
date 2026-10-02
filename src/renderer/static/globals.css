@@ -132,6 +132,9 @@
   --chatbox-font-arabic: 'Cairo', 'Segoe UI', sans-serif;
   --chatbox-font-persian: 'Vazirmatn', 'Cairo', 'Segoe UI', sans-serif;
   --chatbox-font-sans: var(--chatbox-font-latin);
+  /* Display face for wordmark and hero headlines only. Latin-only, so the
+     Persian/Arabic face must stay in front of it for RTL text. */
+  --chatbox-font-serif: 'DM Serif Display', var(--chatbox-font-sans);
 
   /* Accent is hue-free graphite. The one red in the product is the home page
      halftone field below; everything else reads state through weight, elevation
@@ -304,7 +307,9 @@
   --ring: var(--chatbox-tint-brand);
 
   /* shadcn sidebar — OpenCode base + raised surfaces */
-  --sidebar: var(--chatbox-background-sidebar);
+  /* Panel fill removed: the cards carry the depth, so the panel itself stays
+     transparent and the app background runs through it. */
+  --sidebar: transparent;
   --sidebar-foreground: var(--chatbox-tint-primary);
   --sidebar-primary: var(--neo-surface-raised);
   --sidebar-primary-foreground: var(--chatbox-tint-primary);
@@ -592,7 +597,7 @@ ul[data-sidebar='menu-sub'] > li {
 
 .chatbox-input-surface {
   border: none !important;
-  border-radius: 29px;
+  border-radius: 26px;
   box-shadow: var(--neo-shadow-boxed);
   transition: box-shadow 160ms ease, background-color 160ms ease;
 }
@@ -633,6 +638,101 @@ ul[data-sidebar='menu-sub'] > li {
 .chatbox-suggestion-card:focus-visible {
   outline: none;
   box-shadow: var(--neo-shadow-boxed-focus);
+}
+
+/* Suggestion chip: a compact pill at rest that grows into a card on hover or
+   keyboard focus. The description sits in a 0fr -> 1fr grid row, which is the
+   only way to animate to auto height in CSS, so the neighbouring chips keep
+   their position instead of being pushed sideways. */
+.chatbox-suggestion-chip {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: flex-start;
+  /* Fixed compact width, not content width: three chips then always fit the
+     composer column on one row, and the hover card has room for its copy
+     without any sibling moving. */
+  width: 11rem;
+  padding: 8px 12px;
+  border: none;
+  border-radius: 14px;
+  background: var(--chatbox-background-secondary);
+  box-shadow: var(--neo-shadow-boxed);
+  text-align: start;
+  cursor: pointer;
+  transition:
+    background-color 200ms ease,
+    box-shadow 200ms ease,
+    transform 200ms ease;
+}
+
+.chatbox-suggestion-chip:hover:not(:disabled),
+.chatbox-suggestion-chip:focus-visible {
+  background: var(--chatbox-background-tertiary);
+  box-shadow: var(--neo-shadow-boxed-hover);
+  transform: translateY(-2px);
+}
+
+.chatbox-suggestion-chip:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: var(--neo-shadow-inset-sm);
+}
+
+.chatbox-suggestion-chip:focus-visible {
+  outline: none;
+  box-shadow: var(--neo-shadow-boxed-focus);
+}
+
+.chatbox-suggestion-chip-head {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chatbox-suggestion-chip-icon {
+  display: inline-flex;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+}
+
+.chatbox-suggestion-chip-desc {
+  display: grid;
+  grid-template-rows: 0fr;
+  opacity: 0;
+  transition:
+    grid-template-rows 260ms cubic-bezier(0.16, 1, 0.3, 1),
+    opacity 180ms ease;
+}
+
+.chatbox-suggestion-chip-desc > span {
+  overflow: hidden;
+}
+
+.chatbox-suggestion-chip:hover .chatbox-suggestion-chip-desc,
+.chatbox-suggestion-chip:focus-visible .chatbox-suggestion-chip-desc {
+  grid-template-rows: 1fr;
+  opacity: 1;
+}
+
+.chatbox-suggestion-chip:hover .chatbox-suggestion-chip-desc > span,
+.chatbox-suggestion-chip:focus-visible .chatbox-suggestion-chip-desc > span {
+  padding-block-start: 6px;
+  padding-inline-end: 2px;
+}
+
+.chatbox-suggestion-chip-desc > span {
+  transition: padding 260ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .chatbox-suggestion-chip,
+  .chatbox-suggestion-chip-desc,
+  .chatbox-suggestion-chip-desc > span {
+    transition: none;
+  }
 }
 
 /* morph animation — triggered when the user switches Chat/Work mode */
@@ -1107,10 +1207,53 @@ div[data-vaul-drawer] {
   gap: 9px;
 }
 
+.sidebar-wordmark {
+  font-family: var(--chatbox-font-serif);
+  font-size: 19px;
+  letter-spacing: -0.01em;
+  line-height: 1.2;
+}
+
+.chatbox-home-headline {
+  font-family: var(--chatbox-font-serif);
+  letter-spacing: -0.015em;
+}
+
 .sidebar-action-list {
   display: flex;
   flex-direction: column;
   gap: 6px;
+}
+
+/* Sidebar cards: same depth-only elevation language as the composer and the
+   home suggestion cards. No border, boxed shadow at rest. One step darker than
+   the composer surface (`tertiary`) so the sidebar panel reads as recessed
+   next to it instead of competing with the same fill. */
+.sidebar-card {
+  border: none;
+  border-radius: var(--chatbox-radius-lg);
+  background: var(--chatbox-background-tertiary);
+  box-shadow: var(--neo-shadow-boxed);
+}
+
+.sidebar-header .sidebar-card {
+  padding: 7px;
+}
+
+.sidebar-history-card {
+  display: flex;
+  min-height: 0;
+  flex: 1;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sidebar-footer-card {
+  padding: 4px 4px 2px;
+}
+
+.sidebar-history-card .sidebar-list-heading {
+  padding: 8px 10px 4px;
 }
 
 .sidebar-section-label {
@@ -1136,32 +1279,36 @@ div[data-vaul-drawer] {
   border-radius: 8px;
   color: var(--chatbox-tint-primary);
   font-size: 12px;
-  transition: color 180ms ease, background-color 180ms ease, box-shadow 180ms ease, transform 140ms ease;
+  /* No shadow on the buttons: the card around them already carries the depth,
+     and a second raised layer inside it read as a box inside a box. */
+  box-shadow: none;
+  transition: color 180ms ease, background-color 180ms ease, transform 140ms ease;
 }
 
 .sidebar-top-action:hover {
   color: var(--chatbox-tint-primary);
   background: color-mix(in srgb, var(--chatbox-brand) 8%, var(--neo-surface-raised));
-  box-shadow: var(--neo-shadow-outset-xs);
 }
 
 .sidebar-top-action:active {
   transform: translateY(1px) scale(0.99);
-  box-shadow: var(--neo-shadow-inset-sm);
+  background: color-mix(in srgb, var(--chatbox-brand) 14%, var(--neo-surface-raised));
 }
 
 .sidebar-top-action-primary {
   min-height: 34px;
   color: var(--chatbox-tint-brand);
   background: color-mix(in srgb, var(--chatbox-brand) 13%, var(--neo-surface-raised));
-  box-shadow: var(--neo-shadow-outset-sm);
   font-weight: 700;
 }
 
 .sidebar-top-action-primary:hover {
   color: var(--chatbox-tint-brand);
-  background: color-mix(in srgb, var(--chatbox-brand) 18%, var(--neo-surface-raised));
-  box-shadow: var(--neo-shadow-outset-lg);
+  background: color-mix(in srgb, var(--chatbox-brand) 20%, var(--neo-surface-raised));
+}
+
+.sidebar-top-action-primary:active {
+  background: color-mix(in srgb, var(--chatbox-brand) 24%, var(--neo-surface-raised));
 }
 
 .sidebar-shortcut {
@@ -1182,7 +1329,8 @@ div[data-vaul-drawer] {
 }
 
 .sidebar-content {
-  gap: 0;
+  gap: 8px;
+  padding: 0 10px;
   overflow: hidden;
 }
 
