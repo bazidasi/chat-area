@@ -62,6 +62,9 @@ nsis:
 
 linux:
   executableName: fibonacci-chat-area
+  # Window association: Electron reads desktopName from the packaged app's
+  # package.json and uses it as app_id / WM_CLASS, matching StartupWMClass.
+  syncDesktopName: true
   target:
     - target: AppImage
       arch:

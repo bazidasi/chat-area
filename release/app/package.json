@@ -2,6 +2,7 @@
   "name": "app.fibonacci.chat-area",
   "productName": "Fibonacci Chat Area",
   "version": "1.0.0",
+  "desktopName": "fibonacci-chat-area.desktop",
   "description": "Fibonacci Chat Area - AI chat client powered by Fibonacci AI",
   "author": {
     "name": "Fibonacci Chat Area",
