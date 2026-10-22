@@ -10,7 +10,7 @@ describe('defaults', () => {
     const result: Settings = settings()
 
     expect(result.theme).toBe(Theme.System)
-    expect(result.language).toBe('en')
+    expect(result.language).toBe('fa')
     expect(result.fontSize).toBe(14)
     expect(result.spellCheck).toBe(true)
     expect(result.interfaceColors).toEqual(DEFAULT_INTERFACE_COLORS)
@@ -116,8 +116,8 @@ describe('defaults', () => {
   it('chatSessionSettings() returns provider and modelId', () => {
     const result: SessionSettings = chatSessionSettings()
 
-    expect(result.provider).toBe(ModelProviderEnum.ChatboxAI)
-    expect(result.modelId).toBe('chatboxai-4')
+    expect(result.provider).toBe(ModelProviderEnum.Fibonacci)
+    expect(result.modelId).toBe('fibonacci-1-pro-max')
   })
 
   it('pictureSessionSettings() returns provider, modelId, dalleStyle, imageGenerateNum', () => {

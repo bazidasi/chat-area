@@ -1169,6 +1169,18 @@ div[data-vaul-drawer] {
   animation: chatbox-action-bar-pulse 600ms ease-out 2;
 }
 
+/* Text shimmer (vibefarsi.ir/animations/text-shimmer): a highlight sweeps
+   across the text — the standard "thinking" indicator used by
+   components/animations/text-shimmer.tsx. */
+@keyframes shimmer {
+  from {
+    background-position: 200% center;
+  }
+  to {
+    background-position: -200% center;
+  }
+}
+
 /* App-level reduced motion — covers ALL animations/transitions
  * regardless of which component owns them. Applied via
  * data-reduce-motion attribute set by bootstrapReduceMotion()

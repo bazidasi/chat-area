@@ -365,7 +365,6 @@
     "ofetch": "^1.0.1",
     "officeparser": "5.0.0",
     "sanitize-filename": "^1.6.3",
-    "thinking-orbs": "^0.3.1",
     "ua-parser-js": "^2.0.10",
     "uuid": "^9.0.0"
   },
@@ -412,7 +411,8 @@
     "fast-xml-parser": ">=5.5.7",
     "shell-quote": "1.10.0",
     "ws": "8.19.0",
-    "libsql": "0.5.22"
+    "libsql": "0.5.22",
+    "assistant-cloud": "0.2.7"
   },
   "packageManager": "bun@1.4.0"
 }

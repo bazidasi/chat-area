@@ -226,10 +226,15 @@ function RouteComponent() {
 
   return currentSession ? (
     <div className="relative isolate flex h-full flex-col">
-      {/* Red halftone field — same treatment as the home page. The canvas paints
-          its own opaque copy of the surface, so it needs no transparency behind
-          it; the content just has to be lifted above it. */}
-      <HalftoneBackground className="absolute inset-0 z-0" />
+      {/* Red halftone field — fixed to the window, exactly like the home page:
+          the field runs past the page box and under the transparent sidebar
+          panel, so starting a chat keeps the same full-window animation
+          instead of shrinking it into the main column and leaving the
+          sidebar strip on a flat fill. The wrapper is the sizing host — the
+          canvas measures its parent. */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <HalftoneBackground />
+      </div>
       <div className="relative z-[1] flex h-full min-h-0 flex-col">
         <Header session={currentSession} />
 

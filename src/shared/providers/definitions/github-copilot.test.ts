@@ -7,6 +7,8 @@ import type { SessionSettings, Settings } from '../../types'
 import type { ModelDependencies } from '../../types/adapters'
 import type { SentryScope } from '../../utils/sentry_adapter'
 import { withResolvedModelApiStyle } from '../api-style'
+// The app build registers only Fibonacci; re-register the provider this suite exercises.
+import './github-copilot'
 import {
   applyGitHubCopilotModelMetadata,
   getGitHubCopilotApiStyle,

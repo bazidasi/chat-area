@@ -2,6 +2,11 @@ import { getSystemProviders } from '@shared/providers'
 import { ModelProviderEnum } from '@shared/types'
 import { describe, expect, it } from 'vitest'
 import { FEATURED_PROVIDER_IDS } from './providerIcons'
+// The app build registers only Fibonacci; re-register the providers this suite exercises.
+import '@shared/providers/definitions/tencent-hunyuan'
+import '@shared/providers/definitions/xiaomi-mimo'
+import '@shared/providers/definitions/longcat'
+import '@shared/providers/definitions/zhipu-glm-coding-plan'
 
 describe('Provider Spotlight and List integration', () => {
   it('places new providers in the non-featured (More Providers) group by default', () => {

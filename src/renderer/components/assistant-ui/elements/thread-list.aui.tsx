@@ -1,6 +1,7 @@
 'use client'
 
-import { ThinkingOrb } from 'thinking-orbs'
+import { useTranslation } from 'react-i18next'
+import { TextShimmer } from '@/components/animations/text-shimmer'
 import {
   AuiIf,
   ThreadListItemMorePrimitive,
@@ -238,6 +239,7 @@ const ThreadListSkeleton: FC = () => {
 }
 
 export const ThreadListItem: FC = () => {
+  const { t } = useTranslation()
   const isRunning = useAuiState((s) => s.threadListItem.isRunning)
   const [isRenaming, setIsRenaming] = useState(false)
   const triggerRef = useRef<HTMLButtonElement>(null)
@@ -268,12 +270,12 @@ export const ThreadListItem: FC = () => {
           className="focus-visible:ring-ring/50 flex h-full min-w-0 flex-1 items-center rounded-md px-2.5 text-start text-sm outline-none group-hover:pe-9 group-has-focus-visible:pe-9 group-has-data-[state=open]:pe-9 group-data-active:pe-9 focus-visible:ring-1"
         >
           {isRunning && (
-            <ThinkingOrb
-              state="searching"
-              size={20}
+            <TextShimmer
+              className="text-xs me-1.5 shrink-0"
               data-slot="aui_thread-list-item-running"
-              className="text-muted-foreground me-1.5 shrink-0"
-            />
+            >
+              {t('Thinking…')}
+            </TextShimmer>
           )}
           <span data-slot="aui_thread-list-item-title" className="min-w-0 flex-1 truncate">
             <ThreadListItemPrimitive.Title fallback="New Chat" />

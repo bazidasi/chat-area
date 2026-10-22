@@ -514,13 +514,22 @@ function ImageCreatorPage() {
   )
 
   return (
-    <Page title={t('Image Creator')} right={headerRight}>
-      <Flex flex={1} h="100%" className="relative isolate overflow-hidden">
-        {/* Red halftone field — same treatment as the home and chat pages. The
-            canvas paints its own opaque copy of the surface, so it needs no
-            transparency behind it; the content just has to be lifted above it. */}
-        <HalftoneBackground className="absolute inset-0 z-0" />
-        {/* Main Content Area */}
+    <div className="relative isolate h-full">
+      {/* Red halftone field — fixed to the window, exactly like the home and
+          chat pages: the field runs past the page box and under the
+          transparent sidebar panel. The canvas is opaque and covers the whole
+          window, so the page content (title bar and the window controls on
+          it included) is lifted above it with z-[1] — placed inside the page
+          body it would paint over the header row and make the minimize /
+          maximize / close buttons vanish. The wrapper is the sizing host —
+          the canvas measures its parent. */}
+      <div className="pointer-events-none fixed inset-0 z-0">
+        <HalftoneBackground />
+      </div>
+      <div className="relative z-[1] flex h-full flex-col">
+        <Page title={t('Image Creator')} right={headerRight}>
+          <Flex flex={1} h="100%" className="relative isolate overflow-hidden">
+            {/* Main Content Area */}
         <Flex direction="column" flex={1} h="100%" className="relative z-[1] overflow-hidden">
           {/* Results Area */}
           <ScrollArea flex={1} type="auto" offsetScrollbars={!isSmallScreen}>
@@ -683,7 +692,9 @@ function ImageCreatorPage() {
             />
           </>
         )}
-      </Flex>
-    </Page>
+        </Flex>
+      </Page>
+    </div>
+  </div>
   )
 }

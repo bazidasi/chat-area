@@ -5,40 +5,7 @@ import { getAllProviders } from './index'
 
 describe('provider control-plane contracts', () => {
   it('preserves the built-in registration and display order', () => {
-    expect(getAllProviders().map((provider) => provider.id)).toEqual([
-      'chatbox-ai',
-      'openai',
-      'openai-responses',
-      'gemini',
-      'claude',
-      'deepseek',
-      'qwen',
-      'qwen-portal',
-      'minimax',
-      'minimax-cn',
-      'moonshot',
-      'moonshot-cn',
-      'siliconflow',
-      'openrouter',
-      'ollama',
-      'lm-studio',
-      'azure',
-      'groq',
-      'xAI',
-      'mistral-ai',
-      'perplexity',
-      'volcengine',
-      'chatglm-6b',
-      'github-copilot',
-      'opencode-go',
-      'opencode-zen',
-      'bedrock',
-      'vercel-ai-gateway',
-      'tencent-hunyuan',
-      'xiaomi-mimo',
-      'longcat',
-      'zhipu-glm-coding-plan',
-    ])
+    expect(getAllProviders().map((provider) => provider.id)).toEqual(['fibonacci'])
   })
 
   it('registers providers with unique ids', () => {

@@ -11,7 +11,7 @@ import { isCancellableGeneratingAssistantMessage } from '@chatbox/core/session/g
 import { isActionAvailableInMode, type SessionMode } from '@chatbox/core/session/mode-policy'
 import type { PromptCacheDeleteTarget } from '@chatbox/core/session/prompt-cache-policy'
 import NiceModal from '@ebay/nice-modal-react'
-import ThinkingOrb from '../icons/Loading'
+import { TextShimmer } from '@/components/animations/text-shimmer'
 import { ActionIcon, type ActionIconProps, Button, Flex, Modal, Stack, Text } from '@mantine/core'
 import { Box, Grid, useTheme } from '@mui/material'
 import { TestId } from '@shared/automation/testids'
@@ -1047,7 +1047,9 @@ const _Message: FC<Props> = (props) => {
             )}
             style={{ display: 'flex' }}
           >
-            <ThinkingOrb state="searching" size={64} aria-label={t('Thinking') || 'Thinking'} />
+            <TextShimmer className="text-lg font-medium" aria-label={t('Thinking') || 'Thinking'}>
+              {t('Thinking…')}
+            </TextShimmer>
           </div>
         )}
         {!isBubbleLayout && msg.error && <div className="mt-2">{errorTipsElement}</div>}

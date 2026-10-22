@@ -1,4 +1,4 @@
-import ThinkingOrb from '../icons/Loading'
+import { TextShimmer } from '@/components/animations/text-shimmer'
 import { Group, Text } from '@mantine/core'
 import { Typography } from '@mui/material'
 import type { Message } from '@shared/types'
@@ -111,10 +111,9 @@ export function PreparingToolCallStatus(props: {
 
   return (
     <Group gap={6} align="center" wrap="nowrap" mt={6} mb={2} className="max-w-full">
-      <ThinkingOrb state="connecting" size={20} className="shrink-0" aria-hidden />
-      <Text size="xs" c="chatbox-secondary" lh="16px" truncate="end">
+      <TextShimmer className="max-w-full truncate text-xs" aria-hidden>
         {progress ? `${label} · ${progress}` : label}
-      </Text>
+      </TextShimmer>
     </Group>
   )
 }
@@ -137,8 +136,9 @@ function RetryingIndicator(props: { attempt: number; maxAttempts: number }) {
   const { t } = useTranslation()
   return (
     <div className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-400 mb-1">
-      <ThinkingOrb state="working" size={20} className="shrink-0" aria-hidden />
-      <span>{t('Retrying {{attempt}}/{{maxAttempts}}', { attempt, maxAttempts })}</span>
+      <TextShimmer className="text-xs" aria-hidden>
+        {t('Retrying {{attempt}}/{{maxAttempts}}', { attempt, maxAttempts })}
+      </TextShimmer>
     </div>
   )
 }
@@ -148,8 +148,7 @@ export function LoadingBubble(props: { children: React.ReactNode }) {
   return (
     <div className="flex flex-row items-start justify-start overflow-x-auto overflow-y-hidden">
       <div className="flex justify-start items-center gap-1.5 mb-1 px-2 py-2 rounded-lg bg-chatbox-background-secondary">
-        <ThinkingOrb state="working" size={20} className="shrink-0" aria-hidden />
-        <span className="me-2 font-medium text-chatbox-secondary">{children}</span>
+        <TextShimmer className="me-2 font-medium text-chatbox-secondary">{children}</TextShimmer>
       </div>
     </div>
   )

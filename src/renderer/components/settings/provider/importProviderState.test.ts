@@ -1,6 +1,8 @@
 import { ModelProviderEnum, ModelProviderType } from '@shared/types'
 import { describe, expect, it } from 'vitest'
 import { buildImportedProviderSettingsUpdate } from './importProviderState'
+// The app build registers only Fibonacci; re-register the providers this suite exercises.
+import '@shared/providers/definitions/openai'
 
 describe('buildImportedProviderSettingsUpdate', () => {
   it('updates only provider settings for builtin providers', () => {

@@ -48,7 +48,6 @@ win:
     - target: nsis
       arch:
         - x64
-        - arm64
   verifyUpdateCodeSignature: false
   artifactName: ${productName}-${version}-Setup.${ext}
 
@@ -56,6 +55,10 @@ nsis:
   oneClick: false
   allowToChangeInstallationDirectory: true
   include: assets/installer.nsh
+  # Single-pass NSIS script: no wine in this build environment, so the stock
+  # two-pass uninstaller flow cannot run. installer.nsi compiles installer +
+  # uninstaller together and writes the uninstaller at install time.
+  script: installer.nsi
 
 linux:
   executableName: fibonacci-chat-area

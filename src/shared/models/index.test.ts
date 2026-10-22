@@ -11,6 +11,20 @@ import { ModelProviderEnum, type SessionSettings, type Settings } from 'src/shar
 import type { ModelDependencies } from 'src/shared/types/adapters'
 import type { SentryScope } from 'src/shared/utils/sentry_adapter'
 import { describe, expect, it, vi } from 'vitest'
+// The app build registers only Fibonacci; re-register the providers this suite exercises.
+import 'src/shared/providers/definitions/deepseek'
+import 'src/shared/providers/definitions/longcat'
+import 'src/shared/providers/definitions/minimax'
+import 'src/shared/providers/definitions/moonshot'
+import 'src/shared/providers/definitions/openai'
+import 'src/shared/providers/definitions/openai-responses'
+import 'src/shared/providers/definitions/opencode-go'
+import 'src/shared/providers/definitions/opencode-zen'
+import 'src/shared/providers/definitions/qwen'
+import 'src/shared/providers/definitions/qwen-portal'
+import 'src/shared/providers/definitions/tencent-hunyuan'
+import 'src/shared/providers/definitions/xiaomi-mimo'
+import 'src/shared/providers/definitions/zhipu-glm-coding-plan'
 
 const mockScope: SentryScope = {
   setTag: vi.fn(),

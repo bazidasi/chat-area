@@ -8,6 +8,7 @@ import { createFetchWithProxy } from '../../../models/utils/fetch-proxy'
 import type { ProviderModelInfo } from '../../../types'
 import type { ModelDependencies } from '../../../types/adapters'
 import { normalizeOpenAIApiHostAndPath } from '../../../utils/llm_utils'
+import { createFibonacciResilientFetch } from './fibonacci-fetch'
 
 const FIBONACCI_IMAGE_SIZES: Record<string, string> = {
     '1:1': '1024x1024',
@@ -95,7 +96,12 @@ export default class FibonacciAI extends AbstractAISDKModel {
   protected getChatModel(options: CallChatCompletionOptions) {
     const { apiHost, apiPath } = this.options
     const provider = this.getProvider(options, async (_input, init) => {
-      return createFetchWithProxy(this.options.useProxy, this.dependencies)(`${apiHost}${apiPath}`, init)
+      // Rate-limited (429) and transient 5xx answers are retried with backoff
+      // before any stream byte is delivered — long fibonacci-1-pro-max coding
+      // sessions stop dying on the gateway's rate limiter.
+      return createFibonacciResilientFetch(createFetchWithProxy(this.options.useProxy, this.dependencies), {
+        baseDelayMs: 500,
+      })(`${apiHost}${apiPath}`, init)
     })
     return wrapLanguageModel({
       model: provider.languageModel(this.options.model.modelId),
@@ -110,6 +116,7 @@ export default class FibonacciAI extends AbstractAISDKModel {
           apiHost: this.options.apiHost,
           apiKey: this.options.apiKey,
           useProxy: this.options.useProxy,
+          customFetch: createFibonacciResilientFetch(),
         },
         this.dependencies
       )
@@ -142,13 +149,14 @@ export default class FibonacciAI extends AbstractAISDKModel {
     const url = `${this.options.apiHost}/images/generations`
     const size = aspectRatioToSize(params.aspectRatio)
     const results: string[] = []
+    const resilientFetch = createFibonacciResilientFetch()
 
     for (let i = 0; i < params.num; i++) {
       if (signal?.aborted) {
         throw new DOMException('Aborted', 'AbortError')
       }
 
-      const res = await fetch(url, {
+      const res = await resilientFetch(url, {
         method: 'POST',
         headers: {
           Authorization: `Bearer ${this.options.apiKey}`,

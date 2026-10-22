@@ -1017,6 +1017,7 @@
   "The verification code you entered is incorrect or has expired. Please request a new code and try again.": "کد تأییدی که وارد کردید نادرست است یا منقضی شده. لطفاً کد تازه‌ای درخواست کنید و دوباره تلاش کنید.",
   "Theme": "پوسته",
   "Thinking": "تفکر",
+  "Thinking…": "در حال فکر کردن…",
   "Thinking controls are disabled because this Claude model is not exposed through the Anthropic API style.": "کنترل‌های تفکر غیرفعال‌اند چون این مدل Claude از طریق API استایل Anthropic در دسترس نیست.",
   "Thinking controls are disabled because this DeepSeek model is not exposed through the DeepSeek API style.": "کنترل‌های تفکر غیرفعال‌اند چون این مدل DeepSeek از طریق API استایل DeepSeek در دسترس نیست.",
   "Thinking controls are disabled because this Gemini model is not exposed through the Google API style.": "کنترل‌های تفکر غیرفعال‌اند چون این مدل Gemini از طریق API استایل Google در دسترس نیست.",

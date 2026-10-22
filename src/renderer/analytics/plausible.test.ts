@@ -7,6 +7,10 @@ import {
   normalizePlausibleUrl,
   normalizePlausibleVersion,
 } from './plausible'
+// The app build registers only Fibonacci; re-register the providers this suite exercises.
+import '@shared/providers/definitions/openai'
+import '@shared/providers/definitions/chatboxai'
+import '@shared/providers/definitions/github-copilot'
 
 describe('Plausible dimensions', () => {
   it.each([

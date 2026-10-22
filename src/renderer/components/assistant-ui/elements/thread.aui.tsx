@@ -3,7 +3,8 @@
 import { BorderBeam } from 'border-beam'
 import { Liquid } from 'liquid-gooey'
 import { MetalFx } from 'metal-fx'
-import ThinkingOrb from '@/components/icons/Loading'
+import { useTranslation } from 'react-i18next'
+import { TextShimmer } from '@/components/animations/text-shimmer'
 import { useComputedColorScheme } from '@mantine/core'
 import { useReducedMotion } from '@mantine/hooks'
 import {
@@ -390,6 +391,7 @@ const AssistantMessage: FC = () => {
     ToolGroup,
     ReasoningGroup,
   } = useContext(ThreadComponentsContext)
+  const { t } = useTranslation()
 
   const ACTION_BAR_PT = 'pt-1.5'
   // Keep the action bar inside the contained root's paint box, then cancel its reserved space in flow.
@@ -459,12 +461,14 @@ const AssistantMessage: FC = () => {
                 )
               case 'indicator':
                 return (
-                  <ThinkingOrb
-                    state="searching"
-                    size={20}
+                  <TextShimmer
+                    className="text-sm font-medium"
+                    duration={2.4}
                     data-slot="aui_assistant-message-indicator"
                     aria-label="Assistant is working"
-                  />
+                  >
+                    {t('Thinking…')}
+                  </TextShimmer>
                 )
               default:
                 return null

@@ -1,6 +1,8 @@
 import { ModelProviderEnum, ModelProviderType } from '@shared/types'
 import { describe, expect, it } from 'vitest'
 import { parseProviderFromJson, validateProviderConfig } from './provider-config'
+// The app build registers only Fibonacci; re-register the providers this suite exercises.
+import '@shared/providers/definitions/openai'
 
 describe('provider-config', () => {
   describe('parseProviderFromJson', () => {

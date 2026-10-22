@@ -37,7 +37,7 @@ export function createDefaultSettings(): Settings {
     interfaceColors: getDefaultInterfaceColors(),
     interfaceColorsCustomized: false,
     interfaceColorPresets: [],
-    language: 'en',
+    language: 'fa',
     fontSize: 14,
     spellCheck: true,
     defaultPrompt: DEFAULT_SYSTEM_PROMPT,
