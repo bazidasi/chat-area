@@ -36,6 +36,7 @@ import { flushSentry, sentry } from './adapters/sentry'
 import { registerAgentPersonaHandlers } from './agent-persona/ipc-handlers'
 import * as analystic from './analystic-node'
 import { AppUpdater } from './app-updater'
+import { integrateAppImageDesktopEntry } from './appimage-desktop-integration'
 import * as autoLauncher from './autoLauncher'
 import { formatTooLargeFileRead, readRegularFileBytesBounded } from './bounded-file-read'
 import { handleDeepLink } from './deeplinks'
@@ -685,6 +686,11 @@ if (quitForInstallRequested) {
       await createWindow()
       await initializeSessionAttachmentRagAfterAppReady()
       ensureTray()
+      // AppImages never self-install: register the running AppImage into the
+      // user's application menu so it shows up in GNOME/KDE search.
+      if (process.platform === 'linux') {
+        integrateAppImageDesktopEntry()
+      }
       // HarmonyOS HAP updates are distributed outside electron-updater.
       if (MAIN_RUNTIME_POLICY.startAppUpdater) {
         new AppUpdater(() => mainWindow)

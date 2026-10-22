@@ -76,7 +76,7 @@ linux:
     entry:
       Name: Fibonacci Chat Area
       Comment: AI chat client powered by Fibonacci AI
-      StartupWMClass: Fibonacci Chat Area
+      StartupWMClass: fibonacci-chat-area
       Categories: Network;Chat;Development;
 
 directories:
