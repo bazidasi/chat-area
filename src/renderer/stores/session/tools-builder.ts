@@ -13,7 +13,6 @@ import { languageNameMap } from '@/i18n/locales'
 import { mcpController } from '@/packages/mcp/controller'
 import { generateCommandExplanation } from '@/packages/model-calls/command-explanation'
 import { buildAgentMemoryTools } from '@/packages/model-calls/toolsets/agent-memory'
-import { buildChatboxCliToolSet } from '@/packages/model-calls/toolsets/chatbox-cli'
 import { buildCodeExecutionTools } from '@/packages/model-calls/toolsets/code-execution'
 import fileToolSet from '@/packages/model-calls/toolsets/file'
 import { buildFilesystemTools } from '@/packages/model-calls/toolsets/filesystem'
@@ -389,11 +388,11 @@ In long conversations, earlier tool call results may be automatically compressed
     instructions += options.workspaceInstructionsOverride ?? (await buildWorkspaceInstructions(userWorkingDirectories))
     instructions += `
 ## Git
-When you create a Git branch, prefix its name with \`chatbox/\` (for example \`chatbox/fix-login-retry\`).
+When you create a Git branch, prefix its name with \`fibonacci/\` (for example \`fibonacci/fix-login-retry\`).
 
 When you create a Git commit that includes code changes, append this exact trailer to the commit message:
 
-\`Co-authored-by: Chatbox <chatbox@chatboxai.com>\`
+\`Co-authored-by: Fibonacci <chatbot@fibonacci.monster>\`
 `
   }
   if (kbToolSet && kbSupported) {
@@ -545,6 +544,11 @@ When you create a Git commit that includes code changes, append this exact trail
       provider: codeExecution?.provider,
       userWorkingDirectories: options.sessionSettings?.workingDirectories?.filter((dir) => dir.trim().length > 0),
       fullAccess: commandApprovalMode === 'full_access',
+      // With code execution the code-execution toolset provides its sandbox-aware
+      // read_file; without it, the filesystem set must supply one so the model can
+      // actually read project files even when the sandbox is unavailable
+      // (e.g. Linux without bubblewrap/socat).
+      includeReadFile: !codeExecToolSet,
     })
     instructions += filesystemToolSet.description
     tools = { ...tools, ...filesystemToolSet.tools }
@@ -566,14 +570,6 @@ When you create a Git commit that includes code changes, append this exact trail
       sandboxWorkingDirectory
     )
     tools.load_skill = buildLoadSkillTool(options)
-    if (enabledSkills.some((skill) => skill.name === 'chatbox-product-info')) {
-      const chatboxCliToolSet = buildChatboxCliToolSet({
-        sessionId: options.sessionId,
-        onUsed: options.onAgentModeActivated,
-      })
-      instructions += chatboxCliToolSet.description
-      tools = { ...tools, ...chatboxCliToolSet.tools }
-    }
     if (legacyCommandTools) tools.user_exec = buildUserExecTool(options)
     if (codeExecution) {
       tools.install_skill = buildInstallSkillTool(

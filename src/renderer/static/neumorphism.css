@@ -414,16 +414,16 @@ textarea.mantine-Input-input {
 }
 
 .mantine-Switch-input:checked {
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--chatbox-brand), white 20%),
-    var(--chatbox-brand)
-  );
+  /* A dedicated "on" accent, not the graphite brand: the brand track read as a
+     washed light-grey pill in dark mode (light-grey track + white knob), which
+     made switches and their rows feel unreadable. */
+  background-color: var(--neo-accent);
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--neo-accent), white 18%), var(--neo-accent));
   border-color: transparent;
 }
 
 .mantine-Switch-input:checked::before {
-  background: var(--chatbox-tint-on-accent);
+  background: var(--neo-accent-contrast);
   box-shadow: var(--neo-shadow-outset-xs);
 }
 
@@ -439,13 +439,17 @@ textarea.mantine-Input-input {
 .mantine-Checkbox-input:checked,
 .mantine-Checkbox-input:indeterminate,
 .mantine-Radio-input:checked {
-  background-color: var(--chatbox-brand);
-  background-image: linear-gradient(
-    135deg,
-    color-mix(in srgb, var(--chatbox-brand), white 20%),
-    var(--chatbox-brand)
-  );
+  background-color: var(--neo-accent);
+  background-image: linear-gradient(135deg, color-mix(in srgb, var(--neo-accent), white 18%), var(--neo-accent));
   border-color: transparent;
+}
+
+/* Mantine paints the tick/dot white by default — white-on-light-grey was the
+   unreadable "checked" state. The knob/tint always matches the accent track. */
+.mantine-Checkbox-input:checked ~ .mantine-Checkbox-icon,
+.mantine-Checkbox-input:indeterminate ~ .mantine-Checkbox-icon,
+.mantine-Radio-input:checked ~ .mantine-Radio-icon {
+  color: var(--neo-accent-contrast) !important;
 }
 
 .mantine-Checkbox-input:hover,
@@ -568,15 +572,21 @@ textarea.mantine-Input-input {
   display: block;
   width: 100%;
   border-radius: var(--chatbox-radius-md);
-  color: var(--chatbox-tint-secondary);
+  /* Primary ink at rest (dimmed), full ink on hover/active: the previous
+     secondary-grey label on the grey sidebar read as white-on-grey and was
+     hard to scan, especially at low DPI. */
+  color: var(--chatbox-tint-primary);
+  opacity: 0.78;
   text-decoration: none;
   transition:
     box-shadow 160ms ease,
     background-color 160ms ease,
-    color 160ms ease;
+    color 160ms ease,
+    opacity 160ms ease;
 }
 
 .neo-settings-nav-item:hover:not([data-disabled='true']) {
+  opacity: 1;
   background: color-mix(in srgb, var(--chatbox-tint-white) 7%, var(--chatbox-background-secondary));
   box-shadow: var(--neo-shadow-outset-xs);
 }
@@ -600,6 +610,7 @@ textarea.mantine-Input-input {
 .neo-settings-nav-item--active,
 .neo-settings-nav-item--active:hover {
   color: var(--chatbox-tint-primary);
+  opacity: 1;
   background: color-mix(in srgb, var(--chatbox-tint-white) 12%, var(--chatbox-background-secondary));
   box-shadow: var(--neo-shadow-outset-xs);
 }

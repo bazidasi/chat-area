@@ -11,8 +11,6 @@ import { isValidSkillName } from './validation'
 const log = getLogger('skills:builtin-sync')
 
 const MANIFEST_FILE = 'manifest.json'
-const FETCH_TIMEOUT_MS = 10_000
-
 interface SnapshotEntry {
   version: number
   hash: string
@@ -23,26 +21,6 @@ interface SnapshotEntry {
 interface SnapshotManifest {
   skills: Record<string, SnapshotEntry>
   syncedAt: number
-}
-
-interface RemoteManifestItem {
-  name: string
-  description: string
-  version: number
-  hash: string
-  updated_at: number
-}
-
-interface RemoteSkillDetail {
-  name: string
-  description: string
-  body: string
-  files?: RemoteSkillFile[]
-  version: number
-  hash: string
-  allowed_tools?: string[]
-  metadata?: Record<string, string>
-  license?: string
 }
 
 interface RemoteSkillFile {
@@ -96,12 +74,6 @@ function hashSkillContent(body: string, files: RemoteSkillFile[] = []): string {
     .digest('hex')
 }
 
-function getApiOrigin(): string {
-  if (process.env.USE_LOCAL_API) {
-    return 'http://localhost:8002'
-  }
-  return 'https://api.chatboxai.app'
-}
 
 function readManifest(): SnapshotManifest {
   try {
@@ -250,36 +222,7 @@ export function ensureBuiltinSeeded(): void {
   }
 }
 
-async function fetchJson<T>(url: string): Promise<T | null> {
-  const controller = new AbortController()
-  const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS)
-  try {
-    const res = await fetch(url, { signal: controller.signal })
-    if (!res.ok) {
-      log.warn(`fetchJson non-ok status ${res.status} for ${url}`)
-      return null
-    }
-    return (await res.json()) as T
-  } catch (error) {
-    log.warn(`fetchJson failed for ${url}`, error)
-    return null
-  } finally {
-    clearTimeout(timer)
-  }
-}
 
-function buildMetadataFromDetail(detail: RemoteSkillDetail): SkillMetadata {
-  const metadata: SkillMetadata = {
-    name: detail.name,
-    description: detail.description,
-  }
-  if (detail.license) metadata.license = detail.license
-  if (detail.metadata && Object.keys(detail.metadata).length > 0) metadata.metadata = detail.metadata
-  if (Array.isArray(detail.allowed_tools) && detail.allowed_tools.length > 0) {
-    metadata.allowedTools = detail.allowed_tools
-  }
-  return metadata
-}
 
 /**
  * 从后端拉取内置 skill manifest，按内容 hash 对比本地快照，差异项下载内容并覆盖本地快照。
@@ -289,63 +232,12 @@ function buildMetadataFromDetail(detail: RemoteSkillDetail): SkillMetadata {
 export async function syncBuiltinSkills(lang?: string): Promise<boolean> {
   ensureBuiltinSeeded()
 
-  const origin = getApiOrigin()
-  const langQuery = lang ? `?lang=${encodeURIComponent(lang)}` : ''
-  const manifestUrl = `${origin}/api/builtin_skills${langQuery}`
-
-  log.info(`syncBuiltinSkills: fetching manifest from ${manifestUrl}`)
-  const remote = await fetchJson<{ data: RemoteManifestItem[] }>(manifestUrl)
-  if (!remote || !Array.isArray(remote.data)) {
-    log.warn(`syncBuiltinSkills: no usable manifest from ${manifestUrl}, keeping local snapshot`)
-    return false
-  }
-
-  const manifest = readManifest()
-  let changed = false
-
-  for (const item of remote.data) {
-    if (!item?.name || typeof item.hash !== 'string') continue
-    // 安全：name 会被用作快照目录路径，必须校验，防止后端异常/被篡改的 name（如 "../foo"）
-    // 导致 writeSnapshotSkill 写到快照目录之外
-    if (!isValidSkillName(item.name)) {
-      log.warn(`syncBuiltinSkills: skipping invalid skill name "${item.name}"`)
-      continue
-    }
-    const local = manifest.skills[item.name]
-    if (local && local.hash === item.hash) continue // 内容未变，跳过
-
-    const detailUrl = `${origin}/api/builtin_skills/${encodeURIComponent(item.name)}${langQuery}`
-    const detailRes = await fetchJson<{ data: RemoteSkillDetail }>(detailUrl)
-    const detail = detailRes?.data
-    if (!detail || typeof detail.body !== 'string' || !detail.body.trim()) {
-      log.warn(`syncBuiltinSkills: skipping "${item.name}", invalid detail`)
-      continue
-    }
-
-    try {
-      const files = Array.isArray(detail.files) ? detail.files : []
-      const localHash = hashSkillContent(detail.body, files)
-      if (detail.hash && detail.hash !== localHash) {
-        log.warn(`syncBuiltinSkills: hash mismatch for "${item.name}", remote=${detail.hash}, local=${localHash}`)
-      }
-      writeSnapshotSkill(item.name, buildMetadataFromDetail(detail), detail.body, files, { replaceDir: true })
-      manifest.skills[item.name] = {
-        version: detail.version ?? item.version ?? 1,
-        hash: detail.hash || localHash,
-        updatedAt: Date.now(),
-        origin: 'remote',
-      }
-      changed = true
-      log.info(`syncBuiltinSkills: updated "${item.name}" from backend`)
-    } catch (error) {
-      log.error(`syncBuiltinSkills: failed to write "${item.name}"`, error)
-    }
-  }
-
-  manifest.syncedAt = Date.now()
-  writeManifest(manifest)
-  log.info(`syncBuiltinSkills: done, remote=${remote.data.length} skill(s), changed=${changed}`)
-  return changed
+  // Fibonacci fork: remote skill sync pointed at the chatbox backend and is
+  // disabled. Locally seeded builtin skills still get written on first start.
+  // The snapshot is never cleared, so existing skills remain usable offline.
+  void lang
+  log.info('syncBuiltinSkills: remote skill sync is disabled in this build')
+  return false
 }
 
 /** 从快照目录发现所有内置 skill（解析 SKILL.md），标记 isBuiltin。 */

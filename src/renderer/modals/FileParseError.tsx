@@ -115,7 +115,7 @@ const FileParseError = NiceModal.create(({ errorCode, fileName }: FileParseError
               className="cursor-pointer border-0 bg-transparent p-0 underline font-semibold text-blue-600 hover:text-blue-700"
               onClick={() => {
                 onClose()
-                navigateToSettings('/chatbox-ai')
+                navigateToSettings('/provider/fibonacci')
               }}
             />
           ),

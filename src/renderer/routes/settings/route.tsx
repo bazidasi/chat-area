@@ -258,7 +258,9 @@ function SettingsNavItem({
         span
         className={clsx(
           'neo-settings-nav-item__label !text-inherit',
-          isSmallScreen ? 'min-h-[32px] leading-[32px]' : ''
+          // Padding-based min height (not a fixed line-height): a locked
+          // leading value clips Vazirmatn/Cairo descenders at small sizes.
+          isSmallScreen ? 'min-h-[36px] py-1' : ''
         )}
       >
         {label}

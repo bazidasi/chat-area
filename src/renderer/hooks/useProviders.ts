@@ -5,33 +5,24 @@ import { useCallback, useMemo } from 'react'
 import { enrichModelsFromRegistry, useModelRegistryVersion } from '@/packages/model-registry'
 import platform from '@/platform'
 import { useSettingsStore } from '@/stores/settingsStore'
-import useChatboxAIModels from './useChatboxAIModels'
 
 export const useProviders = () => {
   useModelRegistryVersion()
 
-  const { chatboxAIModels } = useChatboxAIModels()
   const setSettings = useSettingsStore((state) => state.setSettings)
   const customProviders = useSettingsStore((state) => state.customProviders)
   const favoritedModelsSetting = useSettingsStore((state) => state.favoritedModels)
-  const licenseKey = useSettingsStore((state) => state.licenseKey)
   const providerSettingsMap = useSettingsStore((state) => state.providers)
 
   const allProviderBaseInfos = useMemo(() => [...SystemProviders(), ...(customProviders || [])], [customProviders])
   const providers = useMemo(
     () =>
       allProviderBaseInfos
-        // Fibonacci fork: the legacy Fibonacci AI cloud provider is hidden from all model lists
+        // Fibonacci fork: the legacy chatbox-ai cloud provider is hidden from all model lists
         .filter((p) => p.id !== ModelProviderEnum.ChatboxAI)
         .map((p) => {
           const providerSettings = mergeSharedOAuthProviderSettings(p.id, providerSettingsMap)
-          if (p.id === ModelProviderEnum.ChatboxAI && licenseKey) {
-            return {
-              ...p,
-              ...providerSettings,
-              models: chatboxAIModels,
-            }
-          } else if (
+          if (
             (!p.isCustom &&
               (providerSettings?.apiKey ||
                 isUsingOAuth(providerSettings || {}, platform.type) ||
@@ -51,7 +42,7 @@ export const useProviders = () => {
           }
         })
         .filter((p) => !!p),
-    [providerSettingsMap, allProviderBaseInfos, chatboxAIModels, licenseKey]
+    [providerSettingsMap, allProviderBaseInfos]
   )
 
   const favoritedModels = useMemo(

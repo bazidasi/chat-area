@@ -405,8 +405,11 @@ export const ModelSelectorV2 = forwardRef<HTMLDivElement, ModelSelectorV2Props>(
                   boxShadow: 'var(--neo-shadow-outset-xs)',
                 },
                 label: {
-                  minHeight: 30,
+                  minHeight: 34,
                   fontWeight: 600,
+                  lineHeight: 1.45,
+                  paddingTop: 4,
+                  paddingBottom: 4,
                 },
               }}
             />

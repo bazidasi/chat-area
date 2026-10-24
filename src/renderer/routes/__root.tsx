@@ -71,7 +71,6 @@ const useSession = (sessionId: string | null) => rendererApplication.sessionHook
 
 import { bootstrapReduceMotion } from '@/lib/reduce-motion-bootstrap'
 import { initOnboardingStore, onboardingStore } from '@/stores/onboardingStore'
-import * as premiumActions from '@/stores/premiumActions'
 import * as settingActions from '@/stores/settingActions'
 import { initSettingsStore, settingsStore, useLanguage, useSettingsStore, useTheme } from '@/stores/settingsStore'
 import { useUIStore } from '@/stores/uiStore'
@@ -700,7 +699,8 @@ const creteMantineTheme = (scale = 1) =>
 export const Route = createRootRoute({
   component: () => {
     useI18nEffect()
-    premiumActions.useAutoValidate() // 每次启动都执行 license 检查，防止用户在lemonsqueezy管理页面中取消了当前设备的激活
+    // Fibonacci fork: startup license validation called the chatbox backend and
+    // is removed — there is no chatbox license service in this build.
     useSystemLanguageWhenInit()
     useShortcut()
     const theme = useAppTheme()

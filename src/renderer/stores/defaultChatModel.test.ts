@@ -13,199 +13,65 @@ function makeSettings(overrides: Partial<ChatboxDefaultModelSettings> = {}): Cha
   }
 }
 
+// Fibonacci fork: default-model resolution no longer reads Chatbox license
+// payloads at all — the only registered provider is Fibonacci, so every
+// selection resolves to its default model.
 describe('resolveChatboxLicenseDefaultModel', () => {
-  it('keeps BYOK users without a Chatbox license on the existing no-default path', () => {
-    expect(resolveChatboxLicenseDefaultModel(makeSettings())).toBeUndefined()
+  it('resolves to the Fibonacci default model for any settings shape', () => {
+    expect(resolveChatboxLicenseDefaultModel(makeSettings())).toEqual({
+      provider: ModelProviderEnum.Fibonacci,
+      modelId: 'fibonacci-1-pro-max',
+    })
   })
 
-  it('does not use an expired Chatbox license as the default model source', () => {
+  it('ignores stored license payloads (expired or otherwise)', () => {
     expect(
       resolveChatboxLicenseDefaultModel(
         makeSettings({
           licenseKey: 'license-key',
           hasExpiredLicense: true,
           licenseDetail: {
-            name: 'Fibonacci AI Pro',
+            name: 'Chatbox AI Pro',
             defaultModel: 'chatboxai-4',
           },
         })
       )
-    ).toBeUndefined()
-  })
-
-  it('uses the license defaultModel when the API provides one', () => {
-    expect(
-      resolveChatboxLicenseDefaultModel(
-        makeSettings({
-          licenseKey: 'license-key',
-          licenseDetail: {
-            name: 'Fibonacci AI Pro',
-            defaultModel: 'chatboxai-4',
-            type: 'chatboxai-3.5',
-          },
-        })
-      )
     ).toEqual({
-      provider: ModelProviderEnum.ChatboxAI,
-      modelId: 'chatboxai-4',
-    })
-  })
-
-  it('falls back to the license type when defaultModel is missing', () => {
-    expect(
-      resolveChatboxLicenseDefaultModel(
-        makeSettings({
-          licenseKey: 'license-key',
-          licenseDetail: {
-            name: 'Fibonacci AI Lite',
-            type: 'chatboxai-3.5',
-          },
-        })
-      )
-    ).toEqual({
-      provider: ModelProviderEnum.ChatboxAI,
-      modelId: 'chatboxai-3.5',
-    })
-  })
-
-  it('uses plan names as a fallback for older license details', () => {
-    expect(
-      resolveChatboxLicenseDefaultModel(
-        makeSettings({
-          licenseKey: 'license-key',
-          licensePlanName: 'Fibonacci AI Pro',
-        })
-      )
-    ).toEqual({
-      provider: ModelProviderEnum.ChatboxAI,
-      modelId: 'chatboxai-4',
-    })
-
-    expect(
-      resolveChatboxLicenseDefaultModel(
-        makeSettings({
-          licenseKey: 'license-key',
-          licensePlanName: 'Fibonacci AI Lite',
-        })
-      )
-    ).toEqual({
-      provider: ModelProviderEnum.ChatboxAI,
-      modelId: 'chatboxai-3.5',
-    })
-  })
-
-  it('uses license plan over display name when defaultModel and type are missing', () => {
-    expect(
-      resolveChatboxLicenseDefaultModel(
-        makeSettings({
-          licenseKey: 'license-key',
-          licenseDetail: {
-            name: 'Fibonacci AI Pro',
-            plan: 'lite',
-          },
-        })
-      )
-    ).toEqual({
-      provider: ModelProviderEnum.ChatboxAI,
-      modelId: 'chatboxai-3.5',
-    })
-
-    expect(
-      resolveChatboxLicenseDefaultModel(
-        makeSettings({
-          licenseKey: 'license-key',
-          licenseDetail: {
-            name: 'Fibonacci AI Lite',
-            plan: 'pro',
-          },
-        })
-      )
-    ).toEqual({
-      provider: ModelProviderEnum.ChatboxAI,
-      modelId: 'chatboxai-4',
+      provider: ModelProviderEnum.Fibonacci,
+      modelId: 'fibonacci-1-pro-max',
     })
   })
 })
 
 describe('applyChatboxLicenseDefaultModelToSession', () => {
-  it('keeps preset chat sessions unchanged for BYOK users', () => {
+  it('applies the Fibonacci default model to preset chat sessions without a selected model', () => {
     const session = {
       type: 'chat' as const,
-      settings: undefined,
+      settings: {},
     }
-
-    expect(applyChatboxLicenseDefaultModelToSession(session, makeSettings())).toBe(session)
-  })
-
-  it('applies the Chatbox license model to preset chat sessions without a selected model', () => {
-    const session = {
-      type: 'chat' as const,
-      settings: {
-        temperature: 0.7,
-      },
-    }
-
-    expect(
-      applyChatboxLicenseDefaultModelToSession(
-        session,
-        makeSettings({
-          licenseKey: 'license-key',
-          licenseDetail: {
-            name: 'Fibonacci AI Pro',
-            defaultModel: 'chatboxai-4',
-          },
-        })
-      )
-    ).toEqual({
-      type: 'chat',
-      settings: {
-        temperature: 0.7,
-        provider: ModelProviderEnum.ChatboxAI,
-        modelId: 'chatboxai-4',
-      },
-    })
+    const result = applyChatboxLicenseDefaultModelToSession(session, makeSettings())
+    expect(result.settings?.provider).toBe(ModelProviderEnum.Fibonacci)
+    expect(result.settings?.modelId).toBe('fibonacci-1-pro-max')
   })
 
   it('does not override an existing preset session model', () => {
     const session = {
       type: 'chat' as const,
       settings: {
-        provider: ModelProviderEnum.OpenAI,
-        modelId: 'gpt-4o',
+        provider: ModelProviderEnum.Fibonacci,
+        modelId: 'fibonacci-2-coder',
       },
     }
-
-    expect(
-      applyChatboxLicenseDefaultModelToSession(
-        session,
-        makeSettings({
-          licenseKey: 'license-key',
-          licenseDetail: {
-            name: 'Fibonacci AI Pro',
-            defaultModel: 'chatboxai-4',
-          },
-        })
-      )
-    ).toBe(session)
+    const result = applyChatboxLicenseDefaultModelToSession(session, makeSettings())
+    expect(result.settings?.modelId).toBe('fibonacci-2-coder')
   })
 
   it('does not apply chat defaults to picture sessions', () => {
     const session = {
       type: 'picture' as const,
-      settings: undefined,
+      settings: {},
     }
-
-    expect(
-      applyChatboxLicenseDefaultModelToSession(
-        session,
-        makeSettings({
-          licenseKey: 'license-key',
-          licenseDetail: {
-            name: 'Fibonacci AI Pro',
-            defaultModel: 'chatboxai-4',
-          },
-        })
-      )
-    ).toBe(session)
+    const result = applyChatboxLicenseDefaultModelToSession(session, makeSettings())
+    expect(result.settings?.provider).toBeUndefined()
   })
 })

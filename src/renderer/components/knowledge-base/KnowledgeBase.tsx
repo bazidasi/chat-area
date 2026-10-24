@@ -555,7 +555,7 @@ const KnowledgeBasePage: React.FC = () => {
                   size="xs"
                   variant="light"
                   leftSection={<IconLogin size={14} />}
-                  onClick={() => navigateToSettings('chatbox-ai')}
+                  onClick={() => navigateToSettings('/provider/fibonacci')}
                 >
                   {t('Log in to')}
                 </Button>
@@ -614,7 +614,7 @@ const KnowledgeBasePage: React.FC = () => {
                                 ? String(t('Sign in to to use this knowledge base'))
                                 : String(t('Provider unavailable'))
                             }
-                            onUnavailableClick={!isLoggedIn ? () => navigateToSettings('chatbox-ai') : undefined}
+                            onUnavailableClick={!isLoggedIn ? () => navigateToSettings('/provider/fibonacci') : undefined}
                           />
                         </>
                       ) : (

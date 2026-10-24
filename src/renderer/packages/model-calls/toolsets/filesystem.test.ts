@@ -531,3 +531,51 @@ describe('list_files model output', () => {
     })
   })
 })
+
+describe('read_file without code execution', () => {
+  const fsRead = vi.fn(async (..._args: unknown[]) => ({ success: true, content: 'hello' }))
+
+  const getPlatform = async () => {
+    const mod = (await import('@/platform')) as unknown as {
+      default: { fsRead?: unknown }
+    }
+    return mod.default
+  }
+
+  beforeEach(() => {
+    fsRead.mockClear()
+    exec.mockClear()
+  })
+
+  test('is only registered when includeReadFile is set, and reads host files via fs:read', async () => {
+    const platform = await getPlatform()
+    const originalFsRead = platform.fsRead
+    platform.fsRead = fsRead
+    try {
+      const withRead = buildFilesystemTools({ sessionId: 'session-id', provider, includeReadFile: true }).tools
+      const withoutRead = buildFilesystemTools({ sessionId: 'session-id', provider }).tools
+
+      expect(withoutRead.read_file).toBeUndefined()
+      expect(withRead.read_file).toBeDefined()
+
+      const result = await execute(withRead.read_file, { file_path: '/mnt/projects/demo/src/main.ts' })
+      expect(fsRead).toHaveBeenCalledWith({ filePath: '/mnt/projects/demo/src/main.ts', offset: 1, limit: 500 })
+      expect(result).toMatchObject({ content: 'hello' })
+    } finally {
+      platform.fsRead = originalFsRead
+    }
+  })
+
+  test('rejects relative paths when no sandbox provider is bound', async () => {
+    const platform = await getPlatform()
+    const originalFsRead = platform.fsRead
+    platform.fsRead = fsRead
+    try {
+      const tools = buildFilesystemTools({ includeReadFile: true }).tools
+      const result = await execute(tools.read_file, { file_path: 'relative/path.ts' })
+      expect(result).toEqual({ error: 'Relative paths require an active session sandbox' })
+    } finally {
+      platform.fsRead = originalFsRead
+    }
+  })
+})

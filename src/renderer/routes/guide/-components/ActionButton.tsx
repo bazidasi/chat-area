@@ -1,9 +1,9 @@
 /**
- * ActionButton - Reusable button for login and provider settings actions
+ * ActionButton - Reusable button for provider setup and navigation actions
  */
 
-import { Box, Button, Flex, Group, Modal, Radio, Stack, Text } from '@mantine/core'
-import { IconCirclePlus, IconExternalLink, IconId, IconInfoCircle, IconSettings } from '@tabler/icons-react'
+import { Box, Button, Flex, Group, Stack, Text } from '@mantine/core'
+import { IconCirclePlus, IconExternalLink, IconInfoCircle, IconSettings } from '@tabler/icons-react'
 import { useNavigate } from '@tanstack/react-router'
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
@@ -11,17 +11,11 @@ import { trackJkClickEvent } from '@/analytics/jk'
 import { JK_EVENTS, JK_PAGE_NAMES } from '@/analytics/jk-events'
 import { ScalableIcon } from '@/components/common/ScalableIcon'
 import { navigateToSettings } from '@/modals/settings-navigation'
-import { openLinkWithAuth } from '@/packages/openLinkWithAuth'
-import { buildChatboxUrl, getUserProfile, listLicensesByUser, type UserLicense } from '@/packages/remote'
 import platform from '@/platform'
-import { EmailCodeLoginModal } from '@/routes/settings/provider/chatbox-ai/-components/EmailCodeLoginModal'
 import guideRedirectLoadingGif from '@/static/guide/guide-redirect-loading.gif'
-import { authInfoStore } from '@/stores/authInfoStore'
-import * as premiumActions from '@/stores/premiumActions'
-import { settingsStore, useLanguage } from '@/stores/settingsStore'
 
 interface LoginButtonProps {
-  onLoginSuccess: () => void
+  onLoginSuccess?: () => void
 }
 
 const GUIDE_ACTION_BUTTON_MAX_WIDTH = 320
@@ -31,88 +25,13 @@ const guideActionButtonWidthStyle = {
   maxWidth: GUIDE_ACTION_BUTTON_MAX_WIDTH,
 } as const
 
-export function LoginButton({ onLoginSuccess }: LoginButtonProps) {
+/**
+ * Fibonacci fork: the chatbox account login flow (email code + license
+ * activation) is removed. The guide's login button now opens the Fibonacci
+ * provider settings where the user configures their API token.
+ */
+export function LoginButton({ onLoginSuccess: _onLoginSuccess }: LoginButtonProps = {}) {
   const { t } = useTranslation()
-  const language = useLanguage()
-  const [showLicenseModal, setShowLicenseModal] = useState(false)
-  const [licenses, setLicenses] = useState<UserLicense[]>([])
-  const [selectedLicenseKey, setSelectedLicenseKey] = useState('')
-  const [activatingLicense, setActivatingLicense] = useState(false)
-  // Remember success state to keep showing success UI even after new messages are added
-  const [hasSucceeded, setHasSucceeded] = useState(false)
-  const [loginModalOpened, setLoginModalOpened] = useState(false)
-
-  const activateLicense = useCallback(
-    async (licenseKey: string) => {
-      setActivatingLicense(true)
-      try {
-        const result = await premiumActions.activate(licenseKey, 'login', { pageName: JK_PAGE_NAMES.HELP_PAGE })
-        if (result.valid) {
-          setHasSucceeded(true)
-          onLoginSuccess()
-        } else {
-          console.error('License activation failed:', result.error)
-          // Still mark as success since they logged in
-          setHasSucceeded(true)
-          onLoginSuccess()
-        }
-      } catch (error) {
-        console.error('Failed to activate license:', error)
-        setHasSucceeded(true)
-        onLoginSuccess()
-      } finally {
-        setActivatingLicense(false)
-        setShowLicenseModal(false)
-      }
-    },
-    [onLoginSuccess]
-  )
-
-  const handleLoginSuccessInternal = useCallback(
-    async (tokens: { accessToken: string; refreshToken: string }) => {
-      // Save tokens
-      authInfoStore.getState().setTokens(tokens)
-
-      // Try to get and activate licenses
-      try {
-        const [fetchedLicenses, userProfile] = await Promise.all([listLicensesByUser(), getUserProfile()])
-
-        if (fetchedLicenses.length === 1) {
-          // Auto-activate single license
-          await activateLicense(fetchedLicenses[0].key)
-        } else if (fetchedLicenses.length > 1) {
-          // Check for previously selected license
-          const lastSelected = settingsStore.getState().lastSelectedLicenseByUser?.[userProfile.email]
-          const isLastSelectedValid = lastSelected && fetchedLicenses.some((l: UserLicense) => l.key === lastSelected)
-
-          if (isLastSelectedValid) {
-            await activateLicense(lastSelected)
-          } else {
-            // Multiple licenses - show selection modal
-            setLicenses(fetchedLicenses)
-            setSelectedLicenseKey(fetchedLicenses[0].key)
-            setShowLicenseModal(true)
-          }
-        } else {
-          // No licenses but logged in - still mark as success
-          setHasSucceeded(true)
-          onLoginSuccess()
-        }
-      } catch (error) {
-        console.error('Failed to get licenses:', error)
-        // Still mark as login success even if license fetch fails
-        setHasSucceeded(true)
-        onLoginSuccess()
-      }
-    },
-    [onLoginSuccess, activateLicense]
-  )
-
-  const handleLicenseConfirm = useCallback(() => {
-    if (selectedLicenseKey) {
-      void activateLicense(selectedLicenseKey)
-    }
-  }, [selectedLicenseKey, activateLicense])
 
   const trackLoginButtonClick = useCallback(() => {
     trackJkClickEvent(JK_EVENTS.LOGIN_BUTTON_CLICK, {
@@ -121,71 +40,19 @@ export function LoginButton({ onLoginSuccess }: LoginButtonProps) {
   }, [])
 
   return (
-    <>
-      <Stack mt="md" gap="sm" style={guideActionButtonWidthStyle}>
-        <Button
-          onClick={() => {
-            trackLoginButtonClick()
-            setLoginModalOpened(true)
-          }}
-          disabled={hasSucceeded}
-          variant="light"
-          color={hasSucceeded ? 'green' : undefined}
-          fullWidth
-          h={42}
-        >
-          {hasSucceeded ? t('Login Successful') : t('Login to')}
-        </Button>
-      </Stack>
-
-      {/* License Selection Modal */}
-      <Modal
-        opened={showLicenseModal}
-        onClose={() => {}}
-        title={t('Select License')}
-        centered
-        closeOnClickOutside={false}
-        closeOnEscape={false}
-        withCloseButton={false}
+    <Stack mt="md" gap="sm" style={guideActionButtonWidthStyle}>
+      <Button
+        onClick={() => {
+          trackLoginButtonClick()
+          navigateToSettings('/provider/fibonacci')
+        }}
+        variant="light"
+        fullWidth
+        h={42}
       >
-        <Stack gap="md">
-          <Text size="sm" c="chatbox-secondary">
-            {t('You have multiple licenses. Please select one to use:')}
-          </Text>
-
-          <Radio.Group value={selectedLicenseKey} onChange={setSelectedLicenseKey}>
-            <Stack gap="xs">
-              {licenses.map((license) => (
-                <Radio
-                  key={license.key}
-                  value={license.key}
-                  label={
-                    <Stack gap={2}>
-                      <Text fw={500}>{license.product_name}</Text>
-                      <Text size="xs" c="chatbox-tertiary" className="font-mono">
-                        {license.key.substring(0, 8)}
-                        {'*'.repeat(12)}
-                      </Text>
-                    </Stack>
-                  }
-                />
-              ))}
-            </Stack>
-          </Radio.Group>
-
-          <Button fullWidth onClick={handleLicenseConfirm} loading={activatingLicense} disabled={!selectedLicenseKey}>
-            {t('Confirm')}
-          </Button>
-        </Stack>
-      </Modal>
-
-      <EmailCodeLoginModal
-        opened={loginModalOpened}
-        onClose={() => setLoginModalOpened(false)}
-        language={language}
-        onLoginSuccess={handleLoginSuccessInternal}
-      />
-    </>
+        {t('Set up Fibonacci AI')}
+      </Button>
+    </Stack>
   )
 }
 
@@ -396,9 +263,9 @@ export function ViewLicenseButton() {
 
   return (
     <Flex mt="xs" style={guideActionButtonWidthStyle}>
-      <Button variant="light" fullWidth h={42} onClick={() => navigateToSettings('chatbox-ai')}>
-        <ScalableIcon icon={IconId} className="me-2" />
-        {t('View License Details')}
+      <Button variant="light" fullWidth h={42} onClick={() => navigateToSettings('/provider/fibonacci')}>
+        <ScalableIcon icon={IconSettings} className="me-2" />
+        {t('View Provider Settings')}
       </Button>
     </Flex>
   )
@@ -409,46 +276,21 @@ interface FreeTrialLinkProps {
   onAfterClick?: () => void
 }
 
-export function FreeTrialLink({ onAfterClick }: FreeTrialLinkProps = {}) {
+export function FreeTrialLink({ onAfterClick: _onAfterClick }: FreeTrialLinkProps = {}) {
   const { t } = useTranslation()
-  const language = settingsStore.getState().language || 'en'
-  const [pendingExternalAction, setPendingExternalAction] = useState(false)
-  const pendingExternalActionRef = useRef(false)
 
-  const handleClaimFreePlan = useCallback(async () => {
-    if (pendingExternalActionRef.current) return
-
-    pendingExternalActionRef.current = true
-    setPendingExternalAction(true)
-    trackJkClickEvent(JK_EVENTS.FREE_LICENSE_CLAIM_CLICK, {
-      pageName: JK_PAGE_NAMES.HELP_PAGE,
-      content: 'onboarding_guide',
-    })
-    try {
-      await openLinkWithAuth(
-        buildChatboxUrl(
-          `/redirect_app/claim_free_plan/${language}/?utm_source=app&utm_content=guide_session_free_trial`
-        )
-      )
-      onAfterClick?.()
-    } finally {
-      pendingExternalActionRef.current = false
-      setPendingExternalAction(false)
-    }
-  }, [language, onAfterClick])
-
+  // Fibonacci fork: free-plan claiming ran through the chatbox account service,
+  // which no longer exists. Point the user at the provider settings instead.
   return (
     <Flex mt="md">
       <Button
         leftSection={<ScalableIcon icon={IconExternalLink} size={18} />}
-        onClick={() => void handleClaimFreePlan()}
+        onClick={() => navigateToSettings('/provider/fibonacci')}
         variant="light"
         style={guideActionButtonWidthStyle}
         h={42}
-        loading={pendingExternalAction}
-        disabled={pendingExternalAction}
       >
-        {t('Claim Free Plan')}
+        {t('Set up Fibonacci AI')}
       </Button>
     </Flex>
   )

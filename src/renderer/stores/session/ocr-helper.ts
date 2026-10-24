@@ -35,8 +35,8 @@ export function getOCRModel(
     }
   }
 
-  // Fallback to Fibonacci AI built-in OCR model
-  const modelSettings = getModelSettings(globalSettings, ModelProviderEnum.ChatboxAI, 'chatbox-ocr-1')
+  // Fallback to the registered Fibonacci chat model (vision-capable server-side).
+  const modelSettings = getModelSettings(globalSettings, ModelProviderEnum.Fibonacci, 'fibonacci-1-pro-max')
   return {
     model: getModel(modelSettings, globalSettings, configs, dependencies),
     providerName: 'Fibonacci AI',

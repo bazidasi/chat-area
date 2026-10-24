@@ -42,9 +42,9 @@ import { getForceShowNewUserScenarioCardsFlag } from '@/dev/devToolsFlags'
 import { useMyCopilots, useRemoteCopilotsByCursor } from '@/hooks/useCopilots'
 import { useIsSmallScreen } from '@/hooks/useScreenChange'
 import * as remote from '@/packages/remote'
+import { FIBONACCI_DEFAULT_MODEL, FIBONACCI_DEFAULT_MODEL_ID } from '@/packages/fibonacci-default-model'
 import { router } from '@/router'
 import { useAuthInfoStore } from '@/stores/authInfoStore'
-import { resolveChatboxLicenseDefaultModel } from '@/stores/defaultChatModel'
 import { getHasCompletedFirstSuccessfulChat } from '@/stores/firstSuccessfulChat'
 import { getSessionAgentModeEntry } from '@/stores/session/agent-mode'
 import { switchCurrentSession } from '@/stores/session/crud'
@@ -62,9 +62,11 @@ const scenarioAgentModeOff = {
   lockReason: null,
 } satisfies AgentModeEntry
 
+// Brand-new users start on the registered Fibonacci provider — the upstream
+// chatbox-ai default pointed at a provider that no longer exists in this build.
 const firstChatScenarioDefaultModel = {
-  provider: ModelProviderEnum.ChatboxAI,
-  modelId: 'chatboxai-3.5',
+  provider: ModelProviderEnum.Fibonacci,
+  modelId: FIBONACCI_DEFAULT_MODEL_ID,
 } satisfies Pick<SessionSettings, 'provider' | 'modelId'>
 
 export const Route = createFileRoute('/')({
@@ -107,10 +109,6 @@ function Index() {
   const hasUserSelectedModelRef = useRef(false)
 
   const defaultChatModel = useSettingsStore((s) => s.defaultChatModel)
-  const licenseKey = useSettingsStore((s) => s.licenseKey)
-  const licenseDetail = useSettingsStore((s) => s.licenseDetail)
-  const licensePlanName = useSettingsStore((s) => s.licensePlanName)
-  const hasExpiredLicense = useSettingsStore((s) => s.hasExpiredLicense)
   const isLoggedIn = useAuthInfoStore((s) => Boolean(s.accessToken && s.refreshToken))
 
   const selectedModel = useMemo(() => {
@@ -170,17 +168,13 @@ function Index() {
       if (old.settings?.provider && old.settings?.modelId) {
         return old
       }
+      // No license-driven fallback: the only built-in provider is Fibonacci.
       const defaultModel = defaultChatModel
         ? {
             provider: defaultChatModel.provider,
             modelId: defaultChatModel.model,
           }
-        : resolveChatboxLicenseDefaultModel({
-            licenseKey,
-            hasExpiredLicense,
-            licenseDetail,
-            licensePlanName,
-          })
+        : FIBONACCI_DEFAULT_MODEL
       if (!defaultModel) {
         return old
       }
@@ -192,16 +186,7 @@ function Index() {
         },
       }
     })
-  }, [
-    defaultChatModel,
-    hasCompletedFirstSuccessfulChat,
-    hasExpiredLicense,
-    isLoggedIn,
-    licenseDetail,
-    licenseKey,
-    licensePlanName,
-    session.copilotId,
-  ])
+  }, [defaultChatModel, hasCompletedFirstSuccessfulChat, isLoggedIn, session.copilotId])
 
   const { copilots: myCopilots } = useMyCopilots()
   const { copilots: remoteCopilots } = useRemoteCopilotsByCursor({ limit: 10 })
@@ -558,13 +543,25 @@ function Index() {
                             icon={IconPresentation}
                             title={t('AI Presentation')}
                             description={t('Turn ideas into engaging, professional presentations.')}
-                            onClick={() => setQuote(t('Create a professional presentation about '))}
+                            onClick={() =>
+                              setQuote(
+                                t(
+                                  'Create a professional presentation. Topic: [TOPIC]. Audience: [AUDIENCE]. Length: [NUMBER] slides. Tone: [FORMAL / FRIENDLY / TECHNICAL].\n\nFor each slide give: a slide title, 3-5 concise bullets, and a one-line speaker note. Suggest a fitting visual for each slide (chart, diagram, or image description). Start with a title slide and an agenda, and close with a summary and clear next steps.'
+                                )
+                              )
+                            }
                           />
                           <HomeFeatureCard
                             icon={IconCode}
                             title={t('Dev Assistant')}
                             description={t('Generate clean, production-ready code in seconds.')}
-                            onClick={() => setQuote(t('Write production-ready code for '))}
+                            onClick={() =>
+                              setQuote(
+                                t(
+                                  'Write production-ready code. Task: [FEATURE OR TASK]. Language/framework: [LANGUAGE / FRAMEWORK].\n\nRequirements:\n- [REQUIREMENT 1]\n- [REQUIREMENT 2]\n\nInclude error handling and input validation, add inline comments only where logic is non-obvious, and return complete files with no placeholders. Finish with a short explanation of the design decisions and how to run and test the code.'
+                                )
+                              )
+                            }
                           />
                         </Slides>
                       </div>

@@ -699,12 +699,12 @@ describe('prepareAgentGenerationHarness', () => {
     expect(JSON.stringify(prepared.coreMessages)).not.toContain('SANDBOX_MODE')
   })
 
-  test('disables chatbox_cli while a resumed image task waits for its callback', async () => {
+  test('never exposes chatbox_cli (skill removed with the chatbox backend services)', async () => {
     discoverSkillsMock.mockResolvedValue([
-      { name: 'chatbox-product-info', description: 'Operate Chatbox product features' },
+      { name: 'data-analysis', description: 'Analyze data with the sandbox' },
     ])
     getSettingsMock.mockReturnValue({
-      skills: { enabledSkillNames: ['chatbox-product-info'] },
+      skills: { enabledSkillNames: ['data-analysis'] },
     })
     const messages: Message[] = [
       {
@@ -739,7 +739,7 @@ describe('prepareAgentGenerationHarness', () => {
 
     const prepared = await prepareAgentGenerationHarness({
       session: createSession(),
-      settings: { provider: ModelProviderEnum.ChatboxAI, modelId: 'test-model' } as SessionSettings,
+      settings: { provider: ModelProviderEnum.Fibonacci, modelId: 'test-model' } as SessionSettings,
       globalSettings: {} as Settings,
       configs: { uuid: 'config-1' } as Config,
       messages,
@@ -756,10 +756,12 @@ describe('prepareAgentGenerationHarness', () => {
       isPro: () => true,
     })
 
-    expect(prepared.tools.chatbox_cli).toBeDefined()
-    expect(prepared.chatOptions.prepareStep).toBeDefined()
-    const stepSettings = await prepared.chatOptions.prepareStep?.({ steps: [] } as never)
-    expect(stepSettings?.activeTools).not.toContain('chatbox_cli')
+    // The chatbox-product-info skill no longer ships, so chatbox_cli can never
+    // be registered — the stale tool-call in history must not resurrect it.
+    // (prepareStep only existed to pause chatbox_cli during image callbacks,
+    // so there is no step filter to assert on anymore.)
+    expect(prepared.tools.chatbox_cli).toBeUndefined()
+    expect(prepared.chatOptions.prepareStep).toBeUndefined()
   })
 
   test('keeps a still-generating resumed message with its tool calls in the model context', async () => {

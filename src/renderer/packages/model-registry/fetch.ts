@@ -5,7 +5,9 @@ import { transformFullResponse } from '@shared/model-registry/transform'
 import type { ModelRegistryData, ModelsDevResponse } from '@shared/model-registry/types'
 import platform from '@/platform'
 
-const BLOB_KEY = 'model-registry-cache-v2'
+// v3: bumped to invalidate the blob cache after the fibonacci-only rebuild —
+// stale cached registry data from older builds must not fight the new fixes.
+const BLOB_KEY = 'model-registry-cache-v3'
 const CACHE_EXPIRY_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 const FETCH_TIMEOUT_MS = 15_000 // 15 seconds
 const API_URL = 'https://models.dev/api.json'

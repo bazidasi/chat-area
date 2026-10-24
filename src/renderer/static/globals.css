@@ -144,6 +144,13 @@
      light mode and light ink in dark mode, so the polarity has to flip with it
      or filled buttons lose contrast. */
   --chatbox-tint-on-accent: #ffffff;
+  /* Interactive "on" accent (switch track, checkbox, radio). The graphite brand
+     reads as a washed light-grey when lit in dark mode and offers no state
+     signal, so checked controls use this single restrained teal instead —
+     dark enough for a white knob in light mode, bright enough for a deep knob
+     in dark mode. */
+  --neo-accent: #0d9488;
+  --neo-accent-contrast: #ffffff;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-error: var(--text-on-critical-base);
@@ -432,6 +439,11 @@
      so filled controls keep a readable foreground in both */
   --chatbox-brand: #ededed;
   --chatbox-tint-on-accent: #171717;
+  /* Dark scheme "on" accent: bright teal track with a deep knob — the previous
+     graphite track (#ededed gradient) read as a light-grey pill and made the
+     whole settings row feel washed out. */
+  --neo-accent: #2dd4bf;
+  --neo-accent-contrast: #05302b;
   --brand: var(--chatbox-brand);
   --chatbox-tint-brand: var(--chatbox-brand);
   --chatbox-tint-error: var(--icon-critical-hover);
@@ -485,6 +497,14 @@ html[data-lang='ar'],
 html[data-lang='fa'] {
   --mantine-font-family: var(--chatbox-font-sans);
   --mantine-font-family-headings: var(--chatbox-font-sans);
+  /* Vazirmatn/Cairo carry taller ascenders and deeper descenders than the
+     Latin faces Mantine's default line-heights (1.3–1.33) were tuned for.
+     At those ratios option labels can clip at the bottom on low-DPI displays.
+     These lifts apply app-wide, including portalled overlays. */
+  --mantine-line-height-xs: 1.45;
+  --mantine-line-height-sm: 1.5;
+  --mantine-line-height-md: 1.55;
+  --mantine-line-height-lg: 1.6;
 }
 
 :root[data-mantine-color-scheme="light"][data-mantine-color-scheme],
@@ -709,6 +729,9 @@ ul[data-sidebar='menu-sub'] > li {
 
 .chatbox-suggestion-chip-desc > span {
   overflow: hidden;
+  /* bottom padding survives the 0fr collapse so descenders never clip
+     against the chip's lower edge on hover-reveal */
+  padding-block-end: 2px;
 }
 
 .chatbox-suggestion-chip:hover .chatbox-suggestion-chip-desc,
@@ -720,6 +743,7 @@ ul[data-sidebar='menu-sub'] > li {
 .chatbox-suggestion-chip:hover .chatbox-suggestion-chip-desc > span,
 .chatbox-suggestion-chip:focus-visible .chatbox-suggestion-chip-desc > span {
   padding-block-start: 6px;
+  padding-block-end: 4px;
   padding-inline-end: 2px;
 }
 

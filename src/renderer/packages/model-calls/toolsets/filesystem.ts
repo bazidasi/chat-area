@@ -13,7 +13,7 @@ import platform from '@/platform'
 import { buildEditStats, buildWriteStats } from './file-mutation-stats'
 import { asRecord, contentOrErrorText, numberField, stringField, toTextModelOutput } from './model-output'
 import { remapPhantomHomePathForProvider } from './sandbox-paths'
-import { editSoulVirtualFile, isSoulVirtualPath, writeSoulVirtualFile } from './soul-file'
+import { editSoulVirtualFile, isSoulVirtualPath, readSoulVirtualFile, writeSoulVirtualFile } from './soul-file'
 
 interface FilesystemContext {
   sessionId?: string
@@ -22,6 +22,10 @@ interface FilesystemContext {
   // these are routed through the sandbox and written without approval, like /tmp.
   userWorkingDirectories?: string[]
   fullAccess?: boolean
+  // Emit a standalone read_file tool. When code execution is enabled, the
+  // code-execution toolset already provides read_file (sandbox-aware) and
+  // registering a second definition would overwrite it.
+  includeReadFile?: boolean
 }
 
 interface EditOperation {
@@ -84,6 +88,32 @@ function formatWriteFileOutput(output: unknown): string {
   if (error) return `Error: ${error}`
   const filePath = stringField(record, 'file_path')
   return filePath ? `Status: success\nAction: write_file\nPath: ${filePath}` : contentOrErrorText(output)
+}
+
+// read_file bounds — kept in sync with the main-process fs:read handler caps.
+const FS_READ_MAX_LINES = 2000
+const FS_READ_DEFAULT_LINES = 500
+const FS_READ_MAX_CHARS = 50_000
+
+function truncateReadOutput(output: string, maxLength = FS_READ_MAX_CHARS): string {
+  if (output.length <= maxLength) return output
+  const half = Math.floor(maxLength / 2)
+  return `${output.slice(0, half)}\n\n... [truncated ${output.length - maxLength} characters] ...\n\n${output.slice(-half)}`
+}
+
+function formatReadFileOutput(output: unknown): string {
+  const record = asRecord(output)
+  const error = stringField(record, 'error')
+  if (error) return contentOrErrorText(output)
+  const content = stringField(record, 'content') ?? ''
+  const startLine = numberField(record, 'startLine')
+  const endLine = numberField(record, 'endLine')
+  const hint = stringField(record, 'hint')
+  const displayContent =
+    content.trim() === '' && startLine !== undefined && endLine !== undefined && endLine >= startLine
+      ? '[Selected lines are blank.]'
+      : content
+  return hint ? `${displayContent}\n\n${hint}` : displayContent
 }
 
 function formatEditFileOutput(output: unknown): string {
@@ -539,16 +569,122 @@ export function buildFilesystemTools(context: FilesystemContext): { tools: ToolS
     toModelOutput: toTextModelOutput(formatEditFileOutput),
   }
 
+  // Standalone read_file for sessions WITHOUT code execution. The code-execution
+  // toolset owns its own sandbox-aware read_file; without it, agent mode used to
+  // expose only list_files / search_files — the model could see a project tree but
+  // had no way to open a file (e.g. Linux without bubblewrap/socat, where the local
+  // sandbox reports unavailable and code execution is disabled entirely).
+  // This variant reads absolute host paths directly through the bounded, deny-listed
+  // main-process fs:read handler, so reading a user-granted project folder never
+  // depends on sandbox availability.
+  const read_file: ToolSet[string] = {
+    description:
+      'Read the content of a file. Absolute paths (including the user-selected project/working directories) are read directly from the user filesystem. ' +
+      'Relative paths require an active session sandbox. Output is truncated to fit context; use offset to continue reading large files.',
+    inputSchema: jsonSchema({
+      type: 'object',
+      properties: {
+        file_path: {
+          type: 'string',
+          description: 'Absolute path to the file, or a relative sandbox path when a sandbox is active',
+        },
+        offset: {
+          type: 'integer',
+          minimum: 1,
+          description: 'Line number to start reading from (1-indexed). Defaults to 1.',
+        },
+        limit: {
+          type: 'integer',
+          minimum: 1,
+          maximum: FS_READ_MAX_LINES,
+          description: `Max number of lines to read. Defaults to ${FS_READ_DEFAULT_LINES}, max ${FS_READ_MAX_LINES}.`,
+        },
+      },
+      required: ['file_path'],
+      additionalProperties: false,
+    }),
+    execute: async (input) => {
+      const readInput = input as { file_path: string; offset?: number; limit?: number }
+      if (isSoulVirtualPath(readInput.file_path)) {
+        return readSoulVirtualFile()
+      }
+      readInput.file_path = await remapPhantomHomePathForProvider(readInput.file_path, context.provider)
+      readInput.file_path = normalizeToolPathForPlatform(readInput.file_path)
+
+      const safeStart = Math.max(1, Math.floor(Number(readInput.offset ?? 1)) || 1)
+      const safeLimit = Math.max(1, Math.floor(Number(readInput.limit ?? FS_READ_DEFAULT_LINES)) || FS_READ_DEFAULT_LINES)
+      const range = { offset: safeStart, limit: Math.min(safeLimit, FS_READ_MAX_LINES) }
+
+      // Absolute host path: prefer the main-process bounded read. Works with or
+      // without a sandbox (reads are approval-free and deny-listed in main).
+      if (isAbsolutePath(readInput.file_path) && platform.fsRead) {
+        const result = await platform.fsRead({
+          filePath: readInput.file_path,
+          offset: range.offset,
+          limit: range.limit,
+        })
+        if (!result.success) return { error: result.error || `File not found: ${readInput.file_path}` }
+        const hasMore = !!result.endLine && !!result.totalLines && result.endLine < result.totalLines
+        return {
+          file_path: readInput.file_path,
+          content: truncateReadOutput(result.content ?? ''),
+          startLine: result.startLine,
+          endLine: result.endLine,
+          totalLines: result.totalLines,
+          ...(hasMore
+            ? {
+                hint: `[Showing lines ${result.startLine}-${result.endLine} of ${result.totalLines}. Use offset=${(result.endLine ?? 0) + 1} to continue.]`,
+              }
+            : {}),
+        }
+      }
+
+      // Relative (sandbox) path, or fsRead unavailable: fall back to the sandbox.
+      if (context.provider && context.sessionId) {
+        const setup = await ensureSandbox(context)
+        if (!setup.success) {
+          return requireAbsoluteRealPath(readInput.file_path) ?? { error: setup.error }
+        }
+        const result = await context.provider.readFileOut(readInput.file_path, range)
+        if (!result.success) {
+          return {
+            error: result.error || `File not found: ${readInput.file_path}`,
+            ...(result.errorCode ? { errorCode: result.errorCode } : {}),
+          }
+        }
+        const content = result.content ?? ''
+        const totalLines = result.totalLines ?? 0
+        const endLine = result.endLine ?? 0
+        if (totalLines === 0) return { file_path: readInput.file_path, content: '', totalLines: 0 }
+        return {
+          file_path: readInput.file_path,
+          content: truncateReadOutput(content),
+          startLine: result.startLine ?? safeStart,
+          endLine,
+          totalLines,
+          ...(endLine < totalLines
+            ? { hint: `[Showing lines ${safeStart}-${endLine} of ${totalLines}. Use offset=${endLine + 1} to continue.]` }
+            : {}),
+        }
+      }
+
+      return requireAbsoluteRealPath(readInput.file_path) ?? { error: 'File reading is not available on this platform' }
+    },
+    toModelOutput: toTextModelOutput(formatReadFileOutput, { emptyFallback: 'File is empty.' }),
+  }
+
   return {
     tools: {
       list_files,
       search_files,
       write_file,
       edit_file,
+      ...(context.includeReadFile ? { read_file } : {}),
     },
     description: `
 ## Filesystem
-Use these tools (write_file / edit_file / list_files / search_files) as the primary way to create and modify files — prefer them over writing files through code_execution.
+Use these tools (${context.includeReadFile ? 'read_file / ' : ''}write_file / edit_file / list_files / search_files) as the primary way to inspect, create and modify files — prefer them over writing files through code_execution.
+- read_file opens project files: pass the absolute path of any file inside the user-selected working directories to read its content${context.includeReadFile ? '' : ' (not available in this session)'}.
 - Relative paths are resolved in the session sandbox working directory and can be written or edited without confirmation. Prefer relative paths.
 - Do NOT use phantom home paths like /home/user or /root — they do not exist. Use relative paths instead.
 - Absolute paths access the user's real filesystem. Read/list/search only when the user provided or clearly requested the path.

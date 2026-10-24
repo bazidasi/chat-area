@@ -1,5 +1,4 @@
 import type { SkillMetadata } from '@shared/types/skills'
-import * as chatboxProductInfo from './chatbox-product-info'
 import * as dataAnalysis from './data-analysis'
 import * as frontendDesign from './frontend-design'
 import * as vibedrop from './vibedrop'
@@ -17,7 +16,6 @@ export interface BuiltinSeed {
 
 export const builtinSkills: BuiltinSeed[] = [
   { metadata: dataAnalysis.metadata, body: dataAnalysis.body, version: 1 },
-  { metadata: chatboxProductInfo.metadata, body: chatboxProductInfo.body, version: 4 },
   { metadata: vibedrop.metadata, body: vibedrop.body, version: 1 },
   { metadata: frontendDesign.metadata, body: frontendDesign.body, version: 1 },
 ]

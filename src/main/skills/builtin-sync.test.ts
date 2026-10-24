@@ -39,42 +39,14 @@ describe('syncBuiltinSkills', () => {
     fs.rmSync(userDataRoot.current, { recursive: true, force: true })
   })
 
-  it('syncs multi-file skills and matches backend hash order', async () => {
-    const hash = '314490b1a5c9c70658abacaa2055e85de940100f137648df4258fd2cb583e903'
-    vi.stubGlobal(
-      'fetch',
-      vi.fn((url: string) => {
-        if (String(url).endsWith('/api/builtin_skills')) {
-          return Response.json({
-            data: [{ name: 'multi-file-skill', description: 'desc', version: 2, hash, updated_at: 1 }],
-          })
-        }
-        if (String(url).endsWith('/api/builtin_skills/multi-file-skill')) {
-          return Response.json({
-            data: {
-              name: 'multi-file-skill',
-              description: 'desc',
-              body: 'body',
-              files: [
-                { path: 'LICENSE', content: 'license\n', hash: 'hash-license', size: 8 },
-                { path: 'assets/a.txt', content: 'asset\n', hash: 'hash-asset', size: 6 },
-              ],
-              version: 2,
-              hash,
-            },
-          })
-        }
-        return new Response(null, { status: 404 })
-      })
-    )
+  it('is disabled in the Fibonacci fork and keeps the local snapshot', async () => {
+    const fetchSpy = vi.fn()
+    vi.stubGlobal('fetch', fetchSpy)
 
-    await expect(syncBuiltinSkills()).resolves.toBe(true)
-
-    const skillDir = path.join(getBuiltinSkillsDir(), 'multi-file-skill')
-    expect(fs.readFileSync(path.join(skillDir, 'SKILL.md'), 'utf-8')).toContain('body')
-    expect(fs.readFileSync(path.join(skillDir, 'LICENSE'), 'utf-8')).toBe('license\n')
-    expect(fs.readFileSync(path.join(skillDir, 'assets/a.txt'), 'utf-8')).toBe('asset\n')
-    expect(loggerWarn).not.toHaveBeenCalledWith(expect.stringContaining('hash mismatch'))
+    // Remote skill sync pointed at the chatbox backend and is disabled: no
+    // network call is made and the call resolves without changes.
+    await expect(syncBuiltinSkills()).resolves.toBe(false)
+    expect(fetchSpy).not.toHaveBeenCalled()
   })
 
   it('rejects normalized reserved file paths before replacing the existing snapshot', async () => {

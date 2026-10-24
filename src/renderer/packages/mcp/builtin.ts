@@ -1,5 +1,3 @@
-import i18n from '@/i18n'
-import { getLicenseKey } from '@/stores/settingActions'
 import type { MCPServerConfig } from './types'
 
 export interface BuildinMCPServerConfig {
@@ -9,50 +7,17 @@ export interface BuildinMCPServerConfig {
   url: string
 }
 
-export const BUILTIN_MCP_SERVERS: BuildinMCPServerConfig[] = [
-  {
-    id: 'fetch',
-    name: 'Fetch',
-    description: i18n.t(
-      'This server enables LLMs to retrieve and process content from web pages, converting HTML to markdown for easier consumption.'
-    ),
-    url: 'https://mcp.chatboxai.app/fetch',
-  },
-  {
-    id: 'edgeone-pages',
-    name: 'EdgeOne Pages',
-    description: i18n.t('Deploy HTML content to EdgeOne Pages and obtaining an accessible public URL.'),
-    url: 'https://mcp.chatboxai.app/edgeone-pages',
-  },
-  {
-    id: 'arxiv',
-    name: 'arXiv',
-    description: i18n.t('MCP server for accessing arXiv papers'),
-    url: 'https://mcp.chatboxai.app/arxiv',
-  },
-  {
-    id: 'context7',
-    name: 'Context7',
-    description: i18n.t('Retrieves up-to-date documentation and code examples for any library.'),
-    url: 'https://mcp.chatboxai.app/context7',
-  },
-]
+/**
+ * Fibonacci fork: the builtin MCP servers were hosted at mcp.chatboxai.app
+ * (chatbox-managed services) and are removed. Users can still add their own
+ * MCP servers from settings; the array stays as the (now empty) extension
+ * point the UI maps over.
+ */
+export const BUILTIN_MCP_SERVERS: BuildinMCPServerConfig[] = []
 
-export function getBuiltinServerConfig(id: string, licenseKey?: string): MCPServerConfig | null {
-  const config = BUILTIN_MCP_SERVERS.find((s) => s.id === id)
-  if (!config) {
-    return null
-  }
-  const license = licenseKey || getLicenseKey()
-  return {
-    id,
-    name: config.name,
-    enabled: true,
-    protocolMode: 'legacy',
-    transport: {
-      type: 'http',
-      url: config.url,
-      headers: license ? { 'x-chatbox-license': license } : undefined,
-    },
-  }
+/** Lookup kept for API compatibility — always undefined now the list is empty. */
+export function getBuiltinServerConfig(_id: string, _licenseKey?: string): MCPServerConfig | undefined {
+  return undefined
 }
+
+export type { MCPServerConfig }

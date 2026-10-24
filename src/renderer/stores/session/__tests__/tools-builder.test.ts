@@ -404,8 +404,8 @@ describe('buildToolsForSession', () => {
     }
     expect(result.tools.code_execution).toBeDefined()
     expect(result.instructions).toContain('## Git')
-    expect(result.instructions).toContain('prefix its name with `chatbox/`')
-    expect(result.instructions).toContain('Co-authored-by: Chatbox <chatbox@chatboxai.com>')
+    expect(result.instructions).toContain('prefix its name with `fibonacci/`')
+    expect(result.instructions).toContain('Co-authored-by: Fibonacci <chatbot@fibonacci.monster>')
   })
 
   test('v2 command contract exposes run_command and retires legacy command tools', async () => {
@@ -1055,8 +1055,8 @@ describe('load_skill tool', () => {
   })
 })
 
-describe('chatbox_cli tool', () => {
-  test('uses an OpenAI-compatible top-level function schema', async () => {
+describe('chatbox_cli tool (removed)', () => {
+  test('is never registered — the chatbox-product-info skill was removed', async () => {
     const model = createMockModel()
     getSettingsMock.mockReturnValue({
       skills: { enabledSkillNames: ['chatbox-product-info'] },
@@ -1067,98 +1067,10 @@ describe('chatbox_cli tool', () => {
       messages: [],
       agentMode: 'on',
     })
-    const inputSchema = result.tools.chatbox_cli.inputSchema as unknown as {
-      jsonSchema: Record<string, unknown>
-    }
 
-    expect(inputSchema.jsonSchema).toMatchObject({
-      type: 'object',
-      properties: {
-        command: { type: 'string' },
-        argv: { type: 'array' },
-      },
-      additionalProperties: false,
-    })
-    expect(inputSchema.jsonSchema).not.toHaveProperty('oneOf')
-    expect(inputSchema.jsonSchema).not.toHaveProperty('anyOf')
-    expect(inputSchema.jsonSchema).not.toHaveProperty('allOf')
-  })
-
-  test('is available only when chatbox-product-info is enabled', async () => {
-    const model = createMockModel()
-    const options: BuildToolsOptions = {
-      webBrowsing: false,
-      messages: [],
-      agentMode: 'on',
-    }
-
-    getSettingsMock.mockReturnValueOnce({
-      skills: { enabledSkillNames: ['chatbox-product-info'] },
-    })
-    const enabled = await buildToolsForSession(model, options)
-    expect(enabled.tools.chatbox_cli).toBeDefined()
-
-    getSettingsMock.mockReturnValueOnce({
-      skills: { enabledSkillNames: ['test-skill'] },
-    })
-    const disabled = await buildToolsForSession(model, options)
-    expect(disabled.tools.chatbox_cli).toBeUndefined()
-  })
-
-  test('returns masked license status for CLI-style command', async () => {
-    const model = createMockModel()
-    const onAgentModeActivated = vi.fn()
-    settingsState.licenseKey = 'license-key-secret-1234'
-    settingsState.licenseActivationMethod = 'manual'
-    settingsState.licensePlanName = 'Fibonacci AI Pro'
-
-    getSettingsMock.mockReturnValue({
-      skills: { enabledSkillNames: ['chatbox-product-info'] },
-    })
-
-    const result = await buildToolsForSession(model, {
-      webBrowsing: false,
-      messages: [],
-      agentMode: 'on',
-      onAgentModeActivated,
-    })
-    if (!result.tools.chatbox_cli.execute) throw new Error('chatbox_cli execute missing')
-
-    const executeResult = await result.tools.chatbox_cli.execute({ command: 'chatbox account status' }, {} as never)
-
-    expect(onAgentModeActivated).toHaveBeenCalledTimes(1)
-    expect(executeResult).toMatchObject({
-      licenseConfigured: true,
-      licenseKey: 'configured (...1234)',
-      activationMethod: 'manual',
-      plan: { name: 'Fibonacci AI Pro' },
-    })
-    expect(JSON.stringify(executeResult)).not.toContain('license-key-secret-1234')
-  })
-
-  test('advertises the structured command hierarchy through capabilities', async () => {
-    const model = createMockModel()
-    getSettingsMock.mockReturnValue({
-      skills: { enabledSkillNames: ['chatbox-product-info'] },
-    })
-
-    const result = await buildToolsForSession(model, {
-      sessionId: 'session-1',
-      webBrowsing: false,
-      messages: [],
-      agentMode: 'on',
-    })
-    if (!result.tools.chatbox_cli.execute) throw new Error('chatbox_cli execute missing')
-
-    const executeResult = await result.tools.chatbox_cli.execute({ argv: ['capabilities'] }, {} as never)
-    expect(executeResult).toMatchObject({
-      ok: true,
-      command: 'capabilities',
-      domains: ['account', 'settings', 'chats', 'image'],
-    })
+    expect(result.tools.chatbox_cli).toBeUndefined()
   })
 })
-
 describe('session attachment RAG tools', () => {
   function retrievalMessage(): Message {
     return {

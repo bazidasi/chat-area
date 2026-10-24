@@ -55,23 +55,27 @@ describe('initData', () => {
     storageMock.setItemNow.mockResolvedValue(undefined)
   })
 
-  it('uses all session meta records to decide whether default sessions are needed', async () => {
-    metaStorage.getAllTotal.mockResolvedValue(1)
-
-    await initData()
-
-    expect(metaStorage.getAllTotal).toHaveBeenCalledTimes(1)
-    expect(storageMock.setItemNow).not.toHaveBeenCalled()
-    expect(metaStorage.createMany).not.toHaveBeenCalled()
-  })
-
-  it('creates default sessions when session meta storage is empty', async () => {
+  // Fibonacci fork: demo session seeding is disabled entirely — the app starts
+  // with an empty chat list. initData is kept as a no-op for the migration
+  // pipeline and must not touch session storage at all.
+  it('never seeds demo sessions, regardless of existing session count', async () => {
     metaStorage.getAllTotal.mockResolvedValue(0)
 
     await initData()
 
-    expect(storageMock.setItemNow).toHaveBeenCalled()
-    expect(metaStorage.createMany).toHaveBeenCalled()
+    expect(metaStorage.getAllTotal).not.toHaveBeenCalled()
+    expect(storageMock.setItemNow).not.toHaveBeenCalled()
+    expect(metaStorage.createMany).not.toHaveBeenCalled()
+  })
+
+  it('does not touch session storage when sessions already exist either', async () => {
+    metaStorage.getAllTotal.mockResolvedValue(5)
+
+    await initData()
+
+    expect(metaStorage.getAllTotal).not.toHaveBeenCalled()
+    expect(storageMock.setItemNow).not.toHaveBeenCalled()
+    expect(metaStorage.createMany).not.toHaveBeenCalled()
   })
 })
 

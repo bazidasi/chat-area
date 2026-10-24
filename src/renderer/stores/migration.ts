@@ -36,11 +36,12 @@ import { initData } from '@/setup/init_data'
 import storage, { StorageKey } from '@/storage'
 import { StorageKeyGenerator } from '@/storage/StoreStorage'
 import { createSessionMetaRecordsFromLegacyList } from '@/utils/session-utils'
+import { FIBONACCI_DEFAULT_MODEL_ID } from '@/packages/fibonacci-default-model'
 import * as defaults from '../../shared/defaults'
 import { getLogger } from '../lib/utils'
 import { migrationProcessAtom } from './atoms/utilAtoms'
 import { withMigrationErrorContext } from './migration-error'
-import { getSessionMeta } from './sessionHelpers'
+import { getSessionMeta, getMetaStorage } from './sessionHelpers'
 
 const log = getLogger('migration')
 
@@ -64,7 +65,7 @@ type MigrateStore = {
   setBlob?: (key: string, value: string) => Promise<void>
 }
 
-export const CurrentVersion = 16
+export const CurrentVersion = 17
 
 async function doMigrateStorage(oldStorage: Storage) {
   // 找到老版本的数据，说明是升级，执行数据迁移操作
@@ -210,6 +211,7 @@ export async function migrateOnData(dataStore: MigrateStore, canRelaunch = true)
     migrate_13_to_14,
     migrate_14_to_15,
     migrate_15_to_16,
+    migrate_16_to_17,
   ]
 
   for (; configVersion < CurrentVersion; configVersion++) {
@@ -645,5 +647,105 @@ async function migrate_15_to_16(dataStore: MigrateStore) {
       projects: Array.from(projectsByKey.values()),
     })
   }
+  return false
+}
+
+/**
+ * Collects every session id this app ever seeded as a demo/template chat.
+ * Kept in sync with `@/packages/initial_data` exports so the cleanup in
+ * `migrate_16_to_17` stays exhaustive without hardcoding UUIDs.
+ */
+function getDemoSessionIds(): string[] {
+  return uniq([
+    ...defaultSessionsForEN.map((session) => session.id),
+    ...defaultSessionsForCN.map((session) => session.id),
+    imageCreatorSessionForCN.id,
+    imageCreatorSessionForEN.id,
+    artifactSessionCN.id,
+    artifactSessionEN.id,
+    mermaidSessionCN.id,
+    mermaidSessionEN.id,
+  ])
+}
+
+/**
+ * v16 → v17 cleanup, applied to every updating install:
+ *
+ * 1. Remove the demo/template sessions that used to be seeded on first run —
+ *    Fibonacci starts with an empty chat list (both the legacy flat keys and
+ *    the per-session `session:<id>` records plus their meta rows).
+ * 2. Clear the persisted remote config: flags cached from the old backend
+ *    (e.g. `setting_chatboxai_first`) must not override this build's
+ *    fibonacci-only behavior after an update.
+ * 3. Drop cached `chatbox-ai` provider settings and remap any default model
+ *    selection that still points at an unregistered provider to Fibonacci,
+ *    so new chats resolve a real model instead of throwing.
+ *
+ * This is also the cache-bust for the update itself: stale cached state that
+ * could fight the new build's fixes is explicitly reset here.
+ */
+async function migrate_16_to_17(dataStore: MigrateStore) {
+  const demoIds = new Set(getDemoSessionIds())
+  let removedSessions = 0
+
+  // --- 1a. legacy flat session array (pre-v8 installs) ---
+  const legacySessions = await dataStore.getData<Session[]>(StorageKey.ChatSessions, [])
+  if (legacySessions.length > 0) {
+    const keptSessions = legacySessions.filter((session) => !demoIds.has(session.id))
+    removedSessions += legacySessions.length - keptSessions.length
+    await dataStore.setData(StorageKey.ChatSessions, keptSessions)
+  }
+
+  // --- 1b. legacy session meta list ---
+  const legacyList = await dataStore.getData<SessionMeta[]>(StorageKey.ChatSessionsList, [])
+  if (legacyList.length > 0) {
+    const keptList = legacyList.filter((meta) => !demoIds.has(meta.id))
+    removedSessions += legacyList.length - keptList.length
+    await dataStore.setData(StorageKey.ChatSessionsList, keptList)
+  }
+
+  // --- 1c. per-session storage records (session:<id>) and meta rows ---
+  try {
+    const metaStorage = await getMetaStorage()
+    const records = await metaStorage.getAllIncludingHidden()
+    // Meta records only carry the picked SessionMeta fields (no copilotId), so
+    // the demo ids from initial_data are the sole filter signal here.
+    const demoRecords = records.filter((record) => demoIds.has(record.id))
+    for (const record of demoRecords) {
+      await storage.removeItem(StorageKeyGenerator.session(record.id))
+    }
+    if (demoRecords.length > 0) {
+      await metaStorage.deleteMany(demoRecords.map((record) => record.id))
+      removedSessions += demoRecords.length
+    }
+  } catch (error) {
+    log.warn('migrate_16_to_17: meta storage cleanup failed', error)
+  }
+
+  // --- 2. clear the persisted remote config cache ---
+  try {
+    await dataStore.setData(StorageKey.RemoteConfig, {})
+  } catch (error) {
+    log.warn('migrate_16_to_17: remote config reset failed', error)
+  }
+
+  // --- 3. provider settings scrub + default model remap ---
+  const settings = await dataStore.getData<Settings>(StorageKey.Settings, defaults.settings())
+  const providers = { ...(settings.providers ?? {}) }
+  delete providers[ModelProviderEnum.ChatboxAI]
+
+  const remapDefaultChatModel = (selection?: { provider: string; model: string }) => {
+    if (!selection?.provider || selection.provider === ModelProviderEnum.Fibonacci) return selection
+    return { provider: ModelProviderEnum.Fibonacci, model: FIBONACCI_DEFAULT_MODEL_ID }
+  }
+
+  const nextSettings: Settings = {
+    ...settings,
+    providers,
+    defaultChatModel: remapDefaultChatModel(settings.defaultChatModel),
+  }
+  await dataStore.setData(StorageKey.Settings, nextSettings)
+
+  log.info(`migrate_16_to_17: removed ${removedSessions} demo session(s), remote config cleared, chatbox-ai settings dropped`)
   return false
 }

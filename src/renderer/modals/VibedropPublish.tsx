@@ -124,7 +124,7 @@ const VibedropPublish = NiceModal.create(({ html, uniqueId, sessionId }: Vibedro
   }
 
   const goLogin = () => {
-    navigateToSettings('/provider/chatbox-ai')
+    navigateToSettings('/provider/fibonacci')
     onClose()
   }
 

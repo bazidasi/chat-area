@@ -1178,6 +1178,8 @@
   "Sit back, relax. Chatbox will start a new chat in {{count}}s...": "راحت باشید. برنامه تا {{count}} ثانیه دیگر گفتگوی جدیدی را شروع می‌کند...",
   "Excellent! You're ready to explore.\n\nClick the button below to configure your API directly. If you need help later, just click the **Help** button in the sidebar. Enjoy!": "عالی! آمادهٔ شروع هستید.\n\nروی دکمهٔ زیر کلیک کنید تا API خود را مستقیم تنظیم کنید. اگر بعداً به کمک نیاز داشتید، دکمهٔ **راهنما** را در نوار کناری بزنید. لذت ببرید!",
   "Set up API": "راه‌اندازی API",
+  "Set up Fibonacci AI": "راه‌اندازی فیبوناچی AI",
+  "View Provider Settings": "نمایش تنظیمات سرویس‌دهنده",
   "What would you like Chatbox to help with?": "دوست دارید Fibonacci Chat Area در چه چیزی به شما کمک کند؟",
   "Choose a scenario to explore Chatbox, or type your own question below.": "یک سناریو برای کاوش برنامه انتخاب کنید یا پرسش خود را در پایین بنویسید.",
   "Document Summary": "خلاصه سند",
@@ -1440,6 +1442,6 @@
   "Generate clean, production-ready code in seconds.": "تولید کد تمیز و آمادهٔ بهره‌برداری در چند ثانیه.",
   "Make Slides": "ساخت اسلاید",
   "Generate Code": "تولید کد",
-  "Create a professional presentation about ": "ساخت ارائهٔ حرفه‌ای دربارهٔ ",
-  "Write production-ready code for ": "نوشتن کد آمادهٔ بهره‌برداری برای "
+  "Create a professional presentation. Topic: [TOPIC]. Audience: [AUDIENCE]. Length: [NUMBER] slides. Tone: [FORMAL / FRIENDLY / TECHNICAL].\n\nFor each slide give: a slide title, 3-5 concise bullets, and a one-line speaker note. Suggest a fitting visual for each slide (chart, diagram, or image description). Start with a title slide and an agenda, and close with a summary and clear next steps.": "یک ارائهٔ حرفه‌ای بساز.\n\nموضوع: [موضوع ارائه]\nمخاطب: [مخاطب ارائه؛ مثلاً مدیران محصول]\nتعداد اسلایدها: [مثلاً ۱۰]\nلحن: [رسمی / صمیمی / فنی]\n\nبرای هر اسلاید این موارد را بده: عنوان اسلاید، ۳ تا ۵ نکتهٔ کوتاه و یک یادداشت ارائه‌دهندهٔ یک‌خطی. برای هر اسلاید یک تصویرسازی مناسب هم پیشنهاد بده (نمودار، دیاگرام یا توضیح تصویر).\n\nکار را با اسلاید عنوان و یک اسلاید دستور جلسه شروع کن و در پایان یک اسلاید جمع‌بندی و گام‌های بعدی روشن بیاور.",
+  "Write production-ready code. Task: [FEATURE OR TASK]. Language/framework: [LANGUAGE / FRAMEWORK].\n\nRequirements:\n- [REQUIREMENT 1]\n- [REQUIREMENT 2]\n\nInclude error handling and input validation, add inline comments only where logic is non-obvious, and return complete files with no placeholders. Finish with a short explanation of the design decisions and how to run and test the code.": "کد آمادهٔ بهره‌برداری بنویس.\n\nکار: [قابلیت یا کاری که باید پیاده‌سازی شود]\nزبان/فریم‌ورک: [مثلاً TypeScript + React]\n\nالزامات:\n- [الزام ۱]\n- [الزام ۲]\n\nمدیریت خطا و اعتبارسنجی ورودی را لحاظ کن و فقط برای بخش‌های غیربدیهی کامنت بگذار. فایل‌ها را کامل و بدون بخش ناقص تحویل بده.\n\nدر پایان، توضیح کوتاهی دربارهٔ تصمیم‌های طراحی و روش اجرا و تست کد بنویس."
 }

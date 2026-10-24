@@ -25,6 +25,14 @@ export default function SegmentedControl({ value, onChange, data, ...props }: Se
         indicator: {
           borderRadius: 0,
         },
+        label: {
+          // Keep tall scripts (Vazirmatn/Cairo descenders) clear of the control
+          // edges at small sizes and low-DPI displays.
+          paddingInline: '0.75rem',
+          paddingTop: '0.375rem',
+          paddingBottom: '0.375rem',
+          lineHeight: 1.45,
+        },
       }}
     />
   )
