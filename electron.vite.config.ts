@@ -302,7 +302,15 @@ export default defineConfig(({ mode }) => {
         outDir: isProduction ? 'release/app/dist/renderer' : undefined,
         target: 'es2020', // Avoid static initialization blocks for browser compatibility
         sourcemap: isProduction ? false : true,
-        minify: isProduction ? 'esbuild' : false, // Use esbuild for faster, less memory-intensive minification
+        // RENDERER_NO_MINIFY=1: low-RAM escape hatch. The 17k-module renderer
+        // minification can exceed 4 GB machines during "rendering chunks".
+        // Build unminified (RENDERER_NO_MINIFY=1) and post-minify the emitted
+        // chunks with the esbuild CLI, which streams per-file in a separate,
+        // memory-light process. Output is byte-equivalent in behavior.
+        minify: isProduction && process.env.RENDERER_NO_MINIFY !== '1' ? 'esbuild' : false,
+        // Skip the post-build gzip-size report: it allocates a compressed copy
+        // of every chunk and inflates peak memory on low-RAM build machines.
+        reportCompressedSize: false,
         rollupOptions: {
           output: {
             entryFileNames: 'js/[name].[hash].js',
