@@ -1,0 +1,151 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --chatbox-bg: #f8f8f8;
+  --chatbox-surface: #ffffff;
+  --chatbox-surface-soft: #f1f2f5;
+  --chatbox-border: rgba(15, 23, 42, 0.08);
+  --chatbox-text: #18181b;
+  --chatbox-text-secondary: #52525b;
+  --chatbox-text-tertiary: #71717a;
+  --chatbox-accent: #d6199b;
+  --chatbox-primary: #2979ff;
+}
+
+html[data-theme='dark'] {
+  --chatbox-bg: #101010;
+  --chatbox-surface: #18181b;
+  --chatbox-surface-soft: #202024;
+  --chatbox-border: rgba(255, 255, 255, 0.09);
+  --chatbox-text: #f4f4f5;
+  --chatbox-text-secondary: #a1a1aa;
+  --chatbox-text-tertiary: #71717a;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: var(--chatbox-bg);
+  color: var(--chatbox-text);
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Vazirmatn', sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Custom sleek scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(120, 120, 128, 0.25);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(120, 120, 128, 0.45);
+}
+
+/* Markdown & code block typography */
+.markdown-body {
+  line-height: 1.68;
+  font-size: 0.9375rem;
+  word-break: break-word;
+}
+
+.markdown-body p {
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body p:first-child {
+  margin-top: 0;
+}
+
+.markdown-body p:last-child {
+  margin-bottom: 0;
+}
+
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  font-weight: 600;
+  line-height: 1.35;
+  margin-top: 1.15rem;
+  margin-bottom: 0.5rem;
+}
+
+.markdown-body h1 { font-size: 1.35rem; }
+.markdown-body h2 { font-size: 1.18rem; }
+.markdown-body h3 { font-size: 1.05rem; }
+
+.markdown-body ul,
+.markdown-body ol {
+  margin: 0.5rem 0;
+  padding-inline-start: 1.4rem;
+}
+
+.markdown-body ul { list-style-type: disc; }
+.markdown-body ol { list-style-type: decimal; }
+
+.markdown-body li {
+  margin: 0.2rem 0;
+}
+
+.markdown-body blockquote {
+  border-inline-start: 3px solid var(--chatbox-accent);
+  padding-inline-start: 0.875rem;
+  margin: 0.75rem 0;
+  color: var(--chatbox-text-secondary);
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 0.75rem 0;
+  font-size: 0.875rem;
+  overflow-x: auto;
+  display: block;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid var(--chatbox-border);
+  padding: 0.45rem 0.7rem;
+  text-align: start;
+}
+
+.markdown-body th {
+  background-color: var(--chatbox-surface-soft);
+  font-weight: 600;
+}
+
+.markdown-body a {
+  color: var(--chatbox-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown-body :not(pre) > code {
+  background-color: rgba(128, 128, 128, 0.14);
+  padding: 0.12rem 0.36rem;
+  border-radius: 0.35rem;
+  font-size: 0.85em;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.markdown-body hr {
+  border: none;
+  border-top: 1px solid var(--chatbox-border);
+  margin: 1rem 0;
+}

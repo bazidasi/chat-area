@@ -1,7 +1,0 @@
-interface:
-  display_name: "i18n Translate"
-  short_description: "翻译 Chatbox 改动中的 UI 文案"
-  default_prompt: "使用 $i18n-translate 翻译我当前改动引入的 i18n key。"
-
-policy:
-  allow_implicit_invocation: true
